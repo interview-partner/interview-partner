@@ -1,5 +1,6 @@
 package com.vip.interviewpartner.common;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,20 +13,25 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 /**
- * API 응답을 표준화하는 클래스입니다.
- * 이 클래스는 API의 성공, 실패, 오류 상태를 일관된 형식으로 클라이언트에 반환합니다.
+ * API 응답을 표준화하는 클래스입니다. 이 클래스는 API의 성공, 실패, 오류 상태를 일관된 형식으로 클라이언트에 반환합니다.
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ApiResponse<T> {
+@Schema(description = "API 응답을 표준화하는 클래스입니다. API의 성공, 실패, 오류 상태를 일관된 형식으로 클라이언트에 반환합니다.")
+public class ApiCommonResponse<T> {
 
     private static final String SUCCESS_STATUS = "success";
     private static final String FAIL_STATUS = "fail";
     private static final String ERROR_STATUS = "error";
 
+    @Schema(description = "응답 상태 ex) success, fail, error")
     private String status;
+
+    @Schema(description = "응답 데이터")
     private T data;
+
+    @Schema(description = "응답 메시지")
     private String message;
 
     /**
@@ -34,8 +40,8 @@ public class ApiResponse<T> {
      * @param data 성공했을 때 클라이언트에 반환할 데이터
      * @return 성공 상태와 데이터를 포함하는 ApiResponse 객체
      */
-    public static <T> ApiResponse<T> successResponse(T data) {
-        return new ApiResponse<>(SUCCESS_STATUS, data, null);
+    public static <T> ApiCommonResponse<T> successResponse(T data) {
+        return new ApiCommonResponse<>(SUCCESS_STATUS, data, null);
     }
 
     /**
@@ -43,8 +49,8 @@ public class ApiResponse<T> {
      *
      * @return 성공 상태만을 포함하는 ApiResponse 객체
      */
-    public static ApiResponse<?> successWithNoContent() {
-        return new ApiResponse<>(SUCCESS_STATUS, null, null);
+    public static ApiCommonResponse<?> successWithNoContent() {
+        return new ApiCommonResponse<>(SUCCESS_STATUS, null, null);
     }
 
     /**
@@ -53,7 +59,7 @@ public class ApiResponse<T> {
      * @param bindingResult Spring의 BindingResult 객체, 유효성 검사 실패의 세부 정보를 포함
      * @return 실패 상태와 유효성 검사 오류를 포함하는 ApiResponse 객체
      */
-    public static ApiResponse<?> failResponse(BindingResult bindingResult) {
+    public static ApiCommonResponse<?> failResponse(BindingResult bindingResult) {
         Map<String, String> errors = new HashMap<>();
 
         List<ObjectError> allErrors = bindingResult.getAllErrors();
@@ -64,7 +70,7 @@ public class ApiResponse<T> {
                 errors.put(error.getObjectName(), error.getDefaultMessage());
             }
         }
-        return new ApiResponse<>(FAIL_STATUS, errors, null);
+        return new ApiCommonResponse<>(FAIL_STATUS, errors, null);
     }
 
     /**
@@ -73,7 +79,7 @@ public class ApiResponse<T> {
      * @param message 오류 상태에 포함될 메시지
      * @return 오류 상태와 메시지를 포함하는 ApiResponse 객체
      */
-    public static ApiResponse<?> errorResponse(String message) {
-        return new ApiResponse<>(ERROR_STATUS, null, message);
+    public static ApiCommonResponse<?> errorResponse(String message) {
+        return new ApiCommonResponse<>(ERROR_STATUS, null, message);
     }
 }
