@@ -13,7 +13,9 @@ public enum ErrorCode {
     INVALID_REQUEST(400, "유효하지 않는 요청입니다."),
     AUTHENTICATION_REQUIRED(401, "인증이 필요합니다."),
     FORBIDDEN(403, "권한이 없습니다."),
-    SERVER_ERROR(500, "서버에 에러가 발생하였습니다.");
+    SERVER_ERROR(500, "서버에 에러가 발생하였습니다."),
+    DUPLICATE_EMAIL(409, "이메일이 중복입니다."),
+    DUPLICATE_NICKNAME(409, "닉네임이 중복입니다.");
 
     private final int status;
     private final String message;
