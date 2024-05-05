@@ -41,6 +41,17 @@ public class MemberJoinService {
     }
 
     /**
+     * 주어진 닉네임의 사용 가능 여부를 확인하는 메서드입니다.
+     * 닉네임이 사용 중인지 아닌지를 판단합니다.
+     *
+     * @param nickname 검사하고자 하는 사용자의 닉네임
+     * @return 닉네임이 사용 가능할 경우 true, 그렇지 않을 경우 false를 반환합니다.
+     */
+    public boolean isNicknameAvailable(String nickname) {
+        return !memberRepository.existsByNickname(nickname);
+    }
+
+    /**
      * 입력된 이메일이 이미 존재하는지 확인합니다.
      * 이미 존재하는 경우 CustomException을 발생시킵니다.
      *
