@@ -1,5 +1,6 @@
 package com.vip.interviewpartner.config;
 
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,6 +55,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(POST, "/api/v1/members").permitAll()
+                        .requestMatchers(GET, "/api/v1/members/check/nickname/*").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/api/v1/swagger-ui/**", "/api/v1/docs").permitAll()
                         .anyRequest().authenticated());
         return http.build();
