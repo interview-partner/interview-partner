@@ -1,6 +1,9 @@
 package com.vip.interviewpartner.common.exception;
 
 import com.vip.interviewpartner.common.ApiCommonResponse;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import java.util.Set;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -41,11 +44,24 @@ public class GlobalExceptionHandler {
     /**
      * 입력 값 검증 실패(MethodArgumentNotValidException)를 처리합니다. 이 메서드는 입력 값에 대한 검증 실패 시 발생하는 예외를 캡처하고, 상세한 검증 오류 정보를 클라이언트에 반환합니다.
      *
-     * @param bindingResult 검증 실패 결과를 담고 있는 BindingResult 객체
+     * @param e 발생한 MethodArgumentNotValidException
      * @return 상태 코드 400과 함께 검증 오류의 세부 정보를 포함한 ApiResponse 객체
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiCommonResponse<?>> handleValidationExceptions(BindingResult bindingResult) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiCommonResponse.failResponse(bindingResult));
+    public ResponseEntity<ApiCommonResponse<?>> handleValidationExceptions(MethodArgumentNotValidException e) {
+        BindingResult bindingResult = e.getBindingResult();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiCommonResponse.failValidResponse(bindingResult));
+    }
+
+    /**
+     * Bean Validation에서 제약 조건 위반을 감지했을 때 발생하는 예외(ConstraintViolationException)를 처리합니다.
+     *
+     * @param e 발생한 ConstraintViolationException
+     * @return 상태 코드 400과 함께 검증 오류의 세부 정보를 포함한 ApiResponse 객체
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiCommonResponse<?>> handleConstraintValidationException(ConstraintViolationException e) {
+        Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiCommonResponse.failValidatedResponse(violations));
     }
 }

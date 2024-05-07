@@ -1,9 +1,11 @@
 package com.vip.interviewpartner.common;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.ConstraintViolation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,20 +20,17 @@ import org.springframework.validation.ObjectError;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Schema(description = "API 응답을 표준화하는 클래스입니다. API의 성공, 실패, 오류 상태를 일관된 형식으로 클라이언트에 반환합니다.")
+@Schema(description = "API 응답을 표준화하는 클래스입니다. API의 성공, 실패, 오류 상태를 일관된 형식으로 클라이언트에 반환합니다.", hidden = true)
 public class ApiCommonResponse<T> {
 
     private static final String SUCCESS_STATUS = "success";
     private static final String FAIL_STATUS = "fail";
     private static final String ERROR_STATUS = "error";
 
-    @Schema(description = "응답 상태 ex) success, fail, error")
     private String status;
 
-    @Schema(description = "응답 데이터")
     private T data;
 
-    @Schema(description = "응답 메시지")
     private String message;
 
     /**
@@ -59,7 +58,7 @@ public class ApiCommonResponse<T> {
      * @param bindingResult Spring의 BindingResult 객체, 유효성 검사 실패의 세부 정보를 포함
      * @return 실패 상태와 유효성 검사 오류를 포함하는 ApiResponse 객체
      */
-    public static ApiCommonResponse<?> failResponse(BindingResult bindingResult) {
+    public static ApiCommonResponse<?> failValidResponse(BindingResult bindingResult) {
         Map<String, String> errors = new HashMap<>();
 
         List<ObjectError> allErrors = bindingResult.getAllErrors();
@@ -70,6 +69,25 @@ public class ApiCommonResponse<T> {
                 errors.put(error.getObjectName(), error.getDefaultMessage());
             }
         }
+        return new ApiCommonResponse<>(FAIL_STATUS, errors, null);
+    }
+
+    /**
+     * Bean Validation을 사용하여 유효성 검사에 실패한 경우의 응답을 생성합니다.
+     *
+     * @param violations ConstraintViolation의 Set, 유효성 검사 실패의 세부 정보를 포함
+     * @return 실패 상태와 유효성 검사 오류를 포함하는 ApiResponse 객체
+     */
+    public static ApiCommonResponse<?> failValidatedResponse(Set<ConstraintViolation<?>> violations) {
+        Map<String, String> errors = new HashMap<>();
+
+        for (ConstraintViolation<?> violation : violations) {
+            String path = violation.getPropertyPath().toString();
+            String fieldName = path.substring(path.lastIndexOf('.') + 1);
+            String errorMessage = violation.getMessage();
+            errors.merge(fieldName, errorMessage, (existingMessage, newMessage) -> existingMessage + "; " + newMessage);
+        }
+
         return new ApiCommonResponse<>(FAIL_STATUS, errors, null);
     }
 
