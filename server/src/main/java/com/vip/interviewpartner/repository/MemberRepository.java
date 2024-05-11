@@ -1,6 +1,7 @@
 package com.vip.interviewpartner.repository;
 
 import com.vip.interviewpartner.domain.Member;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -23,4 +24,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      * @return 회원이 존재하는 경우 true, 그렇지 않은 경우 false
      */
     boolean existsByNickname(String nickname);
+
+    /**
+     * 주어진 이메일과 일치하는 회원을 찾습니다.
+     * 이 메소드는 이메일을 인자로 받아, 해당 이메일을 가진 회원을 찾아 Optional로 반환합니다.
+     *
+     * @param email 찾을 회원의 이메일
+     * @return 찾은 회원을 담고 있는 Optional, 회원이 존재하지 않는 경우 빈 Optional
+     */
+    Optional<Member> findByEmail(String email);
 }
