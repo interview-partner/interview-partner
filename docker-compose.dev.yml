@@ -16,6 +16,17 @@ services:
       - --log-error-verbosity=1
     networks:
       - network
+  redis:
+    container_name: redis-container
+    image: redis
+    restart: always
+    ports:
+      - 6379:6379
+    networks:
+      - network
+    command: redis-server --requirepass root1234
+    volumes:
+        - redis:/data
 
   server:
     container_name: server-container
@@ -33,11 +44,15 @@ services:
       SPRING_DATASOURCE_DRIVER: com.mysql.cj.jdbc.Driver
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root1234
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_REDIS_PASSWORD: root1234
     networks:
       - network
 
 volumes:
   db:
+  redis:
 
 networks:
   network:
