@@ -3,25 +3,48 @@ package com.vip.interviewpartner.config;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vip.interviewpartner.common.exception.CustomAccessDeniedHandler;
+import com.vip.interviewpartner.common.exception.CustomAuthenticationEntryPoint;
+import com.vip.interviewpartner.common.exception.ExceptionHandlingFilter;
+import com.vip.interviewpartner.common.jwt.JWTFilter;
+import com.vip.interviewpartner.common.jwt.JWTUtil;
+import com.vip.interviewpartner.common.jwt.LoginFilter;
+import com.vip.interviewpartner.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 /**
- * Spring Security 설정 클래스입니다.
- * 이 클래스는 웹 보안에 관련된 설정을 구성합니다.
+ * Spring Security 설정 클래스입니다. 이 클래스는 웹 보안에 관련된 설정을 구성합니다.
  */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final AuthenticationConfiguration authenticationConfiguration;
+    private final ObjectMapper objectMapper;
+    private final JWTUtil jwtUtil;
+    private final TokenService tokenService;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
 
     /**
      * Spring Security 필터 체인을 구성하는 빈입니다.
@@ -53,11 +76,33 @@ public class SecurityConfig {
         http
                 .csrf((auth) -> auth.disable());
         http
+                .formLogin((auth) -> auth.disable());
+        http
+                .httpBasic((auth) -> auth.disable());
+        http
+                .exceptionHandling((auth) -> auth
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler));
+        http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(POST, "/api/v1/members").permitAll()
                         .requestMatchers(GET, "/api/v1/members/check/nickname/*").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/api/v1/swagger-ui/**", "/api/v1/docs").permitAll()
                         .anyRequest().authenticated());
+
+        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), tokenService);
+        loginFilter.setFilterProcessesUrl("/api/v1/auth/login");
+
+        http
+                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+        http
+                .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
+        http
+                .addFilterBefore(new ExceptionHandlingFilter(objectMapper), JWTFilter.class);
+
+        http
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
     }
 }

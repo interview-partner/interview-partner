@@ -26,6 +26,7 @@ import org.hibernate.annotations.ColumnDefault;
         @UniqueConstraint(name = "UK_NICKNAME", columnNames = {"nickname"})
 })
 public class Member extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -48,6 +49,12 @@ public class Member extends BaseTimeEntity {
     @Column(columnDefinition = "varchar(255)", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    public Member(Long id, String nickname, Role role) {
+        this.id = id;
+        this.nickname = nickname;
+        this.role = role;
+    }
 
     @Builder(builderMethodName = "regularMemberBuilder")
     public Member(String email, String password, String nickname) {
