@@ -82,7 +82,7 @@ public class MemberController {
 
 
     @PostMapping("/me/resumes")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public ApiCommonResponse<?> uploadResume(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestParam("file") MultipartFile file) {
 
         resumeUploadService.upload(customUserDetails.getMemberId(), file);
