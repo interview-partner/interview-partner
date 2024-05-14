@@ -66,7 +66,7 @@ public class AuthController {
     @Operation(summary = "로그아웃 API",
             description = "로그아웃",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "로그아웃 성공, 액세스토큰은 프론트에서 삭제해야 합니다."),
+                    @ApiResponse(responseCode = "200", description = "로그아웃 성공, 기존 RefreshToken 쿠키는 만료되며, 액세스토큰은 프론트에서 삭제해야 합니다."),
                     @ApiResponse(responseCode = "400", description = "유효하지 않은 요청입니다.", content = @Content),
                     @ApiResponse(responseCode = "401", description = "리프레쉬 토큰 만료, 토큰 없음, 유효하지 않는 토큰 - 사용자가 새로운 로그인을 요청해야 합니다.", content = @Content),
             }
