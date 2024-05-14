@@ -16,6 +16,9 @@ import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.customizers.OpenApiCustomizer;
@@ -43,12 +46,22 @@ public class SpringDocConfig {
      */
     @Bean
     public OpenAPI openAPI() {
+        final String securitySchemeName = "bearerAuth";
+
         Info info = new Info()
                 .title("Interview Partner API Document")
                 .version("v1.0.0")
                 .description("Interview Partner API 명세서입니다.");
         OpenAPI openAPI = new OpenAPI()
-                .components(new Components())
+                .addSecurityItem(new SecurityRequirement()
+                        .addList(securitySchemeName))
+                .components(new Components()
+                        .addSecuritySchemes(securitySchemeName, new SecurityScheme()
+                                .name(securitySchemeName)
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .description("로그인 API를 호출해 받은 accessToken을 입력해주세요. refreshToken은 쿠키로 전달됩니다.")
+                                .bearerFormat("JWT")))
                 .info(info)
                 .paths(new Paths());
 
@@ -103,6 +116,7 @@ public class SpringDocConfig {
                     operation.responses(apiResponses);
                     operation.addTagsItem("auth");
                     operation.description("로그인");
+                    operation.setSecurity(List.of());
                     operation.summary("로그인 API");
                     PathItem pathItem = new PathItem().post(operation);
                     openAPI.getPaths().addPathItem("/api/v1/auth/login", pathItem);

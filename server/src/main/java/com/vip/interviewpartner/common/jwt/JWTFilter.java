@@ -3,16 +3,12 @@ package com.vip.interviewpartner.common.jwt;
 import static com.vip.interviewpartner.common.constants.Constants.ACCESS;
 import static com.vip.interviewpartner.common.constants.Constants.AUTHORIZATION_HEADER;
 import static com.vip.interviewpartner.common.constants.Constants.BEARER_TOKEN_PREFIX;
-import static com.vip.interviewpartner.common.exception.ErrorCode.ACCESS_TOKEN_EXPIRED;
 import static com.vip.interviewpartner.common.exception.ErrorCode.INVALID_REQUEST;
-import static com.vip.interviewpartner.common.exception.ErrorCode.INVALID_TOKEN;
 
 import com.vip.interviewpartner.common.exception.CustomException;
 import com.vip.interviewpartner.domain.Member;
 import com.vip.interviewpartner.domain.Role;
 import com.vip.interviewpartner.dto.CustomUserDetails;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,22 +50,8 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         String accessToken = authorization.split(" ")[1];
-
-        try {
-            jwtUtil.isExpired(accessToken);
-        } catch (ExpiredJwtException e) {
-            throw new CustomException(ACCESS_TOKEN_EXPIRED);
-        } catch (JwtException e) {
-            throw new CustomException(INVALID_TOKEN);
-        } catch (Exception e) {
-            throw new CustomException(INVALID_REQUEST);
-        }
-
-        String category = jwtUtil.getCategory(accessToken);
-
-        if (!category.equals(ACCESS)) {
-            throw new CustomException(INVALID_REQUEST);
-        }
+        jwtUtil.validateToken(accessToken);
+        jwtUtil.validateCategory(accessToken, ACCESS);
 
         Long id = jwtUtil.getId(accessToken);
         String nickname = jwtUtil.getNickname(accessToken);

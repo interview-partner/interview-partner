@@ -4,7 +4,12 @@ import static com.vip.interviewpartner.common.constants.Constants.ACCESS;
 import static com.vip.interviewpartner.common.constants.Constants.ACCESS_TOKEN_EXPIRATION_TIME;
 import static com.vip.interviewpartner.common.constants.Constants.REFRESH;
 import static com.vip.interviewpartner.common.constants.Constants.REFRESH_TOKEN_EXPIRATION_TIME;
+import static com.vip.interviewpartner.common.exception.ErrorCode.ACCESS_TOKEN_EXPIRED;
+import static com.vip.interviewpartner.common.exception.ErrorCode.INVALID_REQUEST;
+import static com.vip.interviewpartner.common.exception.ErrorCode.INVALID_TOKEN;
 
+import com.vip.interviewpartner.common.exception.CustomException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -52,13 +57,37 @@ public class JWTUtil {
     }
 
     /**
-     * JWT 토큰의 만료 여부를 확인합니다.
+     * 주어진 토큰이 유효성 검증을 합니다.
+     * 토큰이 만료되었을 경우, ACCESS_TOKEN_EXPIRED 예외를 발생시킵니다.
+     * 토큰이 유효하지 않거나 요청이 잘못된 경우, 각각 INVALID_TOKEN, INVALID_REQUEST 예외를 발생시킵니다.
      *
-     * @param token JWT 토큰
-     * @return 토큰이 만료되었으면 true, 그렇지 않으면 false
+     * @param token 검증할 JWT 토큰
+     * @throws CustomException 토큰이 만료되었거나 유효하지 않은 경우, 또는 잘못된 요청인 경우 발생합니다.
      */
-    public Boolean isExpired(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+    public void validateToken(String token) {
+        try {
+            if (isExpired(token)) {
+                throw new CustomException(ACCESS_TOKEN_EXPIRED);
+            }
+        } catch (JwtException e) {
+            throw new CustomException(INVALID_TOKEN);
+        } catch (Exception e) {
+            throw new CustomException(INVALID_REQUEST);
+        }
+    }
+
+    /**
+     * 주어진 토큰의 카테고리를 검증합니다. 카테고리가 주어진 카테고리와 일치하지 않는 경우, INVALID_REQUEST 예외를 발생시킵니다.
+     *
+     * @param token            검증할 JWT 토큰
+     * @param expectedCategory 기대하는 카테고리
+     * @throws CustomException 카테고리가 기대하는 카테고리와 일치하지 않는 경우
+     */
+    public void validateCategory(String token, String expectedCategory) {
+        String category = getCategory(token);
+        if (!category.equals(expectedCategory)) {
+            throw new CustomException(INVALID_REQUEST);
+        }
     }
 
     /**
@@ -99,6 +128,16 @@ public class JWTUtil {
                 .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME))
                 .signWith(secretKey)
                 .compact();
+    }
+
+    /**
+     * JWT 토큰의 만료 여부를 확인합니다.
+     *
+     * @param token JWT 토큰
+     * @return 토큰이 만료되었으면 true, 그렇지 않으면 false
+     */
+    private Boolean isExpired(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
 }

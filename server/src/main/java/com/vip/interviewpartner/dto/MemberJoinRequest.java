@@ -19,12 +19,12 @@ import lombok.NoArgsConstructor;
 @Schema(description = "회원가입 요청 DTO")
 public class MemberJoinRequest {
 
-    @Schema(description = "이메일", example = "asdasd@google.com")
+    @Schema(description = "이메일", example = "user@example.com")
     @NotBlank(message = "이메일은 필수입니다.")
     @Email(message = "올바른 이메일 형식이 아닙니다.")
     private String email;
 
-    @Schema(description = "비밀번호", example = "q1w2e3r4")
+    @Schema(description = "비밀번호", example = "yourpassword")
     @NotBlank(message = "비밀번호는 필수입니다.")
     @Size(min = 8, max = 12, message = "비밀번호는 8자 이상, 12자 이하여야 합니다.")
     private String password;

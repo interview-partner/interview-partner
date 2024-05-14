@@ -85,7 +85,7 @@ public class SecurityConfig {
                         .accessDeniedHandler(customAccessDeniedHandler));
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers(POST, "/api/v1/members").permitAll()
+                        .requestMatchers(POST, "/api/v1/members", "/api/v1/auth/token/reissue").permitAll()
                         .requestMatchers(GET, "/api/v1/members/check/nickname/*").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/api/v1/swagger-ui/**", "/api/v1/docs").permitAll()
                         .anyRequest().authenticated());
