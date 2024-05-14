@@ -14,6 +14,7 @@ import com.vip.interviewpartner.repository.RefreshTokenRepository;
 import jakarta.servlet.http.Cookie;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TokenService {
     private final JWTUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -105,6 +107,20 @@ public class TokenService {
         refreshTokenRepository.deleteByRefreshToken(findRefreshToken);
         refreshTokenRepository.save(new RefreshTokenData(newRefreshToken, memberId));
         return Map.of(ACCESS, newAccessToken, REFRESH, newRefreshToken);
+    }
+
+    /**
+     * 주어진 리프레쉬 토큰을 검증하고, 해당 토큰을 삭제하는 로그아웃 메소드입니다.
+     * 이 메소드는 주어진 리프레쉬 토큰의 유효성을 검증하고, 해당 토큰을 삭제합니다.
+     *
+     * @param findRefreshToken 검증하고 삭제할 리프레쉬 토큰
+     * @throws CustomException 리프레쉬 토큰이 유효하지 않은 경우, 리프레쉬 토큰이 존재하지 않는 경우
+     */
+    public void logout(String findRefreshToken) {
+        jwtUtil.validateToken(findRefreshToken, REFRESH);
+        refreshTokenRepository.findByRefreshToken(findRefreshToken).orElseThrow(() -> new CustomException(INVALID_TOKEN));
+        refreshTokenRepository.deleteByRefreshToken(findRefreshToken);
+        log.info("logout success");
     }
 }
 
