@@ -15,10 +15,21 @@ export const signup = async (email, password, nickname) => {
         body: JSON.stringify(requestBody)
     });
 
-    if (!response.ok) {
+    // 응답 상태에 따른 처리
+    if (response.status === 201) {
+        // 회원가입 성공
+        return response.json();
+    } else if (response.status === 400) {
+        // 유효한 형식이 아님
         const error = await response.json();
-        throw new Error(error.message || 'Unknown error occurred');
+        throw new Error(error.message);
+    } else if (response.status === 409) {
+        // 이메일 및 닉네임 중복 에러
+        const error = await response.json();
+        throw new Error(error.message);
+    } else {
+        // 기타 오류
+        const error = await response.json();
+        throw new Error(error.message);
     }
-
-    return response.json();
 };

@@ -95,9 +95,9 @@ export function SignupForm(props) {
       if (error.message === 'Invalid request format') {
         console.error('Invalid request format');
         alert('유효하지 않은 형식입니다.');
-      } else if (error.message === 'Email or nickname already exists') {
+      } else if (error.message === 'Email is already in use.') {
         console.error('Email or nickname already exists');
-        alert('이메일 또는 닉네임이 이미 존재합니다.');
+        alert('이미 존재하는 이메일 입니다.');
       } else {
         console.error('Unknown error occurred');
         alert('알 수 없는 오류가 발생했습니다.');
