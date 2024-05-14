@@ -3,6 +3,7 @@ package com.vip.interviewpartner.controller;
 import static com.vip.interviewpartner.common.constants.Constants.ACCESS;
 import static com.vip.interviewpartner.common.constants.Constants.AUTHORIZATION_HEADER;
 import static com.vip.interviewpartner.common.constants.Constants.BEARER_TOKEN_PREFIX;
+import static com.vip.interviewpartner.common.constants.Constants.COOKIE_REFRESH_EXPIRATION_SECONDS;
 import static com.vip.interviewpartner.common.constants.Constants.REFRESH;
 import static com.vip.interviewpartner.common.constants.Constants.REFRESH_TOKEN;
 
@@ -56,7 +57,7 @@ public class AuthController {
     public ApiCommonResponse<?> reissue(HttpServletRequest request, HttpServletResponse response) {
         String findRefreshToken = tokenService.getRefreshTokenFromCookie(request.getCookies());
         Map<String, String> newTokens = tokenService.reissue(findRefreshToken);
-        Cookie refreshTokenCookie = tokenService.createRefreshTokenCookie(REFRESH_TOKEN, newTokens.get(REFRESH));
+        Cookie refreshTokenCookie = tokenService.createRefreshTokenCookie(REFRESH_TOKEN, newTokens.get(REFRESH), COOKIE_REFRESH_EXPIRATION_SECONDS);
         response.setHeader(AUTHORIZATION_HEADER, BEARER_TOKEN_PREFIX + newTokens.get(ACCESS));
         response.addCookie(refreshTokenCookie);
         return ApiCommonResponse.successWithNoContent();

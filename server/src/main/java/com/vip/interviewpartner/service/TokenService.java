@@ -1,7 +1,6 @@
 package com.vip.interviewpartner.service;
 
 import static com.vip.interviewpartner.common.constants.Constants.ACCESS;
-import static com.vip.interviewpartner.common.constants.Constants.COOKIE_REFRESH_EXPIRATION_SECONDS;
 import static com.vip.interviewpartner.common.constants.Constants.REFRESH;
 import static com.vip.interviewpartner.common.constants.Constants.REFRESH_TOKEN;
 import static com.vip.interviewpartner.common.exception.ErrorCode.INVALID_TOKEN;
@@ -54,11 +53,12 @@ public class TokenService {
      *
      * @param key   쿠키의 키
      * @param value 쿠키의 값
+     * @param maxAge 쿠키의 만료 시간
      * @return 생성된 쿠키
      */
-    public Cookie createRefreshTokenCookie(String key, String value) {
+    public Cookie createRefreshTokenCookie(String key, String value, int maxAge) {
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(COOKIE_REFRESH_EXPIRATION_SECONDS);
+        cookie.setMaxAge(maxAge);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         // cookie.setSecure(true); // HTTPS 사용 시 주석 해제
@@ -94,8 +94,7 @@ public class TokenService {
      * @throws CustomException 리프레쉬 토큰이 유효하지 않은 경우, 리프레쉬 토큰이 존재하지 않는 경우
      */
     public Map<String, String> reissue(String findRefreshToken) {
-        jwtUtil.validateToken(findRefreshToken);
-        jwtUtil.validateCategory(findRefreshToken, REFRESH);
+        jwtUtil.validateToken(findRefreshToken, REFRESH);
         String memberId = refreshTokenRepository.findByRefreshToken(findRefreshToken).orElseThrow(() -> new CustomException(INVALID_TOKEN)).getMemberId();
         String nickname = jwtUtil.getNickname(findRefreshToken);
         String role = jwtUtil.getRole(findRefreshToken);

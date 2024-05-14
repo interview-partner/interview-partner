@@ -2,6 +2,7 @@ package com.vip.interviewpartner.common.jwt;
 
 import static com.vip.interviewpartner.common.constants.Constants.AUTHORIZATION_HEADER;
 import static com.vip.interviewpartner.common.constants.Constants.BEARER_TOKEN_PREFIX;
+import static com.vip.interviewpartner.common.constants.Constants.COOKIE_REFRESH_EXPIRATION_SECONDS;
 import static com.vip.interviewpartner.common.constants.Constants.REFRESH_TOKEN;
 import static com.vip.interviewpartner.common.exception.ErrorCode.INVALID_REQUEST;
 import static com.vip.interviewpartner.common.exception.ErrorCode.LOGIN_FAILURE;
@@ -87,7 +88,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String refreshToken = tokenService.createRefreshToken(member);
 
         response.setHeader(AUTHORIZATION_HEADER, BEARER_TOKEN_PREFIX + accessToken);
-        response.addCookie(tokenService.createRefreshTokenCookie(REFRESH_TOKEN, refreshToken));
+        response.addCookie(tokenService.createRefreshTokenCookie(REFRESH_TOKEN, refreshToken, COOKIE_REFRESH_EXPIRATION_SECONDS));
         response.setStatus(HttpStatus.OK.value());
         sendSuccessResponse(response);
         log.info("login success");
