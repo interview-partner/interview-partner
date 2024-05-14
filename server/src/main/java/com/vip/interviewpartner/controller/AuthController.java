@@ -71,7 +71,6 @@ public class AuthController {
                     @ApiResponse(responseCode = "401", description = "리프레쉬 토큰 만료, 토큰 없음, 유효하지 않는 토큰 - 사용자가 새로운 로그인을 요청해야 합니다.", content = @Content),
             }
     )
-    @SecurityRequirements(value = {})
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.OK)
     public ApiCommonResponse<?> logout(HttpServletRequest request, HttpServletResponse response) {
