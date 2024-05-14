@@ -50,8 +50,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         String accessToken = authorization.split(" ")[1];
-        jwtUtil.validateToken(accessToken);
-        jwtUtil.validateCategory(accessToken, ACCESS);
+        jwtUtil.validateToken(accessToken, ACCESS);
 
         Long id = jwtUtil.getId(accessToken);
         String nickname = jwtUtil.getNickname(accessToken);
