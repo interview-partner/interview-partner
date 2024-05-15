@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
+
 /**
  * 이력서 관련 서비스들을 제공하는 클래스입니다.
  */
@@ -19,11 +21,12 @@ public class ResumeUploadService {
     public void upload(Long memberId, MultipartFile file){
 
         String exportedText = exportTextService.exportText(file);
-        String tmpFilePath = stringToTxtService.StringToTxt(exportedText);
+        Path tempFile = stringToTxtService.StringToTxt(exportedText);
 
         System.out.println("memberId = " + memberId);
         System.out.println("exportTextService = " + exportedText);
-        System.out.println("tmpFilePath = " + tmpFilePath);
+        System.out.println("Temporary file created at: " + tempFile);
+
 
 
 
