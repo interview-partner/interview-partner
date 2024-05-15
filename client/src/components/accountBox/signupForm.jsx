@@ -1,17 +1,29 @@
 import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
-import { emailChangeHandler, passwordChangeHandler, nicknameChangeHandler } from "../../utils/validators";
+import { signupEmailChangeHandler, signupPasswordChangeHandler, signupNicknameChangeHandler } from "../../utils/validators";
 import {
   BoldLink,
-  BoxContainer,
-  FormContainer,
   Input,
   MutedLink,
   SubmitButton,
-} from "./common";
-import { Marginer } from "../marginer";
+} from "../common/common";
+import { Marginer } from "../common/marginer/marginer";
 import { AccountContext } from "./accountContext";
-import { config } from "../../config";
+import { signup } from "../../services/signupService";
+
+const BoxContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+`;
+
+const FormContainer = styled.form`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
 
 const ErrorMessage = styled.p`
   color: red;
@@ -37,14 +49,10 @@ export function SignupForm(props) {
   const [confirmNickname, setConfirmNickname] = useState("");
   const [error, setError] = useState({});
 
-  const handleEmailChange = emailChangeHandler(setEmail, setError);
-  const handlePasswordChange = passwordChangeHandler(setPassword, setError);
-  const handleNicknameChange = nicknameChangeHandler(setNickname, setError);
-
   // 비밀번호와 확인 비밀번호 일치 여부 확인
   useEffect(() => {
     if (confirmPassword && password !== confirmPassword) {
-      setError(prev => ({ ...prev, confirmPassword: "Passwords do not match" }));
+      setError(prev => ({ ...prev, confirmPassword: "비밀번호가 일치하지 않습니다." }));
     } else {
       setError(prev => ({ ...prev, confirmPassword: "" }));
     }
@@ -53,7 +61,7 @@ export function SignupForm(props) {
   //닉네임 중복검사
   useEffect(() => {
     if (nickname !== confirmNickname) {
-      setError(prev => ({ ...prev, confirmNickname: "Nickname do not match" }));
+      setError(prev => ({ ...prev, confirmNickname: "닉네임이 일치하지 않습니다." }));
     } else {
       setError(prev => ({ ...prev, confirmNickname: "" }));
     }
@@ -63,32 +71,15 @@ export function SignupForm(props) {
   // 폼 제출 핸들러
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (Object.values(error).some(e => e !== "")) {
       return; // 에러가 있으면 제출 중단
     }
+
     try {
-      // API 호출을 위한 요청 바디 생성
-      const requestBody = {
-        email: email,
-        password: password,
-        nickname: nickname
-      };
-
-      const response = await fetch(`${config.apiUrl}/api/v1/members`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json;charset=UTF-8'
-        },
-        body: JSON.stringify(requestBody)
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await response.json();
+      const data = await signup(email, password, nickname);
       console.log('SignUp Successful:', data);
-      alert(data);
+      alert('회원가입 성공!');
 
       // API 호출 성공 후 입력 필드 초기화
       setEmail("");
@@ -101,30 +92,38 @@ export function SignupForm(props) {
       switchToSignin();
 
     } catch (error) {
-      console.error('SignUp Failed:', error);
-      alert('SignUp Failed');
+      if (error.message === 'Invalid request format') {
+        console.error('Invalid request format');
+        alert('유효하지 않은 형식입니다.');
+      } else if (error.message === 'Email is already in use.') {
+        console.error('Email or nickname already exists');
+        alert('이미 존재하는 이메일 입니다.');
+      } else {
+        console.error('Unknown error occurred');
+        alert('알 수 없는 오류가 발생했습니다.');
+      }
     }
   };
 
   return (
     <BoxContainer>
-
       <FormContainer onSubmit={handleSubmit} noValidate>
-        <FormField type="email" placeholder="Email" value={email} onChange={handleEmailChange} error={error.email} />
-        <FormField type="password" placeholder="Password" value={password} onChange={handlePasswordChange} error={error.password} />
-        <FormField type="password" placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} error={error.confirmPassword} />
-        <FormField type="text" placeholder="Nickname" value={nickname} onChange={handleNicknameChange} error={error.nickname} />
-        <FormField type="text" placeholder="Confirm Nickname" value={confirmNickname} onChange={(e) => setConfirmNickname(e.target.value)} error={error.confirmNickname} />
-        <SubmitButton type="submit">Signup</SubmitButton>
+        <FormField type="email" placeholder="이메일" value={email} onChange={signupEmailChangeHandler(setEmail, setError)} error={error.email} />
+        <FormField type="password" placeholder="비밀번호" value={password} onChange={signupPasswordChangeHandler(setPassword, setError)} error={error.password} />
+        <FormField type="password" placeholder="비밀번호 확인" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} error={error.confirmPassword} />
+        <FormField type="text" placeholder="닉네임" value={nickname} onChange={signupNicknameChangeHandler(setNickname, setError)} error={error.nickname} />
+        <FormField type="text" placeholder="닉네임 확인" value={confirmNickname} onChange={(e) => setConfirmNickname(e.target.value)} error={error.confirmNickname} />
+        <Marginer direction="vertical" margin="35px" />
+        <SubmitButton type="submit">회원가입</SubmitButton>
       </FormContainer>
-      <Marginer direction="vertical" margin="1.6em" />
+      <Marginer direction="vertical" margin="14px" />
       <MutedLink href="#">
-        Already have an account?
+        계정이 이미 있으신가요?
         <BoldLink href="#" onClick={switchToSignin}>
-          Signin
+          로그인 하기
         </BoldLink>
       </MutedLink>
-      <Marginer direction="vertical" margin="2.0em" />
+      <Marginer direction="vertical" margin="70px" />
     </BoxContainer>
   );
 }

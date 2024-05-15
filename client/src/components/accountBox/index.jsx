@@ -5,10 +5,11 @@ import { motion } from "framer-motion";
 import { AccountContext } from "./accountContext";
 import { SignupForm } from "./signupForm";
 import { COLORS } from "../../styles/colors";
+import { Marginer } from "../common/marginer/marginer";
 
 const BoxContainer = styled.div`
-  width: 280px;
-  min-height: 550px;
+  width: 360px;
+  min-height: 674px;
   display: flex;
   flex-direction: column;
   border-radius: 19px;
@@ -24,8 +25,7 @@ const TopContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 0 1.8em;
-  padding-bottom: 5em;
+  padding: 96px 1.8em 5em 56px; /* 위쪽, 오른쪽, 아래쪽, 왼쪽 */
 `;
 
 const BackDrop = styled(motion.div)`
@@ -53,7 +53,7 @@ const HeaderContainer = styled.div`
 `;
 
 const HeaderText = styled.h2`
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 600;
   line-height: 1.24;
   color: #fff;
@@ -64,7 +64,7 @@ const HeaderText = styled.h2`
 const SmallText = styled.h5`
   color: #fff;
   font-weight: 500;
-  font-size: 11px;
+  font-size: 14px;
   z-index: 10;
   margin: 0;
   margin-top: 7px;
@@ -80,12 +80,12 @@ const InnerContainer = styled.div`
 const backdropVariants = {
   expanded: {
     width: "233%",
-    height: "1050px",
+    height: "1100px",
     borderRadius: "20%",
     transform: "rotate(60deg)",
   },
   collapsed: {
-    width: "160%",
+    width: "130%",
     height: "550px",
     borderRadius: "50%",
     transform: "rotate(60deg)",
@@ -137,19 +137,19 @@ export function AccountBox(props) {
           />
           {active === "signin" && (
             <HeaderContainer>
-              <HeaderText>Welcome</HeaderText>
-              <HeaderText>Back</HeaderText>
-              <SmallText>Please sign-in to continue!</SmallText>
+              <HeaderText>로그인</HeaderText>
+              <Marginer direction="vertical" margin="12px" />
+              <SmallText>환영합니다!</SmallText>
             </HeaderContainer>
           )}
           {active === "signup" && (
             <HeaderContainer>
-              <HeaderText>Create</HeaderText>
-              <HeaderText>Account</HeaderText>
-              <SmallText>Please sign-up to continue!</SmallText>
+              <HeaderText>회원가입</HeaderText>
+              <Marginer direction="vertical" margin="12px" />
             </HeaderContainer>
           )}
         </TopContainer>
+        <Marginer direction="vertical" margin="60px" />
         <InnerContainer>
           {active === "signin" && <LoginForm />}
           {active === "signup" && <SignupForm />}
