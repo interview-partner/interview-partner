@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import styled from "styled-components";
 import { AccountBox } from "./components/accountBox";
+import Navbar from "../src/components/layout/navBar"
 
 const AppContainer = styled.div`
   width: 100%;
@@ -15,6 +16,7 @@ const AppContainer = styled.div`
 function App() {
   return (
     <AppContainer>
+      <Navbar />
       <AccountBox />
     </AppContainer>
     // <div className="App">
