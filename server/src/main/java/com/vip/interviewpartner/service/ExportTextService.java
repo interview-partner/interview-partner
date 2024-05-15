@@ -41,6 +41,6 @@ public class ExportTextService {
                 e.printStackTrace();
             }
         }
-        return text.replaceAll("\\r\\n|\\r|\\n", "");
+        return text.replaceAll(" |\\r\\n|\\r|\\n", "").trim();
     }
 }

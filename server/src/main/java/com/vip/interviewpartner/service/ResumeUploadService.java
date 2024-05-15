@@ -14,11 +14,19 @@ import org.springframework.web.multipart.MultipartFile;
 public class ResumeUploadService {
 
     private final ExportTextService exportTextService;
+    private final StringToTxtService stringToTxtService;
 
     public void upload(Long memberId, MultipartFile file){
 
+        String exportedText = exportTextService.exportText(file);
+        String tmpFilePath = stringToTxtService.StringToTxt(exportedText);
+
         System.out.println("memberId = " + memberId);
-        System.out.println("exportTextService = " + exportTextService.exportText(file));
+        System.out.println("exportTextService = " + exportedText);
+        System.out.println("tmpFilePath = " + tmpFilePath);
+
+
+
 
     }
 }
