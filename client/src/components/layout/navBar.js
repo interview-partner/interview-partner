@@ -16,7 +16,7 @@ function Navbar() {
                     <div style = {{width: '56px'}}></div>
                     <Link to="/Mockupcommunity">모의 면접</Link>
                 </div>
-                <div className = 'navcontent'>
+                <div className = 'navcontent' style={{fontSize: '14px'}}>
                     <Link to="/Login">로그인</Link>
                     <div>&nbsp;&nbsp;|&nbsp;&nbsp;</div>
                     <Link to="/Signup">회원가입</Link>
