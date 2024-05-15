@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.FileWriter;
+
 import java.io.IOException;
-import java.util.Random;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 
 /**
  * 추출한 스트링을 txt로 저장하는 서비스를 제공하는 클래스입니다.
@@ -23,37 +25,43 @@ public class StringToTxtService {
      * @param str 추출된 텍스트
      * @return 랜덤 파일 Path
      */
-    public String StringToTxt(String str) {
+    public Path StringToTxt(String str) {
 
-        String randomPath = "src/main/resources/" + generateRandomString() + ".txt";
-
+        // 임시 파일 생성 및 쓰기 메서드 호출
+        Path tempFile = null;
         try {
-            FileWriter writer = new FileWriter(randomPath);  // FileWriter 객체 생성
-            writer.write(str);  // 파일에 문자열 쓰기
-            writer.close();  // 파일 닫기
+            tempFile = createTempFileWithContent(str);
         } catch (IOException e) {
+            System.err.println("An I/O error occurred: " + e.getMessage());
+            e.printStackTrace();
+        } catch (SecurityException e) {
+            System.err.println("A security error occurred: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("An unexpected error occurred: " + e.getMessage());
             e.printStackTrace();
         }
 
-        return randomPath;
+        return tempFile;
     }
 
+
     /**
-     * 랜덤 스트링 10자를 만드는 매서드입니다.
+     * 주어진 내용을 임시 파일에 작성하고 파일의 경로를 반환하는 메서드.
      *
-     * @return 랜덤 스트링 10자
+     * @param content 파일에 쓸 내용
+     * @return 생성된 임시 파일의 경로
+     * @throws IOException
      */
-    public String generateRandomString() {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        Random random = new Random();
-        StringBuilder sb = new StringBuilder(10);
+    public Path createTempFileWithContent(String content) throws IOException {
+        // 운영체제의 기본 임시 디렉터리에 임시 파일 생성
+        Path tempFile = Files.createTempFile("tempFile_", ".txt");
 
-        for (int i = 0; i < 10; i++) {
-            int randomIndex = random.nextInt(characters.length());
-            char randomChar = characters.charAt(randomIndex);
-            sb.append(randomChar);
-        }
+        // 파일에 내용 쓰기
+        Files.write(tempFile, content.getBytes());
 
-        return sb.toString();
+        // JVM 종료 시 파일 삭제 예약
+        tempFile.toFile().deleteOnExit();
+        return tempFile;
     }
 }
