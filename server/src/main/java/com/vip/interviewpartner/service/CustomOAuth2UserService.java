@@ -2,6 +2,7 @@ package com.vip.interviewpartner.service;
 
 import static com.vip.interviewpartner.common.constants.Constants.KAKAO;
 import static com.vip.interviewpartner.common.constants.Constants.NAVER;
+import static com.vip.interviewpartner.common.exception.ErrorCode.DUPLICATE_EMAIL;
 import static com.vip.interviewpartner.common.exception.ErrorCode.INVALID_REQUEST;
 import static com.vip.interviewpartner.common.exception.ErrorCode.UNSUPPORTED_SOCIAL_MEDIA;
 
@@ -87,10 +88,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
      *
      * @param oAuth2Response OAuth2Response 객체로, 소셜 로그인 응답 정보를 포함합니다.
      * @return Member 객체로, 새로 생성된 회원을 반환합니다.
+     * @throws CustomException 동일한 소셜 계정으로 가입된 회원이 이미 존재하는 경우
      */
     private Member registerNewMember(OAuth2Response oAuth2Response) {
         log.info("소셜로그인으로 처음 로그인(강제 회원가입): {}", oAuth2Response.getProvider());
-
+        if(memberRepository.existsByEmail(oAuth2Response.getEmail())) {
+            throw new CustomException(DUPLICATE_EMAIL);
+        }
         Member newMember = Member.builder()
                 .email(oAuth2Response.getEmail())
                 .nickname(createUniqueNickname())
