@@ -66,6 +66,7 @@ public class SpringDocConfig {
                 .paths(new Paths());
 
         springSecurityLoginCustomizer().customise(openAPI);
+        addOAuthEndpoints(openAPI);
 
         return openAPI;
 
@@ -123,6 +124,33 @@ public class SpringDocConfig {
                 }
             }
         };
+    }
+
+    private void addOAuthEndpoints(OpenAPI openAPI) {
+        addOAuthEndpoint(openAPI, "naver", "Naver OAuth2 로그인", "네이버 OAuth2 인증을 시작합니다.");
+        addOAuthEndpoint(openAPI, "kakao", "Kakao OAuth2 로그인", "카카오 OAuth2 인증을 시작합니다.");
+    }
+
+    private void addOAuthEndpoint(OpenAPI openAPI, String provider, String summary, String description) {
+        Paths paths = openAPI.getPaths();
+
+        Operation operation = new Operation()
+                .addTagsItem("auth")
+                .summary(summary)
+                .description(description)
+                .responses(createOAuthResponses());
+
+        PathItem pathItem = new PathItem().get(operation);
+        paths.addPathItem("/api/v1/auth/login/oauth2/" + provider, pathItem);
+    }
+
+    private ApiResponses createOAuthResponses() {
+        ApiResponses responses = new ApiResponses();
+        responses.addApiResponse(String.valueOf(HttpStatus.FOUND.value()),
+                new ApiResponse().description("리디렉션 성공, 리프레시 토큰이 쿠키에 저장되었습니다. 이 토큰을 사용하여 토큰 발행 페이지로 리디렉션합니다."));
+        responses.addApiResponse(String.valueOf(HttpStatus.BAD_REQUEST.value()),
+                new ApiResponse().description("잘못된 요청"));
+        return responses;
     }
 
 }
