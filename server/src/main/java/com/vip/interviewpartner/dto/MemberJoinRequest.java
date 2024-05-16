@@ -41,7 +41,7 @@ public class MemberJoinRequest {
      * @return Member 엔티티
      */
     public Member toEntity(String encodePassword) {
-        return Member.regularMemberBuilder()
+        return Member.builder()
                 .email(email)
                 .password(encodePassword)
                 .nickname(nickname)

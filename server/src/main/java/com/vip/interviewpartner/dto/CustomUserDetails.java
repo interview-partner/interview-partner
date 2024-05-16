@@ -3,21 +3,34 @@ package com.vip.interviewpartner.dto;
 import com.vip.interviewpartner.domain.Member;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 /**
  * 사용자의 세부 정보를 나타내는 클래스입니다.
  * 이 클래스는 Spring Security의 UserDetails 인터페이스를 구현합니다.
  */
 @Getter
-public class CustomUserDetails implements UserDetails {
+public class CustomUserDetails implements UserDetails, OAuth2User {
 
     private Member member;
+    private Map<String, Object> attributes;
 
     public CustomUserDetails(Member member) {
         this.member = member;
+    }
+
+    public CustomUserDetails(Member member, Map<String, Object> attributes) {
+        this.member = member;
+        this.attributes = attributes;
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
     }
 
     @Override
@@ -39,7 +52,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return null;
+        return member.getNickname();
     }
 
     @Override
@@ -68,5 +81,10 @@ public class CustomUserDetails implements UserDetails {
 
     public String getNickname() {
         return member.getNickname();
+    }
+
+    @Override
+    public String getName() {
+        return member.getEmail();
     }
 }
