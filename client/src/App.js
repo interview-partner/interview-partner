@@ -16,8 +16,6 @@ function App() {
   return (
     <>
         <Navbar />
-        <Main />
-
         <Routes>
           <Route path="/" element={<Main/>}/>
           <Route path="/aiinterview" element={<AIinterview />}/>
