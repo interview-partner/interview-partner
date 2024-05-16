@@ -1,15 +1,15 @@
 import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
-import { signupEmailChangeHandler, signupPasswordChangeHandler, signupNicknameChangeHandler } from "../../utils/validators";
+import { signupEmailChangeHandler, signupPasswordChangeHandler, signupNicknameChangeHandler } from "../../../utils/validators";
 import {
   BoldLink,
   Input,
   MutedLink,
   SubmitButton,
-} from "../common/common";
-import { Marginer } from "../common/marginer/marginer";
+} from "../../../components/common/common";
+import { Marginer } from "../../../components/common/marginer/marginer";
 import { AccountContext } from "./accountContext";
-import { signup } from "../../services/signupService";
+import { signup } from "../../../services/signupService";
 
 const BoxContainer = styled.div`
   width: 100%;

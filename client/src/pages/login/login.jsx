@@ -1,6 +1,11 @@
+import { AccountBox } from "../../features/login/accountBox"
+import './login.css';
+
 function Login() {
     return (
-        <div>Login Page</div>
+        <div className="logincontainer">
+            <AccountBox />
+        </div>
     );
 }
   
