@@ -138,8 +138,8 @@ public class SpringDocConfig {
                 .addTagsItem("auth")
                 .summary(summary)
                 .description(description)
+                .security(List.of())
                 .responses(createOAuthResponses());
-
         PathItem pathItem = new PathItem().get(operation);
         paths.addPathItem("/api/v1/auth/login/oauth2/" + provider, pathItem);
     }
@@ -147,7 +147,7 @@ public class SpringDocConfig {
     private ApiResponses createOAuthResponses() {
         ApiResponses responses = new ApiResponses();
         responses.addApiResponse(String.valueOf(HttpStatus.FOUND.value()),
-                new ApiResponse().description("리디렉션 성공, 리프레시 토큰이 쿠키에 저장되었습니다. 이 토큰을 사용하여 토큰 발행 페이지로 리디렉션합니다."));
+                new ApiResponse().description("리다이렉션 성공, 리프레시 토큰이 쿠키에 저장되었습니다. 이 토큰을 사용하여 토큰 재발행 페이지로 리다이렉션을 해 엑세스토큰까지 받습니다."));
         responses.addApiResponse(String.valueOf(HttpStatus.BAD_REQUEST.value()),
                 new ApiResponse().description("잘못된 요청"));
         return responses;
