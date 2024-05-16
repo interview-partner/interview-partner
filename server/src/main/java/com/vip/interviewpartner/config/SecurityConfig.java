@@ -90,6 +90,8 @@ public class SecurityConfig {
                         .accessDeniedHandler(customAccessDeniedHandler));
         http
                 .oauth2Login((oauth2) -> oauth2
+                        .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint
+                                .baseUri("/api/v1/auth/login/oauth2"))
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                                 .userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler));
