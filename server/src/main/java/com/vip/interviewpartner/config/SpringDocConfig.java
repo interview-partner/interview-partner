@@ -150,6 +150,8 @@ public class SpringDocConfig {
                 new ApiResponse().description("리다이렉션 성공, 리프레시 토큰이 쿠키에 저장되었습니다. 이 토큰을 사용하여 토큰 재발행 페이지로 리다이렉션을 해 엑세스토큰까지 받습니다."));
         responses.addApiResponse(String.valueOf(HttpStatus.BAD_REQUEST.value()),
                 new ApiResponse().description("잘못된 요청"));
+        responses.addApiResponse(String.valueOf(HttpStatus.CONFLICT.value()),
+                new ApiResponse().description("동일한 소셜 계정으로 가입된 회원이 이미 존재합니다."));
         return responses;
     }
 
