@@ -11,6 +11,7 @@ public final class Constants {
     //JWT 토큰
     public static final String ACCESS = "access";
     public static final String REFRESH = "refresh";
+    public static final String REFRESH_TOKEN = "refreshToken";
     public static final long ACCESS_TOKEN_EXPIRATION_TIME = 1800000L; // 30분
     public static final long REFRESH_TOKEN_EXPIRATION_TIME = 1209600000L; // 2주
     public static final String AUTHORIZATION_HEADER = "Authorization";

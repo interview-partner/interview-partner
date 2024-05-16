@@ -62,6 +62,10 @@ public class CustomUserDetails implements UserDetails {
         return member.isActive();
     }
 
+    public Long getMemberId() {
+        return member.getId();
+    }
+
     public String getNickname() {
         return member.getNickname();
     }
