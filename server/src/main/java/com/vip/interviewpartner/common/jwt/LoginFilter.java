@@ -1,15 +1,13 @@
 package com.vip.interviewpartner.common.jwt;
 
-import static com.vip.interviewpartner.common.constants.Constants.AUTHORIZATION_HEADER;
-import static com.vip.interviewpartner.common.constants.Constants.BEARER_TOKEN_PREFIX;
 import static com.vip.interviewpartner.common.constants.Constants.COOKIE_REFRESH_EXPIRATION_SECONDS;
 import static com.vip.interviewpartner.common.constants.Constants.REFRESH_TOKEN;
 import static com.vip.interviewpartner.common.exception.ErrorCode.INVALID_REQUEST;
 import static com.vip.interviewpartner.common.exception.ErrorCode.LOGIN_FAILURE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vip.interviewpartner.common.ApiCommonResponse;
 import com.vip.interviewpartner.common.exception.CustomException;
+import com.vip.interviewpartner.common.util.ResponseFilterUtil;
 import com.vip.interviewpartner.domain.Member;
 import com.vip.interviewpartner.dto.CustomUserDetails;
 import com.vip.interviewpartner.dto.LoginRequest;
@@ -17,14 +15,13 @@ import com.vip.interviewpartner.service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -86,13 +83,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Member member = ((CustomUserDetails) authResult.getPrincipal()).getMember();
         String accessToken = tokenService.createAccessToken(member);
         String refreshToken = tokenService.createRefreshToken(member);
-
-        response.setHeader(AUTHORIZATION_HEADER, BEARER_TOKEN_PREFIX + accessToken);
-        response.addCookie(tokenService.createRefreshTokenCookie(REFRESH_TOKEN, refreshToken, COOKIE_REFRESH_EXPIRATION_SECONDS));
-        response.setStatus(HttpStatus.OK.value());
-        sendSuccessResponse(response);
+        Cookie refreshTokenCookie = tokenService.createRefreshTokenCookie(REFRESH_TOKEN, refreshToken, COOKIE_REFRESH_EXPIRATION_SECONDS);
+        ResponseFilterUtil.addJwtTokensToResponse(response, accessToken, refreshTokenCookie);
         log.info("login success");
-
     }
 
     /**
@@ -108,20 +101,5 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         log.info("login fail");
         throw new CustomException(LOGIN_FAILURE);
-    }
-
-    /**
-     * 로그인 성공 응답을 생성하고, 이를 응답 본문에 작성합니다.
-     *
-     * @param response 서버의 응답
-     * @throws IOException 입출력 예외가 발생할 경우
-     */
-    private void sendSuccessResponse(HttpServletResponse response) throws IOException {
-        ApiCommonResponse<?> apiResponse = ApiCommonResponse.successWithNoContent();
-        response.setStatus(HttpStatus.OK.value());
-        response.setContentType("application/json;charset=UTF-8");
-        PrintWriter writer = response.getWriter();
-        writer.print(new ObjectMapper().writeValueAsString(apiResponse));
-        writer.flush();
     }
 }
