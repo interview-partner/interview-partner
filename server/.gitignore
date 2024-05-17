@@ -28,6 +28,7 @@ out/
 **/application.properties
 **/application.yml
 **/application-*.yml
+**/serviceAccountKey.json
 
 ### NetBeans ###
 /nbproject/private/
