@@ -33,4 +33,14 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      * @return 찾은 회원을 담고 있는 Optional, 회원이 존재하지 않는 경우 빈 Optional
      */
     Optional<Member> findByEmail(String email);
+
+    /**
+     * 주어진 제공자(provider), 제공자 ID(providerId)와 일치하는 회원을 찾습니다.
+     * 이 메소드는 제공자와 제공자 ID를 인자로 받아, 해당 정보를 가진 회원을 찾아 Optional로 반환합니다.
+     *
+     * @param provider 소셜 로그인 제공자 (예: kakao, naver 등)
+     * @param providerId 제공자 ID (소셜 로그인 제공자가 제공한 사용자 ID)
+     * @return 찾은 회원을 담고 있는 Optional, 회원이 존재하지 않는 경우 빈 Optional
+     */
+    Optional<Member> findByProviderAndProviderId(String provider, String providerId);
 }

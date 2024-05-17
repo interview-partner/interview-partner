@@ -17,4 +17,7 @@ public final class Constants {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String BEARER_TOKEN_PREFIX = "Bearer ";
     public static final int COOKIE_REFRESH_EXPIRATION_SECONDS = 14 * 24 * 60 * 60; // 2주
+
+    public static final String NAVER = "naver";
+    public static final String KAKAO = "kakao";
 }
