@@ -67,6 +67,7 @@ public class SpringDocConfig {
 
         springSecurityLoginCustomizer().customise(openAPI);
         addOAuthEndpoints(openAPI);
+        addFirebaseEndpoints(openAPI);
 
         return openAPI;
 
@@ -150,6 +151,40 @@ public class SpringDocConfig {
                 new ApiResponse().description("리다이렉션 성공, 리프레시 토큰이 쿠키에 저장되었습니다. 이 토큰을 사용하여 토큰 재발행 페이지로 리다이렉션을 해 엑세스토큰까지 받습니다."));
         responses.addApiResponse(String.valueOf(HttpStatus.BAD_REQUEST.value()),
                 new ApiResponse().description("잘못된 요청"));
+        responses.addApiResponse(String.valueOf(HttpStatus.CONFLICT.value()),
+                new ApiResponse().description("동일한 소셜 계정으로 가입된 회원이 이미 존재합니다."));
+        return responses;
+    }
+
+    private void addFirebaseEndpoints(OpenAPI openAPI) {
+        Paths paths = openAPI.getPaths();
+        Operation operation = new Operation()
+                .addTagsItem("auth")
+                .summary("Firebase Google OAuth2 로그인")
+                .description("Firebase Google OAuth2 인증을 시작합니다.")
+                .security(List.of())
+                .requestBody(createFirebaseRequestBody())
+                .responses(createFirebaseResponses());
+        PathItem pathItem = new PathItem().post(operation);
+        paths.addPathItem("/api/v1/auth/login/firebase/google", pathItem);
+    }
+
+    private RequestBody createFirebaseRequestBody() {
+        Schema<?> schema = new Schema<>().type("object")
+                .addProperties("idToken", new Schema<>().type("string").description("Firebase ID token"));
+
+        MediaType mediaType = new MediaType().schema(schema);
+        Content content = new Content().addMediaType(org.springframework.http.MediaType.APPLICATION_JSON_VALUE, mediaType);
+
+        return new RequestBody().content(content).description("Firebase ID token").required(true);
+    }
+
+    private ApiResponses createFirebaseResponses() {
+        ApiResponses responses = new ApiResponses();
+        responses.addApiResponse(String.valueOf(HttpStatus.OK.value()),
+                new ApiResponse().description("로그인 성공 - 헤더에 'Authorization'로 엑세스 토큰이 포함되어 있으며, " + "'Set-Cookie' 헤더를 통해 리프레쉬 토큰이 쿠키로 설정됩니다."));
+        responses.addApiResponse(String.valueOf(HttpStatus.BAD_REQUEST.value()),
+                new ApiResponse().description("잘못된 요청 - 요청 바디에 'idToken' 필드가 포함되어 있어야 합니다. 또는 유효하지 않은 Firebase 토큰입니다."));
         responses.addApiResponse(String.valueOf(HttpStatus.CONFLICT.value()),
                 new ApiResponse().description("동일한 소셜 계정으로 가입된 회원이 이미 존재합니다."));
         return responses;
