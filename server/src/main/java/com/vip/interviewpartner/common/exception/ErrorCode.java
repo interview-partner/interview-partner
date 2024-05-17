@@ -21,7 +21,8 @@ public enum ErrorCode {
     INVALID_TOKEN(401, "유효하지 않는 토큰입니다."),
     REFRESH_TOKEN_NOT_EXIST(401, "리프레쉬 토큰이 존재하지 않습니다."),
     FILE_EMPTY(400, "no file"),
-    UNSUPPORTED_SOCIAL_MEDIA(400, "지원하지 않는 소셜 미디어입니다.");
+    UNSUPPORTED_SOCIAL_MEDIA(400, "지원하지 않는 소셜 미디어입니다."),
+    INVALID_FIREBASE_ID_TOKEN(400, "유효하지 않는 Firebase 토큰입니다.");
 
     private final int status;
     private final String message;
