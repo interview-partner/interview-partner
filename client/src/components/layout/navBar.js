@@ -1,6 +1,6 @@
 import React, { useState, useEffect} from 'react';
 import { Link } from 'react-router-dom';
-import letterLogo from '../../assets/letterLogo.png';
+import letterLogo from '../../assets/images/letterLogo.png';
 import './navBar.css';
 
 function Navbar() {
