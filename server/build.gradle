@@ -37,6 +37,7 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-impl:0.12.5'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 	implementation 'org.apache.pdfbox:pdfbox:2.0.24'
+	implementation 'com.google.firebase:firebase-admin:9.2.0'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	runtimeOnly 'com.h2database:h2'
