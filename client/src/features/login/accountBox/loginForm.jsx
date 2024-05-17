@@ -1,14 +1,14 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Input, SubmitButton, BoldLink, MutedLink, RoundButton } from '../common/common';
-import { Marginer } from "../common/marginer/marginer";
+import { Input, SubmitButton, BoldLink, MutedLink, RoundButton } from '../../../components/common/common';
+import { Marginer } from "../../../components/common/marginer/marginer";
 import { AccountContext } from "./accountContext";
 import styled from "styled-components";
-import { loginEmailChangeHandler, loginPasswordChangeHandler } from "../../utils/validators";
-import { login } from "../../services/loginService";
+import { loginEmailChangeHandler, loginPasswordChangeHandler } from "../../../utils/validators";
+import { login } from "../../../services/loginService";
 // 이미지 경로
-import kakaoLogo from '../../images/kakao_logo_round.png';
-import naverLogo from '../../images/naver_logo_round.png';
-import googleLogo from '../../images/google_logo_round.png';
+import kakaoLogo from '../../../assets/images/kakao_logo_round.png';
+import naverLogo from '../../../assets/images/naver_logo_round.png';
+import googleLogo from '../../../assets/images/google_logo_round.png';
 
 const BoxContainer = styled.div`
   width: 100%;
