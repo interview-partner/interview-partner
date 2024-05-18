@@ -1,5 +1,7 @@
 package com.vip.interviewpartner.service;
 
+import com.vip.interviewpartner.common.exception.CustomException;
+import com.vip.interviewpartner.common.exception.ErrorCode;
 import com.vip.interviewpartner.domain.Member;
 import com.vip.interviewpartner.domain.Resume;
 import com.vip.interviewpartner.repository.MemberRepository;
@@ -13,6 +15,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.vip.interviewpartner.common.exception.ErrorCode.DUPLICATE_NICKNAME;
+import static com.vip.interviewpartner.common.exception.ErrorCode.UPLOAD_FAILURE;
 
 /**
  * 이력서 관련 서비스들을 제공하는 클래스입니다.
@@ -47,24 +52,19 @@ public class ResumeUploadService {
         String pdfFileKey = "resumes/" + storedFileName;
         String txtFileKey = "texts/" + UUID.randomUUID().toString() + "-" + originalName.replace(".pdf", ".txt");
 
-        String bucketName = "interviewpartnerbucket"; // 미리 생성된 버킷 이름
+
 
         try {
-            s3UploadService.uploadPdfFile(bucketName, file, pdfFileKey);
-            s3UploadService.uploadTxtFile(bucketName, tempFile, txtFileKey);
+            s3UploadService.uploadPdfFile(file, pdfFileKey);
+            s3UploadService.uploadTxtFile(tempFile, txtFileKey);
         } catch (IOException e) {
-            // 예외 메시지를 로깅
-            System.err.println("An I/O error occurred during S3 upload: " + e.getMessage());
-            e.printStackTrace();
-
-            // 사용자에게 예외가 발생했음을 알리는 코드 (예: 리턴 메시지 설정)
-            String errorMessage = "Failed to upload files to S3: " + e.getMessage();
-            System.out.println(errorMessage);
+            throw new CustomException(UPLOAD_FAILURE);
         }
 
         // DB 이력서 정보저장
-        Optional<Member> member = memberRepository.findById(memberId);
-        resumeRepository.save(new Resume(member.get(), originalName, storedFileName, pdfFileKey, txtFileKey));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        resumeRepository.save(new Resume(member, originalName, storedFileName, pdfFileKey, txtFileKey));
     }
 
 }
