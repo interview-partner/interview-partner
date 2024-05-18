@@ -6,7 +6,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 
+import com.vip.interviewpartner.common.exception.CustomException;
+import com.vip.interviewpartner.common.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -17,9 +20,12 @@ public class S3UploadService {
     @Autowired
     private AmazonS3Client amazonS3Client;
 
-    public void uploadPdfFile(String bucketName, MultipartFile file, String originalFileKey) throws IOException {
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName;
+
+    public void uploadPdfFile(MultipartFile file, String originalFileKey) throws IOException {
         if (!getFileExtension(file.getOriginalFilename()).equalsIgnoreCase("pdf")) {
-            throw new IllegalArgumentException("Only PDF files are allowed.");
+            throw new CustomException(ErrorCode.INVALID_FILE_TYPE);
         }
 
         File tempFile = convertMultipartFileToFile(file);
@@ -27,7 +33,7 @@ public class S3UploadService {
         tempFile.delete();
     }
 
-    public void uploadTxtFile(String bucketName, Path tempFile, String originalFileKey) throws IOException {
+    public void uploadTxtFile(Path tempFile, String originalFileKey) throws IOException {
         // Path를 File로 변환
         File fileToUpload = tempFile.toFile();
 
