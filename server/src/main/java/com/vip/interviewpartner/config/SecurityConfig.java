@@ -10,6 +10,8 @@ import com.vip.interviewpartner.common.exception.ExceptionHandlingFilter;
 import com.vip.interviewpartner.common.jwt.JWTFilter;
 import com.vip.interviewpartner.common.jwt.JWTUtil;
 import com.vip.interviewpartner.common.jwt.LoginFilter;
+import com.vip.interviewpartner.common.oauth2.CustomSuccessHandler;
+import com.vip.interviewpartner.service.CustomOAuth2UserService;
 import com.vip.interviewpartner.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
@@ -21,6 +23,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -40,6 +43,8 @@ public class SecurityConfig {
     private final TokenService tokenService;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomSuccessHandler customSuccessHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -84,6 +89,14 @@ public class SecurityConfig {
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
                         .accessDeniedHandler(customAccessDeniedHandler));
         http
+                .oauth2Login((oauth2) -> oauth2
+                        .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint
+                                .baseUri("/api/v1/auth/login/oauth2"))
+                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+                                .userService(customOAuth2UserService))
+                        .successHandler(customSuccessHandler));
+
+        http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(POST, "/api/v1/members", "/api/v1/auth/token/reissue").permitAll()
                         .requestMatchers(GET, "/api/v1/members/check/nickname/*").permitAll()
@@ -93,6 +106,8 @@ public class SecurityConfig {
         LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), tokenService);
         loginFilter.setFilterProcessesUrl("/api/v1/auth/login");
 
+        http
+                .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
         http

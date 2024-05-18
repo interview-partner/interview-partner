@@ -4,8 +4,8 @@ import { LoginForm } from "./loginForm";
 import { motion } from "framer-motion";
 import { AccountContext } from "./accountContext";
 import { SignupForm } from "./signupForm";
-import { COLORS } from "../../styles/colors";
-import { Marginer } from "../common/marginer/marginer";
+import { COLORS } from "../../../styles/colors";
+import { Marginer } from "../../../components/common/marginer/marginer";
 
 const BoxContainer = styled.div`
   width: 360px;
