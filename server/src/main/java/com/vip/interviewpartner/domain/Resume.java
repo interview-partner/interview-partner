@@ -36,4 +36,13 @@ public class Resume extends BaseTimeEntity {
     @ColumnDefault("true")
     @Column(columnDefinition = "TINYINT(1)", nullable = false)
     private boolean isActive;
+
+    public Resume(Member member, String originalFileName,String storedFileName, String filePath, String translatedFilePath) {
+        this.member = member;
+        this.originalFileName = originalFileName;
+        this.storedFileName = storedFileName;
+        this.filePath = filePath;
+        this.translatedFilePath = translatedFilePath;
+        this.isActive = true;
+    }
 }

@@ -20,7 +20,10 @@ public enum ErrorCode {
     REFRESH_TOKEN_EXPIRED(401, "리프레쉬 토큰이 만료되었습니다."),
     INVALID_TOKEN(401, "유효하지 않는 토큰입니다."),
     REFRESH_TOKEN_NOT_EXIST(401, "리프레쉬 토큰이 존재하지 않습니다."),
-    FILE_EMPTY(400, "no file"),
+    FILE_EMPTY(400, "파일이 존재하지 않습니다."),
+    UPLOAD_FAILURE(400, "업로드에 실패했습니다."),
+    INVALID_FILE_TYPE(415, "PDF 파일만 업로드 가능합니다."),
+    MEMBER_NOT_FOUND(400, "유효하지 않은 멤버입니다."),
     UNSUPPORTED_SOCIAL_MEDIA(400, "지원하지 않는 소셜 미디어입니다.");
 
     private final int status;
