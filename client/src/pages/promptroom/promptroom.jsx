@@ -1,7 +1,7 @@
-function Interviewroom() {
+function Promptroom() {
     return (
         <div>Interviewroom Page</div>
     );
 }
   
-export default Interviewroom;
+export default Promptroom;
