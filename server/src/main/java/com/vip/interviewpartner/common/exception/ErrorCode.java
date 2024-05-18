@@ -25,10 +25,6 @@ public enum ErrorCode {
     INVALID_FILE_TYPE(415, "PDF 파일만 업로드 가능합니다."),
     MEMBER_NOT_FOUND(400, "유효하지 않은 멤버입니다.");
 
-
-
-
-
     private final int status;
     private final String message;
 }
