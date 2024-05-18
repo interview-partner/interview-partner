@@ -20,4 +20,7 @@ public final class Constants {
 
     public static final String NAVER = "naver";
     public static final String KAKAO = "kakao";
+    public static final String GOOGLE = "google";
+    public static final String ID_TOKEN = "idToken";
+
 }

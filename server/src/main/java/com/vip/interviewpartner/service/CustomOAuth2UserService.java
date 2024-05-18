@@ -72,7 +72,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
      * @param oAuth2Response OAuth2Response 객체로, 소셜 로그인 응답 정보를 포함합니다.
      * @return Member 객체로, 새로 생성되었거나 기존에 존재하는 회원을 반환합니다.
      */
-    private Member findOrCreateMember(OAuth2Response oAuth2Response) {
+    @Transactional
+    public Member findOrCreateMember(OAuth2Response oAuth2Response) {
         Optional<Member> optionalMember = memberRepository.findByProviderAndProviderId(oAuth2Response.getProvider(), oAuth2Response.getProviderId());
 
         if (optionalMember.isPresent()) {
@@ -92,7 +93,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
      */
     private Member registerNewMember(OAuth2Response oAuth2Response) {
         log.info("소셜로그인으로 처음 로그인(강제 회원가입): {}", oAuth2Response.getProvider());
-        if(memberRepository.existsByEmail(oAuth2Response.getEmail())) {
+        if (memberRepository.existsByEmail(oAuth2Response.getEmail())) {
             throw new CustomException(DUPLICATE_EMAIL);
         }
         Member newMember = Member.builder()

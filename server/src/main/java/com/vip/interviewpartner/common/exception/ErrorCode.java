@@ -24,7 +24,8 @@ public enum ErrorCode {
     UPLOAD_FAILURE(400, "업로드에 실패했습니다."),
     INVALID_FILE_TYPE(415, "PDF 파일만 업로드 가능합니다."),
     MEMBER_NOT_FOUND(400, "유효하지 않은 멤버입니다."),
-    UNSUPPORTED_SOCIAL_MEDIA(400, "지원하지 않는 소셜 미디어입니다.");
+    UNSUPPORTED_SOCIAL_MEDIA(400, "지원하지 않는 소셜 미디어입니다."),
+    INVALID_FIREBASE_ID_TOKEN(400, "유효하지 않는 Firebase 토큰입니다.");
 
     private final int status;
     private final String message;
