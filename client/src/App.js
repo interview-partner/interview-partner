@@ -20,7 +20,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Main/>}/>
           <Route path="/aiinterview" element={<AIinterview />}/>
-          <Route path="/promptwroom" element={<Promptroom />}/>
+          <Route path="/promptroom" element={<Promptroom />}/>
           <Route path="/login" element={<Login />}/>
           <Route path="/mockupcommunity" element={<Mockupcommunity />}/>
           <Route path="/mockuproom" element={<Mockuproom />}/>
