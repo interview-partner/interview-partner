@@ -9,9 +9,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -27,12 +29,13 @@ public class TagController {
     @Operation(summary = "태그 생성 API",
             description = "새로운 태그를 생성합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "태그 생성 성공"),
+                    @ApiResponse(responseCode = "201", description = "태그 생성 성공"),
                     @ApiResponse(responseCode = "400", description = "유효하지 않은 형식, 태그이름은 1자 이상 15자 이하입니다", content = @Content),
                     @ApiResponse(responseCode = "409", description = "태그 이름 중복 에러", content = @Content),
             }
     )
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ApiCommonResponse<TagResponse> createTag(@RequestBody TagCreateRequest tagCreateRequest) {
         TagResponse tagResponse = tagService.create(tagCreateRequest);
         return ApiCommonResponse.successResponse(tagResponse);
