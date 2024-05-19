@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import AIDialogBox from "../../components/textbox/aidialogBox.jsx";
+import InterviewChat from "../../features/chat/interviewChat.jsx";
 
 const PromptroomContainer = styled.div`
     display: flex;
@@ -12,7 +12,7 @@ const PromptroomContainer = styled.div`
 function Promptroom() {
     return (
         <PromptroomContainer>
-            <AIDialogBox />
+            <InterviewChat />
         </PromptroomContainer>
     );
 }

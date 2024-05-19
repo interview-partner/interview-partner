@@ -1,32 +1,27 @@
 import React from 'react';
 import styled from 'styled-components';
-import { COLORS } from "../../styles/colors"
+import { COLORS } from "../../styles/colors";
 
-const AIDialog = styled.div`
-    width: 625px;
-    height: 48px;    
-    max-width: 625px;
-    min-height: 48px;
-    background-color: rgba(98, 174, 213, 0.25);
-    border: none;
-    border-radius: 0px 30px 30px 30px;
-    padding: 14px;
-
-    color: #096AC3;
-    font-size: 16px;
-    font-weight: normal;
-
-    overflow-wrap: break-word;
-    word-break: break-all;
-    white-space: pre-wrap;
+const MessageContainer = styled.div`
+    display: flex;
+    justify-content: ${(props) => (props.isUser ? 'flex-end' : 'flex-start')};
+    margin: 10px;
 `;
 
-function AIDialogBox() {
-    return (
-        <AIDialog>
-            안녕하세요 저는 고양이입니다 어떻게 오셨나요?ㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴ
-        </AIDialog>
-    );
-}
-  
+const MessageBubble = styled.div`
+    max-width: 60%;
+    padding: 10px;
+    border-radius: 20px;
+    background-color: ${(props) => (props.isUser ? COLORS.sky_blue : '#f1f0f0')};
+    color: ${(props) => (props.isUser ? COLORS.user_message : COLORS.ai_message)};
+    word-wrap: break-word;
+`;
+
+const AIDialogBox = ({ text, isUser }) => (
+    <MessageContainer isUser={isUser}>
+        <MessageBubble isUser={isUser}>{text}</MessageBubble>
+    </MessageContainer>
+);
+
 export default AIDialogBox;
+
