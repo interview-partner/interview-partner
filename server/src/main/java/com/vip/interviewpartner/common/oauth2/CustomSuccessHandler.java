@@ -23,6 +23,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 @RequiredArgsConstructor
 @Configuration
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+    private static final String SUCCESS_URL = "http://localhost:3000/login?status=success";
+
     private final TokenService tokenService;
 
     /**
@@ -40,7 +42,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Member member = ((CustomUserDetails) authentication.getPrincipal()).getMember();
         String refresh = tokenService.createRefreshToken(member);
         response.addCookie(tokenService.createRefreshTokenCookie(REFRESH_TOKEN, refresh, COOKIE_REFRESH_EXPIRATION_SECONDS));
-        response.sendRedirect("http://localhost:3000/token/reissue"); // 임의로 지정(추후 변경)
+        response.sendRedirect(SUCCESS_URL);
         log.info("social login success");
     }
 }
