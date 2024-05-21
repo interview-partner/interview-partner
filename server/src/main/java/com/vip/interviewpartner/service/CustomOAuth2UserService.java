@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,22 +49,26 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        if (registrationId == null) {
-            throw new CustomException(INVALID_REQUEST);
+        try {
+            if (registrationId == null) {
+                throw new CustomException(INVALID_REQUEST);
+            }
+            OAuth2Response oAuth2Response;
+            switch (registrationId) {
+                case NAVER:
+                    oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
+                    break;
+                case KAKAO:
+                    oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
+                    break;
+                default:
+                    throw new CustomException(UNSUPPORTED_SOCIAL_MEDIA);
+            }
+            Member member = findOrCreateMember(oAuth2Response);
+            return new CustomUserDetails(member, oAuth2User.getAttributes());
+        } catch (CustomException e) {
+            throw new OAuth2AuthenticationException(new OAuth2Error(e.getErrorCode().name()), e.getMessage(), e);
         }
-        OAuth2Response oAuth2Response;
-        switch (registrationId) {
-            case NAVER:
-                oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
-                break;
-            case KAKAO:
-                oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
-                break;
-            default:
-                throw new CustomException(UNSUPPORTED_SOCIAL_MEDIA);
-        }
-        Member member = findOrCreateMember(oAuth2Response);
-        return new CustomUserDetails(member, oAuth2User.getAttributes());
     }
 
     /**

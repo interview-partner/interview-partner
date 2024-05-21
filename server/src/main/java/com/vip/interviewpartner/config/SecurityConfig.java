@@ -10,6 +10,7 @@ import com.vip.interviewpartner.common.exception.ExceptionHandlingFilter;
 import com.vip.interviewpartner.common.jwt.JWTFilter;
 import com.vip.interviewpartner.common.jwt.JWTUtil;
 import com.vip.interviewpartner.common.jwt.LoginFilter;
+import com.vip.interviewpartner.common.oauth2.CustomFailureHandler;
 import com.vip.interviewpartner.common.oauth2.CustomSuccessHandler;
 import com.vip.interviewpartner.common.oauth2.FirebaseTokenFilter;
 import com.vip.interviewpartner.service.CustomOAuth2UserService;
@@ -46,6 +47,7 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
+    private final CustomFailureHandler customFailureHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -95,7 +97,8 @@ public class SecurityConfig {
                                 .baseUri("/api/v1/auth/login/oauth2"))
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                                 .userService(customOAuth2UserService))
-                        .successHandler(customSuccessHandler));
+                        .successHandler(customSuccessHandler)
+                        .failureHandler(customFailureHandler));
 
         http
                 .authorizeHttpRequests((auth) -> auth
