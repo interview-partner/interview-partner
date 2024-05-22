@@ -1,5 +1,6 @@
 package com.vip.interviewpartner.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,5 +21,17 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(nullable = false, unique = true)
     private String name;
+
+    @Column(nullable = false)
+    private Integer usageCount = 0;
+
+    public Tag(String name) {
+        this.name = name;
+    }
+
+    public void incrementUsageCount() {
+        this.usageCount++;
+    }
 }
