@@ -6,7 +6,8 @@ const PromptroomContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 100%;
+    background-color: #F9F9F9;
 `;
 
 function Promptroom() {

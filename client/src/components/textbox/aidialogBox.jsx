@@ -12,8 +12,8 @@ const MessageBubble = styled.div`
     max-width: 60%;
     padding: 10px;
     border-radius: 20px;
-    background-color: ${(props) => (props.isUser ? COLORS.sky_blue : '#f1f0f0')};
-    color: ${(props) => (props.isUser ? COLORS.user_message : COLORS.ai_message)};
+    background-color: ${(props) => (props.isUser ? 'rgba(98, 174, 213, 0.25)' : '#f1f0f0')};
+    color: ${(props) => (props.isUser ? '#096AC3' : '#262627')};
     word-wrap: break-word;
 `;
 

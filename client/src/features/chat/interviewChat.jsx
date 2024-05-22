@@ -4,13 +4,20 @@ import AIDialogBox from '../../components/textbox/aidialogBox.jsx';
 
 const ChatContainer = styled.div`
     display: flex;
-    flex-direction: column;
-    height: 80vh;
-    width: 60vw;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    overflow: hidden;
+    justify-content: center;
+    height: 100%;
+    width: 62.5%;
+    background-color: white;
 `;
+
+const InnerContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 70%;
+    overflow: hidden;
+    background-color: white;
+`
 
 const MessagesContainer = styled.div`
     flex: 1;
@@ -21,7 +28,6 @@ const MessagesContainer = styled.div`
 const InputContainer = styled.div`
     display: flex;
     padding: 10px;
-    border-top: 1px solid #ccc;
 `;
 
 const Input = styled.input`
@@ -62,6 +68,7 @@ const InterviewChat = () => {
 
     return (
         <ChatContainer>
+            <InnerContainer>
             <MessagesContainer>
                 {messages.map((message, index) => (
                     <AIDialogBox key={index} text={message.text} isUser={message.isUser} />
@@ -78,6 +85,7 @@ const InterviewChat = () => {
                 />
                 <Button onClick={handleSend}>Send</Button>
             </InputContainer>
+            </InnerContainer>
         </ChatContainer>
     );
 };
