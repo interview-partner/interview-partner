@@ -5,6 +5,9 @@ import com.vip.interviewpartner.dto.CustomUserDetails;
 import com.vip.interviewpartner.dto.RoomCreateRequest;
 import com.vip.interviewpartner.dto.RoomCreateResponse;
 import com.vip.interviewpartner.service.RoomCreateService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,14 @@ public class RoomController {
 
     private final RoomCreateService roomCreateService;
 
+    @Operation(summary = "방 생성 API",
+            description = "새로운 모의면접방을 생성합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "방 생성 성공"),
+                    @ApiResponse(responseCode = "400", description = "요청 형식에 맞지 않음", content = @Content),
+                    @ApiResponse(responseCode = "404", description = "해당 리소스가 존재하지 않음(member, tag)", content = @Content),
+            }
+    )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiCommonResponse<RoomCreateResponse> createRoom(@AuthenticationPrincipal CustomUserDetails customUserDetails, @Valid @RequestBody RoomCreateRequest roomCreateRequest) {
