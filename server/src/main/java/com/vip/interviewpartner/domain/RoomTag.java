@@ -38,4 +38,8 @@ public class RoomTag {
     @JoinColumn(name = "tag_id")
     private Tag tag;
 
+    public RoomTag(Room room, Tag tag) {
+        this.room = room;
+        this.tag = tag;
+    }
 }
