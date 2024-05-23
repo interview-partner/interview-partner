@@ -14,8 +14,7 @@ import Signup from "../src/pages/signup/signup.jsx";
 
 function App() {
   return (
-    <>
-    </>
+
   );
 }
 
