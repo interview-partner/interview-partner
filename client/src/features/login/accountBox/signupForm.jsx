@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
-import { signupEmailChangeHandler, signupPasswordChangeHandler, signupNicknameChangeHandler } from "../../../utils/validators";
+import { signupEmailChangeHandler, signupPasswordChangeHandler, signupNicknameChangeHandler, validatePassword, validateNickname, validateFields } from "../../../utils/validators";
 import {
   BoldLink,
   Input,
@@ -8,9 +8,12 @@ import {
   SubmitButton,
 } from "../../../components/common/common";
 import { Marginer } from "../../../components/common/marginer/marginer";
-import { AccountContext } from "./accountContext";
+import { AccountContext } from "../../../context/accountContext";
 import { signup } from "../../../services/signupService";
 
+/**
+ * 스타일드 컴포넌트 정의
+ */
 const BoxContainer = styled.div`
   width: 100%;
   display: flex;
@@ -30,6 +33,9 @@ const ErrorMessage = styled.p`
   font-size: 50%;
 `;
 
+/**
+ * 폼 필드 컴포넌트 정의
+ */
 const FormField = ({ type, placeholder, value, onChange, error }) => (
   <>
     <Input type={type} placeholder={placeholder} value={value} onChange={onChange} />
@@ -49,59 +55,75 @@ export function SignupForm(props) {
   const [confirmNickname, setConfirmNickname] = useState("");
   const [error, setError] = useState({});
 
-  // 비밀번호와 확인 비밀번호 일치 여부 확인
+  // 회원가입 시 비밀번호와 확인 비밀번호 일치 여부 확인
   useEffect(() => {
-    if (confirmPassword && password !== confirmPassword) {
-      setError(prev => ({ ...prev, confirmPassword: "비밀번호가 일치하지 않습니다." }));
-    } else {
-      setError(prev => ({ ...prev, confirmPassword: "" }));
-    }
-  }, [password, confirmPassword]); // password 또는 confirmPassword가 변경될 때마다 실행
+    validatePassword(password, confirmPassword, setError);
+  }, [password, confirmPassword]);
 
-  //닉네임 중복검사
+  // 회원가입 시 닉네임과 확인 닉네임 일치 여부 확인
   useEffect(() => {
-    if (nickname !== confirmNickname) {
-      setError(prev => ({ ...prev, confirmNickname: "닉네임이 일치하지 않습니다." }));
-    } else {
-      setError(prev => ({ ...prev, confirmNickname: "" }));
-    }
-  }, [nickname, confirmNickname]); // nickname 또는 confirmNickname 변경될 때마다 실행
+    validateNickname(nickname, confirmNickname, setError);
+  }, [nickname, confirmNickname]);
 
-
-  // 폼 제출 핸들러
+  /**
+   * 폼 제출 핸들러
+   * 
+   * @param {object} e - 이벤트 객체
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (Object.values(error).some(e => e !== "")) {
-      return; // 에러가 있으면 제출 중단
+    const fields = { email, password, confirmPassword, nickname, confirmNickname };
+    const validationErrors = validateFields(fields);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setError(validationErrors);
+    }
+
+    if (Object.values(validationErrors).some(error => error !== "")) {
+      return;
     }
 
     try {
       const data = await signup(email, password, nickname);
       console.log('SignUp Successful:', data);
-      alert('회원가입 성공!');
+      alert('회원가입이 완료되었습니다.');
 
       // API 호출 성공 후 입력 필드 초기화
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
-      setNickname("");
-      setConfirmNickname("");
+      resetFields();
 
       // 회원가입 성공 후 로그인 폼으로 전환
       switchToSignin();
 
     } catch (error) {
-      if (error.message === 'Invalid request format') {
-        console.error('Invalid request format');
-        alert('유효하지 않은 형식입니다.');
-      } else if (error.message === 'Email is already in use.') {
-        console.error('Email or nickname already exists');
-        alert('이미 존재하는 이메일 입니다.');
-      } else {
-        console.error('Unknown error occurred');
-        alert('알 수 없는 오류가 발생했습니다.');
-      }
+      handleSignupError(error);
+    }
+  };
+
+  /**
+   * 입력 필드를 초기화
+   */
+  const resetFields = () => {
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+    setNickname("");
+    setConfirmNickname("");
+  };
+
+  /**
+   * 회원가입 실패 시 처리 함수
+   */
+  const handleSignupError = (error) => {
+    if (error.message === 'Invalid request format') {
+      console.error('Invalid request format');
+      alert('유효하지 않은 형식입니다.');
+    } else if (error.message === 'Email is already in use.') {
+      console.error('Email or nickname already exists');
+      alert('이미 존재하는 이메일 입니다.');
+    } else {
+      console.error('Unknown error occurred');
+      alert('알 수 없는 오류가 발생했습니다.');
     }
   };
 
