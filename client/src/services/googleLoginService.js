@@ -33,7 +33,7 @@ const googleLogin = (auth, setLoginError, setShowNotification) => {
                             const accessToken = response.headers['authorization'].replace('Bearer ', '');
                             console.log('구글로그인 액세스토큰:', accessToken);
                             localStorage.setItem('accessToken', accessToken);
-                            // window.location.href = '/'
+                            window.location.href = '/'
                         }
                     })
                     .catch(error => {
@@ -49,6 +49,7 @@ const googleLogin = (auth, setLoginError, setShowNotification) => {
                         }
                         setShowNotification(true);
                         console.error('Firebase login error:', error);
+                        window.location.href = '/login'
                     });
             });
         })

@@ -17,7 +17,7 @@ const api = axios.create({
 api.interceptors.request.use(
     config => {
         const accessToken = localStorage.getItem('accessToken');
-        console.log("axios interceptor: ", accessToken);
+        console.log("요청 인터셉터: ", accessToken);
 
         if (accessToken) {
             config.headers['Authorization'] = `Bearer ${accessToken}`;
@@ -40,14 +40,14 @@ api.interceptors.response.use(
     async error => {
         const originalRequest = error.config;
 
-        console.log("originalRequest", originalRequest);
+        console.log("응답 인터셉터");
 
         if (error.response && error.response.status === 401 && !originalRequest._retry) {
             const errorMessage = error.response.data.message;
             const status = error.response.data.status;
             if (status === "error" && errorMessage === "인증이 필요합니다.") {
                 alert("로그인이 필요합니다")
-                // window.location.href = '/login';
+                window.location.href = '/login';
             }
             if (status === "error" && errorMessage === "엑세스 토큰이 만료되었습니다.") {
                 originalRequest._retry = true;
@@ -64,7 +64,7 @@ api.interceptors.response.use(
                         localStorage.removeItem('refreshToken');
                         console.log("리프레쉬 토큰이 만료되어 로그인 화면으로 이동");
                         alert("로그인이 필요합니다")
-                        // window.location.href = '/login';
+                        window.location.href = '/login';
                     }
                     return Promise.reject(refreshError);
                 }
