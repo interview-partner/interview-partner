@@ -75,6 +75,50 @@ export function signupNicknameChangeHandler(setNickname, setError) {
     };
 }
 
+// 회원가입 시 비밀번호와 확인 비밀번호가 일치하는지 확인
+export function validatePassword(password, confirmPassword, setError) {
+    if (confirmPassword && password !== confirmPassword) {
+        setError(prev => ({ ...prev, confirmPassword: "비밀번호가 일치하지 않습니다." }));
+    } else {
+        setError(prev => ({ ...prev, confirmPassword: "" }));
+    }
+}
+
+// 회원가입 시 닉네임과 확인 닉네임이 일치하는지 확인
+export function validateNickname(nickname, confirmNickname, setError) {
+    if (nickname !== confirmNickname) {
+        setError(prev => ({ ...prev, confirmNickname: "닉네임이 일치하지 않습니다." }));
+    } else {
+        setError(prev => ({ ...prev, confirmNickname: "" }));
+    }
+}
+
+/**
+ *  회원가입 시 입력 필드 유효성 검사
+ */
+export const validateFields = (fields) => {
+    const newError = {};
+    const { email, password, confirmPassword, nickname, confirmNickname } = fields;
+
+    if (!email) {
+        newError.email = "이메일을 입력해주세요.";
+    }
+    if (!password) {
+        newError.password = "비밀번호를 입력해주세요.";
+    }
+    if (!confirmPassword) {
+        newError.confirmPassword = "비밀번호 확인을 입력해주세요.";
+    }
+    if (!nickname) {
+        newError.nickname = "닉네임을 입력해주세요.";
+    }
+    if (!confirmNickname) {
+        newError.confirmNickname = "닉네임 확인을 입력해주세요.";
+    }
+
+    return newError;
+};
+
 //로그인 이메일 유효성 검사
 export function loginEmailChangeHandler(setEmail, setValidationErrors) {
     return (e) => {

@@ -1,7 +1,11 @@
+import { AccountBox } from "../../features/login/accountBox"
+
 function Signup() {
     return (
-        <div>Signup Page</div>
+        <div className="logincontainer">
+            <AccountBox />
+        </div>
     );
 }
-  
+
 export default Signup;
