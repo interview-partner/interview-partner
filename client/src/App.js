@@ -11,23 +11,11 @@ import Mockupcommunity from "../src/pages/mockupcommunity/mockupcommunity.jsx";
 import Mockuproom from "../src/pages/mockuproom/mockuproom.jsx";
 import Mypage from "../src/pages/mypage/mypage.jsx";
 import Signup from "../src/pages/signup/signup.jsx";
-import Voiceroom from "../src/pages/voiceroom/voiceroom.jsx";
 
 function App() {
   return (
     <>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Main/>}/>
-          <Route path="/aiinterview" element={<AIinterview />}/>
-          <Route path="/promptroom" element={<Promptroom />}/>
-          <Route path="/login" element={<Login />}/>
-          <Route path="/mockupcommunity" element={<Mockupcommunity />}/>
-          <Route path="/mockuproom" element={<Mockuproom />}/>
-          <Route path="/mypage" element={<Mypage />}/>
-          <Route path="/signup" element={<Signup />}/>
-          <Route path="/voiceroom" element={<Voiceroom />}/>
-        </Routes>
+
     </>
   );
 }
