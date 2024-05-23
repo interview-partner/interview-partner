@@ -146,3 +146,11 @@ export function loginPasswordChangeHandler(setPassword, setValidationErrors) {
         }
     };
 }
+
+//방 생성 모달 태그 입력 필드 길이 유효성 검사
+export const validateTagLength = (tag) => {
+    if (tag.length > 15) {
+        return '태그 이름은 15자 이하이어야 합니다.';
+    }
+    return null;
+};
