@@ -66,6 +66,7 @@ public class Room extends BaseTimeEntity {
         if (roomTags.stream().noneMatch(roomTag -> roomTag.getTag().equals(tag))) {
             RoomTag roomTag = new RoomTag(this, tag);
             roomTags.add(roomTag);
+            tag.incrementUsageCount();
         }
     }
 
