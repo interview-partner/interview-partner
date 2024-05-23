@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import styled from "styled-components";
 import { LoginForm } from "./loginForm";
 import { motion } from "framer-motion";
-import { AccountContext } from "./accountContext";
+import { AccountContext } from "../../../context/accountContext";
 import { SignupForm } from "./signupForm";
 import { COLORS } from "../../../styles/colors";
 import { Marginer } from "../../../components/common/marginer/marginer";
 
+/**
+ * 스타일드 컴포넌트
+ */
 const BoxContainer = styled.div`
   width: 360px;
   min-height: 674px;
@@ -30,7 +33,7 @@ const TopContainer = styled.div`
 
 const BackDrop = styled(motion.div)`
   width: 160%;
-  height: 550px;
+  height: 650px;
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -86,7 +89,7 @@ const backdropVariants = {
   },
   collapsed: {
     width: "130%",
-    height: "550px",
+    height: "600px",
     borderRadius: "50%",
     transform: "rotate(60deg)",
   },
@@ -94,67 +97,45 @@ const backdropVariants = {
 
 const expandingTransition = {
   type: "spring",
-  duration: 2.3,
+  duration: 1.5,
   stiffness: 30,
 };
 
-export function AccountBox(props) {
-  const [isExpanded, setExpanded] = useState(false);
-  const [active, setActive] = useState("signin");
-
-  const playExpandingAnimation = () => {
-    setExpanded(true);
-    setTimeout(() => {
-      setExpanded(false);
-    }, expandingTransition.duration * 1000 - 1500);
-  };
-
-  const switchToSignup = () => {
-    playExpandingAnimation();
-    setTimeout(() => {
-      setActive("signup");
-    }, 400);
-  };
-
-  const switchToSignin = () => {
-    playExpandingAnimation();
-    setTimeout(() => {
-      setActive("signin");
-    }, 400);
-  };
-
-  const contextValue = { switchToSignup, switchToSignin };
+/**
+ * AccountBox 컴포넌트
+ * 로그인 및 회원가입 폼을 전환하는 애니메이션을 포함
+ */
+export function AccountBox() {
+  const { active, isExpanded } = useContext(AccountContext);
 
   return (
-    <AccountContext.Provider value={contextValue}>
-      <BoxContainer>
-        <TopContainer>
-          <BackDrop
-            initial={false}
-            animate={isExpanded ? "expanded" : "collapsed"}
-            variants={backdropVariants}
-            transition={expandingTransition}
-          />
-          {active === "signin" && (
-            <HeaderContainer>
-              <HeaderText>로그인</HeaderText>
-              <Marginer direction="vertical" margin="12px" />
-              <SmallText>환영합니다!</SmallText>
-            </HeaderContainer>
-          )}
-          {active === "signup" && (
-            <HeaderContainer>
-              <HeaderText>회원가입</HeaderText>
-              <Marginer direction="vertical" margin="12px" />
-            </HeaderContainer>
-          )}
-        </TopContainer>
-        <Marginer direction="vertical" margin="60px" />
-        <InnerContainer>
-          {active === "signin" && <LoginForm />}
-          {active === "signup" && <SignupForm />}
-        </InnerContainer>
-      </BoxContainer>
-    </AccountContext.Provider>
+    <BoxContainer>
+      <TopContainer>
+        <BackDrop
+          initial={false}
+          animate={isExpanded ? "expanded" : "collapsed"}
+          variants={backdropVariants}
+          transition={expandingTransition}
+        />
+        {active === "signin" && (
+          <HeaderContainer>
+            <HeaderText>로그인</HeaderText>
+            <Marginer direction="vertical" margin="12px" />
+            <SmallText>환영합니다!</SmallText>
+          </HeaderContainer>
+        )}
+        {active === "signup" && (
+          <HeaderContainer>
+            <HeaderText>회원가입</HeaderText>
+            <Marginer direction="vertical" margin="12px" />
+          </HeaderContainer>
+        )}
+      </TopContainer>
+      <Marginer direction="vertical" margin="60px" />
+      <InnerContainer>
+        {active === "signin" && <LoginForm />}
+        {active === "signup" && <SignupForm />}
+      </InnerContainer>
+    </BoxContainer>
   );
 }
