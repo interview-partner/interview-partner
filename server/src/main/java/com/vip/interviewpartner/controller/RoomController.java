@@ -33,6 +33,7 @@ public class RoomController {
                     @ApiResponse(responseCode = "201", description = "방 생성 성공"),
                     @ApiResponse(responseCode = "400", description = "요청 형식에 맞지 않음", content = @Content),
                     @ApiResponse(responseCode = "404", description = "해당 리소스가 존재하지 않음(member, tag)", content = @Content),
+                    @ApiResponse(responseCode = "500", description = "Openvidu 서버에 문제가 생김", content = @Content),
             }
     )
     @PostMapping
