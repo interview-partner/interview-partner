@@ -1,220 +1,19 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect } from 'react';
+import {
+  ModalBackdrop, ModalContainer, ModalContent, ModalCloseButton, FormContainer,
+  FormText, DropdownWrapper, DropdownInput, DropdownMenu, DropdownItem, TagList,
+  Tag, RemoveTagButton, CounterContainer, CounterButton, CounterInput,
+  CreateRoomButton, Input, ErrorMessage
+} from './ModalStyles';
 import { Marginer } from '../../components/common/marginer/marginer.jsx';
-import { COLORS } from '../../styles/colors.jsx';
-
-// 스타일 컴포넌트 정의
-const ModalBackdrop = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.29);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
-
-const ModalContainer = styled.div`
-  background-color: #fff;
-  width: 630px;
-  height: 650px;
-  padding: 20px;
-  border-radius: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  position: relative;
-`;
-
-const ModalContent = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const ModalCloseButton = styled.button`
-  align-self: flex-end;
-  height: 40px;
-  width: 40px;
-  background: none;
-  border: none;
-  font-size: 32px;
-  cursor: pointer;
-  color: ${COLORS.gray};
-`;
-
-const FormContainer = styled.form`
-  width: 500px;
-  display: flex;
-  flex-direction: column;
-`;
-
-const FormText = styled.p`
-  font-size: 16px;
-  margin: 5px 0;
-`;
-
-const DropdownWrapper = styled.div`
-  position: relative;
-  width: 100%;
-`;
-
-const DropdownButton = styled.button`
-  width: 100%;
-  height: 45px;
-  outline: none;
-  border: 1px solid ${COLORS.light_gray};
-  border-radius: 8px;
-  padding: 0px 10px;
-  border-bottom: 1.4px solid ${COLORS.light_gray};
-  transition: all 200ms ease-in-out;
-  font-size: 12px;
-  font-weight: 500;
-  box-shadow: 0px 0px 2.5px rgba(15, 15, 15, 0.19);
-  background: white url('data:image/svg+xml;utf8,<svg fill="%236e6e6e" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
-  cursor: pointer;
-  text-align: left;
-
-  &:focus {
-    outline: none;
-    border-bottom: 2px solid ${COLORS.sky_blue};
-  }
-`;
-
-const DropdownMenu = styled.ul`
-  position: absolute;
-  top: 50px;
-  width: 100%;
-  max-height: 200px;
-  overflow-y: auto;
-  background: white;
-  border: 1px solid ${COLORS.light_gray};
-  border-radius: 8px;
-  box-shadow: 0px 0px 5px rgba(15, 15, 15, 0.2);
-  z-index: 1000;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-`;
-
-const DropdownItem = styled.li`
-  padding: 10px;
-  font-size: 12px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: ${COLORS.light_gray};
-  }
-`;
-
-const TagList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 10px;
-`;
-
-const Tag = styled.span`
-  background-color: #e0e0e0;
-  border-radius: 5px;
-  padding: 5px 10px;
-  margin-right: 10px;
-  font-size: 12px;
-`;
-
-const RemoveTagButton = styled.button`
-  background: none;
-  border: none;
-  font-size: 12px;
-  cursor: pointer;
-  color: ${COLORS.gray};
-  margin-left: 5px;
-`;
-
-const CounterContainer = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const CounterButton = styled.button`
-  width: 30px;
-  height: 30px;
-  border: 1px solid ${COLORS.light_gray};
-  background-color: white;
-  cursor: pointer;
-  font-size: 18px;
-  border-radius: 5px;
-
-  &:hover {
-    background-color: ${COLORS.light_gray};
-  }
-`;
-
-const CounterInput = styled.input`
-  width: 50px;
-  text-align: center;
-  border: 1px solid ${COLORS.light_gray};
-  border-radius: 5px;
-  height: 30px;
-  margin: 0 10px;
-`;
-
-const CreateRoomButton = styled.button`
-  width: 100px;
-  height: 40px;
-  padding: 8px 20px;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  border: none;
-  border-radius: 100px;
-  cursor: pointer;
-  transition: background 240ms ease-in-out;
-  background: #254366;
-
-  &:hover {
-    background: linear-gradient(
-      #3b6aa0 20%,
-      #3b6aa0 100%
-    );
-  }
-`;
-
-const Input = styled.input`
-  width: 100%;
-  height: 45px;
-  outline: none;
-  border: 1px solid ${COLORS.light_gray};
-  border-radius: 8px;
-  padding: 0px 10px;
-  border-bottom: 1.4px solid ${COLORS.light_gray};
-  transition: all 200ms ease-in-out;
-  font-size: 12px;
-  font-weight: 500;
-  box-shadow: 0px 0px 2.5px rgba(15, 15, 15, 0.19);
-
-  &::placeholder {
-    color: ${COLORS.gray};
-  }
-
-  &:focus {
-    outline: none;
-    border-bottom: 2px solid ${COLORS.sky_blue};
-  }
-`;
-
-const ErrorMessage = styled.p`
-  color: red;
-  font-size: 50%;
-`;
+import { fetchTags, createTag } from '../../../src/services/tagService';
+import { validateTagLength } from '../../utils/validators.jsx';
 
 const FormField = ({ type, placeholder, value, onChange, error }) => (
   <>
     <Input type={type} placeholder={placeholder} value={value} onChange={onChange} />
+    <Marginer direction="vertical" margin={10} />
     {error && <ErrorMessage>{error}</ErrorMessage>}
-    {!error && <Marginer direction="vertical" margin={10} />}
   </>
 );
 
@@ -222,20 +21,80 @@ const ModalComponent = ({
   isModalOpen,
   closeModal,
   tags,
+  setTags,
   handleAddTag,
   handleRemoveTag,
   counter,
+  setCounter,
   handleCounterChange,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedTag, setSelectedTag] = useState('');
+  const [tagInput, setTagInput] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
 
-  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
+  useEffect(() => {
+    if (isModalOpen) {
+      // 모달이 열릴 때 태그와 인원 초기화
+      setTags([]);
+      setCounter(0);
+      setTagInput('');
+      setSuggestions([]);
+    }
+  }, [isModalOpen, setTags, setCounter]);
 
-  const handleTagSelect = (tag) => {
-    setSelectedTag(tag);
+  useEffect(() => {
+    if (tagInput.trim()) {
+      const fetchTagSuggestions = async () => {
+        try {
+          console.log("Fetching tags for:", tagInput.trim());
+          const data = await fetchTags(tagInput.trim());
+          console.log("Response:", data);
+          if (data && data.status === 'success') {
+            setSuggestions(data.data);
+          }
+        } catch (err) {
+          console.error("Error:", err);
+        }
+      };
+
+      fetchTagSuggestions();
+    } else {
+      setSuggestions([]);
+    }
+  }, [tagInput]);
+
+  const handleTagInputChange = (e) => {
+    const value = e.target.value;
+    const errorMessage = validateTagLength(value);
+    if (!errorMessage) {
+      setTagInput(value);
+      if (value.trim()) {
+        setDropdownOpen(true);
+      } else {
+        setDropdownOpen(false);
+      }
+    } else {
+      alert(errorMessage); // 유효하지 않은 경우 경고 메시지 설정
+    }
+  };
+
+  const handleTagSelect = async (tag) => {
+    if (typeof tag === 'string') {
+      // 새로운 태그 추가 로직
+      try {
+        const data = await createTag(tag);
+        if (data.status === 'success') {
+          handleAddTag({ target: { value: data.data.name } });
+        }
+      } catch (err) {
+        console.error("Error:", err);
+      }
+    } else {
+      // 기존 태그 선택 로직
+      handleAddTag({ target: { value: tag.name } });
+    }
+    setTagInput('');
     setDropdownOpen(false);
-    handleAddTag({ target: { value: tag } });
   };
 
   return (
@@ -260,14 +119,26 @@ const ModalComponent = ({
               <Marginer direction="vertical" margin={20} />
               <FormText>태그</FormText>
               <DropdownWrapper>
-                <DropdownButton type="button" onClick={toggleDropdown}>
-                  {selectedTag || '태그를 선택하세요'}
-                </DropdownButton>
+                <DropdownInput
+                  type="text"
+                  placeholder="태그를 입력하세요"
+                  value={tagInput}
+                  onChange={handleTagInputChange}
+                />
                 {dropdownOpen && (
                   <DropdownMenu>
-                    <DropdownItem type="button" onClick={() => handleTagSelect('태그1')}>태그1</DropdownItem>
-                    <DropdownItem type="button" onClick={() => handleTagSelect('태그2')}>태그2</DropdownItem>
-                    <DropdownItem type="button" onClick={() => handleTagSelect('태그3')}>태그3</DropdownItem>
+                    {suggestions
+                      .filter((tag) => tag.name.includes(tagInput))
+                      .map((tag, index) => (
+                        <DropdownItem key={index} onMouseDown={() => handleTagSelect(tag)}>
+                          {tag.name}
+                        </DropdownItem>
+                      ))}
+                    {!suggestions.some(tag => tag.name === tagInput) && tagInput.trim() && (
+                      <DropdownItem onMouseDown={() => handleTagSelect(tagInput)}>
+                        "{tagInput}" 추가
+                      </DropdownItem>
+                    )}
                   </DropdownMenu>
                 )}
               </DropdownWrapper>
