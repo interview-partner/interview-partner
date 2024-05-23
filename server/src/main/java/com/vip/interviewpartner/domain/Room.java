@@ -1,5 +1,6 @@
 package com.vip.interviewpartner.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,6 +15,7 @@ import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,30 +44,44 @@ public class Room extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private RoomStatus status;
 
-    @OneToMany(mappedBy = "room")
+    @OneToMany(mappedBy = "room", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<RoomTag> roomTags = new ArrayList<>();
+
+    @Builder
+    public Room(Member owner, String title, String details, Integer maxParticipants, String sessionId) {
+        this.owner = owner;
+        this.title = title;
+        this.details = details;
+        this.maxParticipants = maxParticipants;
+        this.sessionId = sessionId;
+        this.status = RoomStatus.OPEN;
+    }
 
     /**
      * RoomTag 객체를 현재 Room의 태그 목록에 추가합니다.
      *
-     * @param roomTag
+     * @param tag
      */
-    public void addRoomTag(RoomTag roomTag) {
-        if(!roomTags.contains(roomTag)) {
+    public void addTag(Tag tag) {
+        if (roomTags.stream().noneMatch(roomTag -> roomTag.getTag().equals(tag))) {
+            RoomTag roomTag = new RoomTag(this, tag);
             roomTags.add(roomTag);
-            roomTag.setRoom(this);
         }
     }
 
     /**
      * RoomTag 객체를 현재 Room의 태그 목록에 삭제합니다.
      *
-     * @param roomTag
+     * @param tag
      */
-    public void removeRoomTag(RoomTag roomTag) {
-        if (roomTags.contains(roomTag)) {
-            roomTags.remove(roomTag);
-            roomTag.setRoom(null);
+    public void removeTag(Tag tag) {
+        RoomTag roomTagToRemove = roomTags.stream()
+                .filter(roomTag -> roomTag.getTag().equals(tag))
+                .findFirst()
+                .orElse(null);
+        if (roomTagToRemove != null) {
+            roomTags.remove(roomTagToRemove);
+            roomTagToRemove.setRoom(null);
         }
     }
 }
