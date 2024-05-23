@@ -27,6 +27,7 @@ public enum ErrorCode {
     UNSUPPORTED_SOCIAL_MEDIA(400, "지원하지 않는 소셜 미디어입니다."),
     INVALID_FIREBASE_ID_TOKEN(400, "유효하지 않는 Firebase 토큰입니다."),
     DUPLICATE_TAG_NAME(409, "이미 존재하는 태그 이름입니다."),
+    RESOURCE_NOT_FOUND(404, "요청한 리소스가 존재하지 않습니다."),
     RESUME_NOT_FOUND(400, "유효하지 않은 이력서입니다."),
     S3_READ_FAILURE(400, "S3 객체를 읽는 중 오류가 발생했습니다."),
     S3_DOWNLOAD_FAILURE(400, "S3 객체를 다운받는 중 오류가 발생했습니다."),
