@@ -1,5 +1,6 @@
 package com.vip.interviewpartner.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,6 +9,8 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
+@Schema(description = "방 생성의 응답 DTO")
 public class RoomCreateResponse {
+    @Schema(description = "생성된 방 번호")
     private Long roomId;
 }
