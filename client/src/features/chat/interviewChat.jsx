@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import { COLORS } from "../../styles/colors"
 import AIDialogBox from '../../components/textbox/aidialogBox.jsx';
+import styled from 'styled-components';
 
 const ChatContainer = styled.div`
     display: flex;
@@ -14,35 +15,42 @@ const InnerContainer = styled.div`
     display: flex;
     flex-direction: column;
     height: 100%;
-    width: 70%;
+    width: 80%;
     overflow: hidden;
     background-color: white;
 `
 
 const MessagesContainer = styled.div`
     flex: 1;
+    justify-content: center; 
+    align-items: center; 
+    justify-content: flex-end;
     padding: 10px;
     overflow-y: auto;
 `;
 
 const InputContainer = styled.div`
     display: flex;
+    margin-right: 80px;
+    margin-left: 80px;
+    gap: 4px;
     padding: 10px;
 `;
 
 const Input = styled.input`
     flex: 1;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: 2px solid #D9D9D9;
+    border-radius: 10px;
 `;
 
 const Button = styled.button`
+    display: flex;
     margin-left: 10px;
-    padding: 10px 20px;
+    padding: 10px;
     border: none;
     border-radius: 5px;
-    background-color: #096AC3;
+    background-color: ${COLORS.blue_black};
     color: white;
     cursor: pointer;
 `;
@@ -83,7 +91,11 @@ const InterviewChat = () => {
                         if (e.key === 'Enter') handleSend();
                     }}
                 />
-                <Button onClick={handleSend}>Send</Button>
+                <Button onClick={handleSend}>
+                    <span class="material-symbols-outlined">
+                        send
+                    </span>
+                </Button>
             </InputContainer>
             </InnerContainer>
         </ChatContainer>
