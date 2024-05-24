@@ -5,12 +5,13 @@ import { Routes, Route, Link } from 'react-router-dom';
 import Navbar from "../src/components/layout/navBar";
 import Main from "../src/pages/main/main.jsx";
 import AIinterview from "../src/pages/aiinterview/aiinterview.jsx";
-import Interviewroom from "../src/pages/interviewroom/interviewroom.jsx";
+import Promptroom from "../src/pages/promptroom/promptroom.jsx";
 import Login from "../src/pages/login/login.jsx";
 import Mockupcommunity from "../src/pages/mockupcommunity/mockupcommunity.jsx";
 import Mockuproom from "../src/pages/mockuproom/mockuproom.jsx";
 import Mypage from "../src/pages/mypage/mypage.jsx";
 import Signup from "../src/pages/signup/signup.jsx";
+import Voiceroom from "../src/pages/voiceroom/voiceroom.jsx";
 import { AuthProvider } from './context/AuthContext.js';
 import { AccountProvider } from './context/accountContext';
 
@@ -30,8 +31,10 @@ function App() {
             <Route path="/" element={<Main />} />
             {/* AI 면접 페이지 */}
             <Route path="/aiinterview" element={<AIinterview />} />
-            {/* 면접방 페이지 */}
-            <Route path="/interviewroom" element={<Interviewroom />} />
+            {/* 프롬프트면접방 페이지 */}
+            <Route path="/promptroom" element={<Promptroom />} />
+            {/* 음성면접방 페이지 */}
+            <Route path="/voiceroom" element={<Voiceroom />} />
             {/* 로그인 페이지 */}
             <Route path="/login" element={<Login />} />
             {/* 목업 커뮤니티 페이지 */}
@@ -45,7 +48,6 @@ function App() {
           </Routes>
         </AccountProvider>
       </AuthProvider>
-
     </>
   );
 }
