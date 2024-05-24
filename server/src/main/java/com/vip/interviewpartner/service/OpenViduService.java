@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
- * OpenVidu 서비스를 처리하는 서비스 클래스.
+ * OpenVidu 서비스를 처리하는 서비스 클래스입니다.
  * OpenVidu 서버와의 통신을 담당합니다.
  */
 @Service
@@ -55,13 +55,36 @@ public class OpenViduService {
      * 새로운 세션을 생성합니다.
      *
      * @return 생성된 세션의 세션 ID
-     * @throws CustomException 서버 오류가 발생한 경우
+     * @throws CustomException Openvidu 서버가 응답하지 않는 경우
      */
     public String createSession() {
         try {
             SessionProperties properties = SessionProperties.fromJson(null).build();
             Session session = openVidu.createSession(properties);
             return session.getSessionId();
+        } catch (OpenViduJavaClientException e) {
+            throw new CustomException(SERVER_ERROR);
+        } catch (OpenViduHttpException e) {
+            throw new CustomException(SERVER_ERROR);
+        }
+    }
+
+    /**
+     * 특정 세션의 연결 수를 반환합니다.
+     *
+     * @param sessionId 조회할 세션의 ID
+     * @return 세션에 연결된 연결 수
+     * @throws CustomException Openvidu 서버가 응답하지 않는 경우
+     */
+    public int getSessionConnectionCount(String sessionId) {
+        Session session = openVidu.getActiveSession(sessionId);
+        try {
+            if (session != null) {
+                session.fetch();
+                return session.getConnections().size();
+            } else {
+                return 0;
+            }
         } catch (OpenViduJavaClientException e) {
             throw new CustomException(SERVER_ERROR);
         } catch (OpenViduHttpException e) {
