@@ -4,7 +4,9 @@ import com.vip.interviewpartner.common.ApiCommonResponse;
 import com.vip.interviewpartner.dto.CustomUserDetails;
 import com.vip.interviewpartner.dto.MemberJoinRequest;
 import com.vip.interviewpartner.dto.NicknameCheckResponse;
+import com.vip.interviewpartner.dto.ResumeLookupResponse;
 import com.vip.interviewpartner.service.MemberJoinService;
+import com.vip.interviewpartner.service.ResumeService;
 import com.vip.interviewpartner.service.ResumeUploadService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,6 +39,7 @@ public class MemberController {
 
     private final MemberJoinService memberJoinService;
     private final ResumeUploadService resumeUploadService;
+    private final ResumeService resumeService;
 
     /**
      * 회원가입 API입니다.
@@ -87,6 +91,26 @@ public class MemberController {
 
         resumeUploadService.upload(customUserDetails.getMemberId(), file);
         return ApiCommonResponse.successWithNoContent();
+    }
+
+    /**
+     * 자신의 이력서 조회 API입니다.
+     *
+     * @param customUserDetails 사용자 인증 정보
+     * @return ApiCommonResponse.successResponse();
+     */
+    @Operation(summary = "자신의 이력서 조회 API",
+            description = "사용자가 자신의 이력서를 조회합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "이력서 조회 성공"),
+                    @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content),
+            }
+    )
+    @GetMapping("/me/resumes")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiCommonResponse<List<ResumeLookupResponse>> getResumes(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        List<ResumeLookupResponse> resumes = resumeService.getResumesByMemberId(customUserDetails.getMemberId());
+        return ApiCommonResponse.successResponse(resumes);
     }
 
 }
