@@ -41,6 +41,8 @@ public class Interview extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT")
     private String jobAdvertisement;
 
+    private String interviewType;
+
     @OneToMany(mappedBy = "interview", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
@@ -54,5 +56,13 @@ public class Interview extends BaseTimeEntity {
             questions.add(question);
             question.setInterview(this);
         }
+    }
+
+    public Interview( Member member, Resume resume, String interviewType, String jobAdvertisement, String title ) {
+        this.interviewType = interviewType;
+        this.jobAdvertisement = jobAdvertisement;
+        this.title = title;
+        this.resume = resume;
+        this.member = member;
     }
 }
