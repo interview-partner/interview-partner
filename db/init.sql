@@ -45,6 +45,7 @@ CREATE TABLE `interview`
     `resume_id`         bigint                                  NOT NULL,
     `title`             varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
     `job_advertisement` text COLLATE utf8mb4_general_ci,
+    `interview_type`	varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
     `create_date`       datetime(6) NOT NULL,
     `update_date`       datetime(6) NOT NULL,
     PRIMARY KEY (`id`),
@@ -53,6 +54,7 @@ CREATE TABLE `interview`
     CONSTRAINT `fk_interview_resume` FOREIGN KEY (`resume_id`) REFERENCES `resume` (`id`),
     CONSTRAINT `fk_interview_member` FOREIGN KEY (`member_id`) REFERENCES `member` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 CREATE TABLE `room`
 (
