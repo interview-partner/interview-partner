@@ -47,6 +47,19 @@ services:
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
       SPRING_REDIS_PASSWORD: root1234
+      OPENVIDU_URL: http://openvidu:4443
+    networks:
+      - network
+
+  openvidu:
+    image: openvidu/openvidu-dev:2.29.0
+    restart: always
+    container_name: openvidu-container
+    ports:
+      - 4443:4443
+    environment:
+      OPENVIDU_SECRET: 5OAgTGJ8TCtilux7lL8x9C5JFyNpUMpPShP5j4zCkQ
+      DOMAIN_OR_PUBLIC_IP: localhost
     networks:
       - network
 
