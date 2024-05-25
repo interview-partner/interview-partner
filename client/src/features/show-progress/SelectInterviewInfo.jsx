@@ -7,8 +7,8 @@ import UnActivePoint from "../../components/shape/UnActivePoint.jsx";
 const Container = styled.div`
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 270px;
+    margin-top: 100px;
+    height: 80px;
     width: 100%;
 `;
 
