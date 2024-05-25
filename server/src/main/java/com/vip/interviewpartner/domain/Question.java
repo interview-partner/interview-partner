@@ -35,4 +35,10 @@ public class Question extends BaseCreateDateEntity {
 
     private String content;
     private String modelAnswer;
+
+    public Question(Interview interview, String content){
+        this.interview = interview;
+        this.content = content;
+        this.modelAnswer = "tmp";
+    }
 }
