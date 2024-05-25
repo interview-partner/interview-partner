@@ -21,11 +21,9 @@ const OutCircle = styled.div`
 `
 
 const InnerCircle = styled.div`
-    width: 28px;
-    height: 28px;
+    width: 16px;
+    height: 16px;
     background-color: white;
-    border: 1px solid; 
-    border-color: ${COLORS.light_gray}; 
     border-radius: 50%;
     display: flex; 
     justify-content: center; 
@@ -38,8 +36,7 @@ function ActivePoint() {
     return (
         <Container>
             <OutCircle>
-                <InnerCircle>
-                </InnerCircle>
+                <InnerCircle />
             </OutCircle>
         </Container>
     );

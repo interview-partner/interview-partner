@@ -9,8 +9,8 @@ const Container = styled.div`
     align-items: center;
 `
 const Point = styled.div`
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     background-color: white;
     border: 1px solid; 
     border-color: ${COLORS.light_gray}; 
@@ -25,10 +25,9 @@ function UnActivePoint() {
 
     return (
         <Container>
-            <Point>
-            </Point>
+            <Point />
         </Container>
     );
 }
 
-export default ActivePoint;
+export default UnActivePoint;
