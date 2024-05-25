@@ -147,10 +147,45 @@ export function loginPasswordChangeHandler(setPassword, setValidationErrors) {
     };
 }
 
-//방 생성 모달 태그 입력 필드 길이 유효성 검사
+//방 생성 모달 태그 이름 길이 유효성 검사
 export const validateTagLength = (tag) => {
     if (tag.length > 15) {
         return '태그 이름은 15자 이하이어야 합니다.';
     }
     return null;
+};
+
+//방 생성 모달 이름 입력 유효성 검사
+export const validateTitle = (title) => {
+    if (!title) {
+        return '방 이름을 입력해주세요.';
+    }
+    if (title.length < 0 || title.length > 50) {
+        return '방 이름을 50자 이내로 입력해주세요.';
+    }
+    return '';
+};
+
+//방 생성 모달 한줄 설명 입력 유효성 검사
+export const validateDescription = (description) => {
+    if (description === '') {
+        return '한줄 설명을 입력해주세요.';
+    }
+    return '';
+};
+
+//방 생성 모달 참가자 수 입력 유효성 검사
+export const validateMaxParticipants = (maxParticipants) => {
+    if (maxParticipants < 2 || maxParticipants > 4) {
+        return '최대 참가자 수는 2명에서 4명 사이여야 합니다.';
+    }
+    return '';
+};
+
+//방 생성 모달 태그 숫자 유효성 검사 
+export const validateTagNumber = (tags) => {
+    if (tags.length === 0) {
+        return '적어도 하나의 태그를 추가해야 합니다.'
+    }
+    return '';
 };
