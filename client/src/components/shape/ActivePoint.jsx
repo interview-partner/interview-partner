@@ -10,8 +10,8 @@ const Container = styled.div`
 `
 
 const OutCircle = styled.div`
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     background-color: ${COLORS.sky_blue};
     border-radius: 50%;
     display: flex; 
@@ -21,8 +21,8 @@ const OutCircle = styled.div`
 `
 
 const InnerCircle = styled.div`
-    width: 16px;
-    height: 16px;
+    width: 12px;
+    height: 12px;
     background-color: white;
     border-radius: 50%;
     display: flex; 

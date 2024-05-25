@@ -13,52 +13,60 @@ const Container = styled.div`
 `;
 
 const ProgressBar = styled.div`
-    display: flex;
     position: relative;
     width: 80%;
     height: 12px;
     margin: 0 24px;
-    z-index: 1;
+`;
+
+const FilledBar = styled.div`
+    position: absolute;
+    height: 100%;
     background-color: rgba(98, 174, 213, 0.25);
+    width: ${({ currentIndex }) => `${currentIndex * 33.5}%`};
+    transition: width 0.5s ease-in-out;
 `;
 
 const PointContainer = styled.div`
     position: absolute;
-    top: -30px; 
+    top: -30px;
     left: ${({ left }) => left};
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 `;
 
 const Label = styled.div`
-    margin-bottom: 8px;  
+    margin-bottom: 8px;
     font-size: 14px;
-    color: ${COLORS.font_black};  
+    color: ${COLORS.font_black};
     white-space: nowrap;
 `;
 
-
-function SelectInterviewInfo() {
+function SelectInterviewInfo({ currentIndex }) {
     return (
         <Container>
             <ProgressBar>
+                <FilledBar currentIndex={currentIndex} />
                 <PointContainer left="-2%">
                     <Label>면접 설정</Label>
-                    <UnActivePoint />
+                    {currentIndex === 0 ? <ActivePoint /> : <UnActivePoint />}
                 </PointContainer>
                 <PointContainer left="30%">
                     <Label>개인 맞춤 설정</Label>
-                    <UnActivePoint />
+                    {currentIndex === 1 ? <ActivePoint /> : <UnActivePoint />}
                 </PointContainer>
                 <PointContainer left="64%">
                     <Label>이력서 제출</Label>
-                    <UnActivePoint />
+                    {currentIndex === 2 ? <ActivePoint /> : <UnActivePoint />}
                 </PointContainer>
                 <PointContainer left="97%">
                     <Label>면접 준비</Label>
-                    <UnActivePoint />
+                    {currentIndex === 3 ? <ActivePoint /> : <UnActivePoint />}
                 </PointContainer>
             </ProgressBar>
         </Container>
     );
 }
-  
+
 export default SelectInterviewInfo;
