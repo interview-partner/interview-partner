@@ -262,7 +262,7 @@ export function LoginForm() {
   return (
     <>
       <BoxContainer>
-        <button onClick={testAuth}> 인증테스트 버튼</button>
+        {/* <button onClick={testAuth}> 인증테스트 버튼</button> */}
         <FormContainer onSubmit={handleSubmit} noValidate>
           <FormField type="email" placeholder="이메일을 입력해주세요" value={email} onChange={loginEmailChangeHandler(setEmail, setValidationErrors)} error={validationErrors.email} />
           <FormField type="password" placeholder="비밀번호를 입력해주세요" value={password} onChange={loginPasswordChangeHandler(setPassword, setValidationErrors)} error={validationErrors.password} />

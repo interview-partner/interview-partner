@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 import { COLORS } from '../../styles/colors.jsx';
 
+export const IconImage = styled.img`
+  width: 100%;
+`;
+
 export const ModalBackdrop = styled.div`
   position: fixed;
   top: 0;
@@ -57,6 +61,7 @@ export const FormText = styled.p`
 export const DropdownWrapper = styled.div`
   position: relative;
   width: 100%;
+  margin-bottom: 10px;
 `;
 
 export const DropdownInput = styled.input`
@@ -111,7 +116,7 @@ export const DropdownItem = styled.li`
 export const TagList = styled.div`
   display: flex;
   flex-wrap: wrap;
-  margin-top: 10px;
+  margin-bottom: 10px;
 `;
 
 export const Tag = styled.span`

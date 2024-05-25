@@ -3,7 +3,6 @@ import { Marginer } from '../../components/common/marginer/marginer.jsx';
 import { rooms } from '../../testdata/testroom.js';
 import ModalComponent from './ModalComponent.jsx';
 import { Link } from 'react-router-dom';
-import { addTag, removeTag } from '../../utils/tagUtils.jsx';
 import {
   PageContainer, Header, HeaderContainer, HeaderTitle, MainTitle, SubTitle, CreateRoomButton,
   CardContainer, Card, CardHeader, CardTitle, TagContainer, Tag, CardBody, CardFooter,
@@ -13,8 +12,6 @@ import {
 function Mockupcommunity() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tags, setTags] = useState([]);
-  const [counter, setCounter] = useState(0);
   const roomsPerPage = 6;
   const totalPages = Math.ceil(rooms.length / roomsPerPage);
   const currentRooms = rooms.slice((currentPage - 1) * roomsPerPage, currentPage * roomsPerPage);
@@ -22,21 +19,7 @@ function Mockupcommunity() {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const handleAddTag = (e) => {
-    const selectedTag = e.target.value;
-    addTag(tags, setTags, selectedTag, 3);
-  };
-
-  const handleRemoveTag = (tag) => {
-    removeTag(tags, setTags, tag);
-  };
-
-  const handleCounterChange = (e, amount) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setCounter((prev) => Math.min(4, Math.max(0, prev + amount)));
-  };
-
+  //페이지네이션
   const handleChangePage = (page) => {
     setCurrentPage(page);
   };
@@ -99,13 +82,6 @@ function Mockupcommunity() {
       <ModalComponent
         isModalOpen={isModalOpen}
         closeModal={closeModal}
-        tags={tags}
-        setTags={setTags}
-        handleAddTag={handleAddTag}
-        handleRemoveTag={handleRemoveTag}
-        counter={counter}
-        setCounter={setCounter}
-        handleCounterChange={handleCounterChange}
       />
     </PageContainer>
   );
