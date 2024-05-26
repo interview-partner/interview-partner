@@ -7,33 +7,39 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 300px;
+  height: 628px;
   width: 100%;
 `;
 
 const Carousel = styled.div`
   display: flex;
+  justify-content: center;
   overflow: hidden;
-  width: 80%;
-  height: 200px;
+  width: 90%;
+  height: 628px;
   position: relative;
 `;
 
 const CardContainer = styled.div`
   display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-left: 180px;
   transition: transform 0.5s ease-in-out;
-  transform: ${({ currentIndex }) => `translateX(-${currentIndex * 100}%)`};
+  transform: ${({ currentIndex }) => `translateX(-${currentIndex * 83}%)`};
+  width: 500%;
 `;
 
 const Card = styled.div`
-  min-width: 100%;
-  height: 100%;
-  background-color: ${COLORS.sky_blue};
+  min-width: 80%;
+  height: 90%;
+  background-color: white;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 24px;
-  color: white;
+  border: 1px solid ${COLORS.light_gray}; 
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2);
 `;
 
 const Button = styled.button`

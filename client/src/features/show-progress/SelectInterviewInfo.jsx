@@ -70,3 +70,4 @@ function SelectInterviewInfo({ currentIndex }) {
 }
 
 export default SelectInterviewInfo;
+
