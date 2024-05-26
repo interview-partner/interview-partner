@@ -2,6 +2,7 @@ import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { COLORS } from "../../styles/colors";
 import RoundButton from '../../components/button/RoundButton';
+import InputInterviewSetting from './InputInterviewSetting';
 
 const fadeIn = keyframes`
   from {
@@ -98,7 +99,7 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
       <Carousel>
         <CardContainer currentIndex={currentIndex}>
           <Card>
-            <div>Card 1</div>
+            <InputInterviewSetting />
             {currentIndex === 0 && (
               <ButtonContainer>
                 <RoundButton
