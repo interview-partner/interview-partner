@@ -18,6 +18,26 @@ const Carousel = styled.div`
   width: 90%;
   height: 628px;
   position: relative;
+
+  
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100px;
+    z-index: 1;
+  }
+
+  &::before {
+    left: 0;
+    background: linear-gradient(to right, white, transparent);
+  }
+
+  &::after {
+    right: 0;
+    background: linear-gradient(to left, white, transparent);
+  }
 `;
 
 const CardContainer = styled.div`
