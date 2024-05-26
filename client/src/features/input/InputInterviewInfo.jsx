@@ -1,6 +1,16 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { COLORS } from "../../styles/colors";
+import RoundButton from '../../components/button/RoundButton';
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
 
 const Container = styled.div`
   display: flex;
@@ -19,7 +29,6 @@ const Carousel = styled.div`
   height: 628px;
   position: relative;
 
-  
   &::before, &::after {
     content: '';
     position: absolute;
@@ -52,29 +61,23 @@ const CardContainer = styled.div`
 
 const Card = styled.div`
   min-width: 80%;
-  height: 90%;
+  height: 85%;
   background-color: white;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
   border: 1px solid ${COLORS.light_gray}; 
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2);
+  padding: 20px;
 `;
 
-const Button = styled.button`
-  margin: 10px;
-  padding: 10px;
-  background-color: ${COLORS.sky_blue};
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-
-  &:disabled {
-    background-color: ${COLORS.light_gray};
-    cursor: not-allowed;
-  }
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  animation: ${fadeIn} 0.5s ease-in-out;
 `;
 
 function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
@@ -94,20 +97,100 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
     <Container>
       <Carousel>
         <CardContainer currentIndex={currentIndex}>
-          <Card>Card 1</Card>
-          <Card>Card 2</Card>
-          <Card>Card 3</Card>
-          <Card>Card 4</Card>
+          <Card>
+            <div>Card 1</div>
+            {currentIndex === 0 && (
+              <ButtonContainer>
+                <RoundButton
+                  onClick={prevCard}
+                  disabled={currentIndex === 0}
+                  color="white"
+                  bgColor={COLORS.blue_black}
+                >
+                  Previous
+                </RoundButton>
+                <RoundButton
+                  onClick={nextCard}
+                  disabled={currentIndex === 3}
+                  color="white"
+                  bgColor={COLORS.blue_black}
+                >
+                  Next
+                </RoundButton>
+              </ButtonContainer>
+            )}
+          </Card>
+          <Card>
+            <div>Card 2</div>
+            {currentIndex === 1 && (
+              <ButtonContainer>
+                <RoundButton
+                  onClick={prevCard}
+                  disabled={currentIndex === 0}
+                  color="white"
+                  bgColor={COLORS.blue_black}
+                >
+                  Previous
+                </RoundButton>
+                <RoundButton
+                  onClick={nextCard}
+                  disabled={currentIndex === 3}
+                  color="white"
+                  bgColor={COLORS.blue_black}
+                >
+                  Next
+                </RoundButton>
+              </ButtonContainer>
+            )}
+          </Card>
+          <Card>
+            <div>Card 3</div>
+            {currentIndex === 2 && (
+              <ButtonContainer>
+                <RoundButton
+                  onClick={prevCard}
+                  disabled={currentIndex === 0}
+                  color="white"
+                  bgColor={COLORS.blue_black}
+                >
+                  Previous
+                </RoundButton>
+                <RoundButton
+                  onClick={nextCard}
+                  disabled={currentIndex === 3}
+                  color="white"
+                  bgColor={COLORS.blue_black}
+                >
+                  Next
+                </RoundButton>
+              </ButtonContainer>
+            )}
+          </Card>
+          <Card>
+            <div>Card 4</div>
+            {currentIndex === 3 && (
+              <ButtonContainer>
+                <RoundButton
+                  onClick={prevCard}
+                  disabled={currentIndex === 0}
+                  color="white"
+                  bgColor={COLORS.blue_black}
+                >
+                  Previous
+                </RoundButton>
+                <RoundButton
+                  onClick={nextCard}
+                  disabled={currentIndex === 3}
+                  color="white"
+                  bgColor={COLORS.blue_black}
+                >
+                  Next
+                </RoundButton>
+              </ButtonContainer>
+            )}
+          </Card>
         </CardContainer>
       </Carousel>
-      <div>
-        <Button onClick={prevCard} disabled={currentIndex === 0}>
-          Previous
-        </Button>
-        <Button onClick={nextCard} disabled={currentIndex === 3}>
-          Next
-        </Button>
-      </div>
     </Container>
   );
 }
