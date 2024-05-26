@@ -26,3 +26,37 @@ export const createRoom = async (roomData) => {
         throw new Error(errorMessage);
     }
 };
+
+/**
+ * 방 목록을 조회하는 함수
+ * 
+ * @param {string} status - 조회할 방의 상태 ('open' 또는 'closed')
+ * @param {number} page - 조회할 페이지 번호 (0부터 시작)
+ * @returns {Promise<Object>} 방 목록 조회 성공 시 응답 데이터 반환
+ * @throws {Error} 방 목록 조회 실패 시 오류 메시지 반환
+ */
+export const fetchRooms = async (status = 'open', page = 0) => {
+    try {
+        const response = await api.get('/rooms', {
+            params: {
+                status,
+                page
+            },
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+            }
+        });
+
+        return response.data;
+    } catch (error) {
+        let errorMessage = "Unknown error occurred";
+
+        if (error.response && error.response.status === 400) {
+            errorMessage = "유효하지 않은 형식입니다.";
+        } else if (error.response && error.response.status === 500) {
+            errorMessage = "서버 오류가 발생했습니다.";
+        }
+
+        throw new Error(errorMessage);
+    }
+};
