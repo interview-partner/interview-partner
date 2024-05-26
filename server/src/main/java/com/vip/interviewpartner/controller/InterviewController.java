@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,6 @@ import java.io.IOException;
 public class InterviewController {
 
     private final AiInterviewCreateService aiInterviewCreateService;
-    private final S3DownloadService s3DownloadService;
 
     /**
      * 인터뷰 생성 매서드입니다.
@@ -46,16 +46,15 @@ public class InterviewController {
             description = "AI 면접 생성",
             responses = {
                     @ApiResponse(responseCode = "201", description = "면접 생성 성공"),
-                    @ApiResponse(responseCode = "400", description = "S3 객체 다운로드 오류", content = @Content),
-                    @ApiResponse(responseCode = "400", description = "S3 객체 읽기 오류", content = @Content),
+                    @ApiResponse(responseCode = "400", description = "S3 및 GPT API 오류", content = @Content),
             }
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiCommonResponse<Long> createInterview(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody AiInterviewRequest aiInterviewRequest) {
+    public ApiCommonResponse<Long> createInterview(@AuthenticationPrincipal CustomUserDetails customUserDetails, @Valid @RequestBody AiInterviewRequest aiInterviewRequest) {
 
-        Long Interview_id = aiInterviewCreateService.create(customUserDetails.getMemberId(), aiInterviewRequest);
-        return ApiCommonResponse.successResponse(Interview_id);
+        Long InterviewId = aiInterviewCreateService.create(customUserDetails.getMemberId(), aiInterviewRequest);
+        return ApiCommonResponse.successResponse(InterviewId);
     }
 
 }
