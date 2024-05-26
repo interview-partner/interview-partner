@@ -29,7 +29,7 @@ public class AiInterviewCreateService {
     private final InterviewRepository interviewRepository;
     private final QuestionRepository questionRepository;
     private final S3DownloadService s3DownloadService;
-    private final MakingQuestionService makingQuestionService;
+    private final QuestionMakingService makingQuestionService;
 
     /**
      * AI 인터뷰를 생성을 처리하는 매서드입니다.
@@ -44,16 +44,16 @@ public class AiInterviewCreateService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        Resume resume = resumeRepository.findById(aiInterviewRequest.getResume_id())
+        Resume resume = resumeRepository.findById(aiInterviewRequest.getResumeId())
                 .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
 
         Interview interview = aiInterviewRequest.toEntity(member, resume);
 
         interviewRepository.save(interview);
 
-        String resume_txt = s3DownloadService.getFileContent(resume.getTranslatedFilePath());
+        String resumeTxt = s3DownloadService.getFileContent(resume.getTranslatedFilePath());
 
-        List<String> contents = makingQuestionService.make(resume_txt,aiInterviewRequest.getQuestionNumber());
+        List<String> contents = makingQuestionService.make(resumeTxt,aiInterviewRequest.getQuestionNumber());
 
         for(String content : contents){
             Question question = new Question(interview, content);
