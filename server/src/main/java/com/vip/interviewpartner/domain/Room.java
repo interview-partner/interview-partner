@@ -95,4 +95,12 @@ public class Room extends BaseTimeEntity {
     public boolean isFull(int currentParticipantCount) {
         return maxParticipants <= currentParticipantCount;
     }
+
+    /**
+     * 방의 상태를 CLOSED로 변경합니다.
+     * 이 메서드는 방을 닫기 위해 사용됩니다.
+     */
+    public void close() {
+        this.status = RoomStatus.CLOSED;
+    }
 }
