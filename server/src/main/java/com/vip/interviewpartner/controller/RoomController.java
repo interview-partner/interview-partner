@@ -3,6 +3,7 @@ package com.vip.interviewpartner.controller;
 import com.vip.interviewpartner.common.ApiCommonResponse;
 import com.vip.interviewpartner.domain.RoomStatus;
 import com.vip.interviewpartner.dto.CustomUserDetails;
+import com.vip.interviewpartner.dto.PageCustom;
 import com.vip.interviewpartner.dto.RoomCreateRequest;
 import com.vip.interviewpartner.dto.RoomCreateResponse;
 import com.vip.interviewpartner.dto.RoomEnterRequest;
@@ -18,7 +19,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -73,10 +73,10 @@ public class RoomController {
     @SecurityRequirements(value = {})
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public ApiCommonResponse<List<RoomResponseDTO>> createRoom(@Parameter(description = "조회할 방의 상태(open OR closed)", required = true) @RequestParam(defaultValue = "open") String status,
+    public ApiCommonResponse<PageCustom<RoomResponseDTO>> createRoom(@Parameter(description = "조회할 방의 상태(open OR closed)", required = true) @RequestParam(defaultValue = "open") String status,
                                                                @Parameter(description = "페이지 정보. 기본값: size=6, sort=createDate, direction=DESC") @PageableDefault(size = 6, sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable) {
         RoomStatus roomStatus = RoomStatus.fromString(status);
-        List<RoomResponseDTO> rooms = roomLookupService.getRoomsByStatus(roomStatus, pageable);
+        PageCustom<RoomResponseDTO> rooms = roomLookupService.getRoomsByStatus(roomStatus, pageable);
         return ApiCommonResponse.successResponse(rooms);
     }
 
