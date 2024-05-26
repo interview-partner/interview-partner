@@ -25,10 +25,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Getter
-public class RoomParticipant {
+public class RoomParticipant extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
@@ -42,8 +42,7 @@ public class RoomParticipant {
     @JoinColumn(name = "resume_id")
     private Resume resume;
 
-    @CreatedDate
-    @Column(name = "join_date", updatable = false)
+    @Column(name = "join_date")
     private LocalDateTime joinDate;
 
     @Column(name = "leave_date")
@@ -54,5 +53,21 @@ public class RoomParticipant {
         this.room = room;
         this.member = member;
         this.resume = resume;
+    }
+
+    /**
+     * 사용자가 방에 입장한 시각을 설정합니다.
+     * @param joinDate 입장 시각
+     */
+    public void join(LocalDateTime joinDate) {
+        this.joinDate = joinDate;
+    }
+
+    /**
+     * 사용자가 방에 퇴장한 시각을 설정합니다.
+     * @param leaveDate 퇴장 시각
+     */
+    public void leave(LocalDateTime leaveDate) {
+        this.leaveDate = leaveDate;
     }
 }
