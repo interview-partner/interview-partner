@@ -7,7 +7,6 @@ import com.vip.interviewpartner.domain.Resume;
 import com.vip.interviewpartner.domain.Room;
 import com.vip.interviewpartner.domain.RoomParticipant;
 import com.vip.interviewpartner.dto.RoomEnterUserData;
-import com.vip.interviewpartner.repository.RoomParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,12 +25,13 @@ public class RoomEnterService {
     private final ResumeService resumeService;
     private final RoomService roomService;
     private final OpenViduService openViduService;
-    private final RoomParticipantRepository roomParticipantRepository;
+    private final RoomParticipantService roomParticipantService;
 
     /**
      * 사용자가 방에 입장하는 메서드입니다.
+     *
      * @param memberId 회원 ID
-     * @param roomId 방 ID
+     * @param roomId   방 ID
      * @param resumeId 이력서 ID
      * @return 생성된 방 입장 토큰
      * @throws CustomException 방이 가득 찬 경우 발생
@@ -42,8 +42,8 @@ public class RoomEnterService {
         Resume resume = resumeService.getResumeByIdAndValidateOwnership(resumeId, memberId);
         Room room = roomService.getRoomById(roomId);
         validateRoomCapacity(room);
-        RoomEnterUserData userData = createRoomEnterUserData(member, resume);
-        saveRoomParticipant(member, resume, room);
+        RoomParticipant roomParticipant = roomParticipantService.save(member, resume, room);
+        RoomEnterUserData userData = RoomEnterUserData.create(member, resume, room, roomParticipant);
         return openViduService.createToken(room.getSessionId(), userData.toJson());
     }
 
@@ -57,35 +57,6 @@ public class RoomEnterService {
         if (room.isFull(currentParticipantCount)) {
             throw new CustomException(ErrorCode.ROOM_FULL);
         }
-    }
-
-    /**
-     * 방 입장에 필요한 사용자 데이터를 생성합니다.
-     * @param member 회원 객체
-     * @param resume 이력서 객체
-     * @return 생성된 RoomEnterUserData 객체
-     */
-    private RoomEnterUserData createRoomEnterUserData(Member member, Resume resume) {
-        return RoomEnterUserData.builder()
-                .memberId(member.getId())
-                .nickname(member.getNickname())
-                .resumeUrl(resume.getFilePath())
-                .build();
-    }
-
-    /**
-     * 방 참가자 정보를 저장합니다.
-     * @param member 회원 객체
-     * @param resume 이력서 객체
-     * @param room 방 객체
-     */
-    private void saveRoomParticipant(Member member, Resume resume, Room room) {
-        RoomParticipant roomParticipant = RoomParticipant.builder()
-                .member(member)
-                .room(room)
-                .resume(resume)
-                .build();
-        roomParticipantRepository.save(roomParticipant);
     }
 
 }
