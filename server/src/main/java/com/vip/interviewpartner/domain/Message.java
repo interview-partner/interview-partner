@@ -7,7 +7,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Message extends BaseCreateDateEntity {
+public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -32,4 +34,14 @@ public class Message extends BaseCreateDateEntity {
     private Member sender;
 
     private String content;
+
+    private LocalDateTime createDate;
+
+    @Builder
+    public Message(Room room, Member sender, String content, LocalDateTime createDate) {
+        this.room = room;
+        this.sender = sender;
+        this.content = content;
+        this.createDate = createDate;
+    }
 }
