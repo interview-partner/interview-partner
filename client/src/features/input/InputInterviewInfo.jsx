@@ -3,6 +3,8 @@ import styled, { keyframes } from 'styled-components';
 import { COLORS } from "../../styles/colors";
 import RoundButton from '../../components/button/RoundButton';
 import InputInterviewSetting from './InputInterviewSetting';
+import InputPersonalInfo from '../../features/input/InputPersonalInfo';
+import Inputready from '../../features/input/Inputready';
 
 const fadeIn = keyframes`
   from {
@@ -122,7 +124,7 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
             )}
           </Card>
           <Card>
-            <div>Card 2</div>
+            <InputPersonalInfo />
             {currentIndex === 1 && (
               <ButtonContainer>
                 <RoundButton
@@ -145,7 +147,7 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
             )}
           </Card>
           <Card>
-            <div>Card 3</div>
+            <div>디자인 수정필요</div>
             {currentIndex === 2 && (
               <ButtonContainer>
                 <RoundButton
@@ -168,7 +170,7 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
             )}
           </Card>
           <Card>
-            <div>Card 4</div>
+            <Inputready />
             {currentIndex === 3 && (
               <ButtonContainer>
                 <RoundButton

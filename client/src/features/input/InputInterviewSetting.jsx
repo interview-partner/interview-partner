@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
 import SmallsquareButton from '../../components/button/smallsquareButton';
-import CounterButton from '../../components/button/counterButton'; // Counter 컴포넌트를 가져옴
+import CounterButton from '../../components/button/counterButton'; 
 import CounterOne from "../../assets/icons/counter_1.png";
 import CounterTwo from "../../assets/icons/counter_2.png";
 import CounterThree from "../../assets/icons/counter_3.png";
@@ -25,7 +25,7 @@ const Title = styled.div`
 const SettingContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 `;
 
 const SemiTitle = styled.div`
