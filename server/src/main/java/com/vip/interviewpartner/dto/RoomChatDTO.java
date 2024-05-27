@@ -9,6 +9,9 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * RoomChatDTO 클래스는 채팅 메시지의 데이터 전송 객체입니다.
+ */
 @Getter
 @Slf4j
 @ToString
@@ -19,6 +22,7 @@ public class RoomChatDTO {
 
     /**
      * JSON 문자열을 RoomChatDTO 객체로 변환합니다.
+     * Deserialization 중에 알 수 없는 속성은 무시합니다.
      *
      * @param json JSON 문자열
      * @return RoomChatDTO 객체
