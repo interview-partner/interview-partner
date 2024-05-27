@@ -60,3 +60,55 @@ export const fetchRooms = async (status = 'open', page = 0) => {
         throw new Error(errorMessage);
     }
 };
+
+/**
+ * 방에 입장하기 위한 API 호출
+ * 
+ * @param {number} roomId - 방 ID
+ * @param {number} resumeId - 선택된 이력서 ID
+ * @returns {Promise<string>} - 방 입장 토큰
+ * @throws {Error} - 오류 발생 시 오류 메시지 반환
+ */
+export const enterRoom = async (roomId, resumeId) => {
+    const requestBody = { resumeId };
+
+    try {
+        const response = await api.post(`/rooms/${roomId}/connections`, requestBody, {
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+            }
+        });
+
+        if (response.data && response.data.data && response.data.data.token) {
+            return response.data.data.token;
+        } else {
+            throw new Error("Token not received");
+        }
+    } catch (error) {
+        let errorMessage = "Unknown error occurred";
+
+        if (error.response) {
+            switch (error.response.status) {
+                case 400:
+                    errorMessage = "유효하지 않은 형식입니다.";
+                    break;
+                case 404:
+                    errorMessage = "해당 리소스가 존재하지 않습니다.";
+                    break;
+                case 409:
+                    errorMessage = "방이 꽉 찼습니다.";
+                    break;
+                case 410:
+                    errorMessage = "방이 종료되었습니다.";
+                    break;
+                case 500:
+                    errorMessage = "서버 에러가 발생했습니다.";
+                    break;
+                default:
+                    errorMessage = "알 수 없는 오류가 발생했습니다.";
+            }
+        }
+
+        throw new Error(errorMessage);
+    }
+};
