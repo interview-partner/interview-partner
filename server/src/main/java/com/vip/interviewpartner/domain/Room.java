@@ -85,4 +85,14 @@ public class Room extends BaseTimeEntity {
             roomTagToRemove.setRoom(null);
         }
     }
+
+    /**
+     * 현재 참가자 수를 기준으로 방이 가득 찼는지 여부를 확인합니다.
+     *
+     * @param currentParticipantCount 현재 참가자 수
+     * @return 방이 가득 찼다면 true, 그렇지 않다면 false
+     */
+    public boolean isFull(int currentParticipantCount) {
+        return maxParticipants <= currentParticipantCount;
+    }
 }

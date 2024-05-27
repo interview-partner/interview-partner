@@ -2,7 +2,7 @@ CREATE TABLE `tag`
 (
     `id`         int                                     NOT NULL AUTO_INCREMENT,
     `name`       varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-    `usageCount` int                                     NOT NULL DEFAULT 0,
+    `usage_count` int                                     NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`),
     UNIQUE KEY `UK_NAME` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

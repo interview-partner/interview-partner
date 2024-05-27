@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -48,4 +49,10 @@ public class RoomParticipant {
     @Column(name = "leave_date")
     private LocalDateTime leaveDate;
 
+    @Builder
+    public RoomParticipant(Room room, Member member, Resume resume) {
+        this.room = room;
+        this.member = member;
+        this.resume = resume;
+    }
 }

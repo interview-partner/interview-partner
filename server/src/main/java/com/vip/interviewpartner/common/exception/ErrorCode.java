@@ -27,7 +27,9 @@ public enum ErrorCode {
     UNSUPPORTED_SOCIAL_MEDIA(400, "지원하지 않는 소셜 미디어입니다."),
     INVALID_FIREBASE_ID_TOKEN(400, "유효하지 않는 Firebase 토큰입니다."),
     DUPLICATE_TAG_NAME(409, "이미 존재하는 태그 이름입니다."),
-    RESOURCE_NOT_FOUND(404, "요청한 리소스가 존재하지 않습니다.");
+    RESOURCE_NOT_FOUND(404, "요청한 리소스가 존재하지 않습니다."),
+    ROOM_CLOSED(410, "방이 종료되었습니다."),
+    ROOM_FULL(409, "방이 꽉 찼습니다.");
 
     private final int status;
     private final String message;
