@@ -2,6 +2,7 @@ package com.vip.interviewpartner.repository;
 
 import com.vip.interviewpartner.domain.Room;
 import com.vip.interviewpartner.domain.RoomStatus;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Page;
@@ -19,4 +20,7 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
      */
     @EntityGraph(attributePaths = {"roomTags", "roomTags.tag"})
     Page<Room> findByStatus(RoomStatus status, Pageable pageable);
+
+    Optional<Room> findBySessionId(String sessionId);
+
 }

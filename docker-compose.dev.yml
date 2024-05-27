@@ -60,6 +60,10 @@ services:
     environment:
       OPENVIDU_SECRET: 5OAgTGJ8TCtilux7lL8x9C5JFyNpUMpPShP5j4zCkQ
       DOMAIN_OR_PUBLIC_IP: localhost
+      OPENVIDU_WEBHOOK: true
+      OPENVIDU_WEBHOOK_ENDPOINT: http://server-container:8080/webhook
+      OPENVIDU_WEBHOOK_HEADERS: '["Authorization: Basic cm9vdDpyb290MTIzNA=="]'
+      OPENVIDU_WEBHOOK_EVENTS: '["sessionDestroyed","participantJoined", "participantLeft"]'
     networks:
       - network
 
