@@ -4,9 +4,9 @@ import {
   FormText, DropdownWrapper, DropdownInput, DropdownMenu, DropdownItem, TagList,
   Tag, RemoveTagButton, CounterContainer, CounterButton, CounterInput,
   CreateRoomButton, Input, ErrorMessage, IconImage
-} from './ModalStyles';
+} from './CreateRoomModalStyles.jsx';
 import { Marginer } from '../../components/common/marginer/marginer.jsx';
-import { fetchTags, createTag } from '../../../src/services/tagService';
+import { fetchTags, createTag } from '../../services/tagService.js';
 import { createRoom } from '../../services/roomService.js';
 import { validateTagLength, validateTitle, validateDescription, validateMaxParticipants, validateTagNumber } from '../../utils/validators.jsx';
 import { addTag, removeTag } from '../../utils/tagUtils.jsx';
@@ -174,13 +174,15 @@ const ModalComponent = ({
         <ModalContainer onClick={(e) => e.stopPropagation()}>
           <ModalContent>
             <ModalCloseButton onClick={closeModal}>
-              <IconImage src={closeIcon} alt="Voice Icon" />
+              <IconImage src={closeIcon} alt="Close Icon" />
             </ModalCloseButton>
+
             <Marginer direction="vertical" margin={20} />
             <header style={{ textAlign: 'left', width: '500px' }}>
               <h1>방 만들기</h1>
             </header>
             <Marginer direction="vertical" margin={20} />
+
             <FormContainer onSubmit={(e) => e.preventDefault()}>
               <FormText>방 이름</FormText>
               <FormField
