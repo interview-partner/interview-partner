@@ -29,7 +29,11 @@ public enum ErrorCode {
     DUPLICATE_TAG_NAME(409, "이미 존재하는 태그 이름입니다."),
     RESOURCE_NOT_FOUND(404, "요청한 리소스가 존재하지 않습니다."),
     ROOM_CLOSED(410, "방이 종료되었습니다."),
-    ROOM_FULL(409, "방이 꽉 찼습니다.");
+    ROOM_FULL(409, "방이 꽉 찼습니다."),
+    RESUME_NOT_FOUND(400, "유효하지 않은 이력서입니다."),
+    S3_READ_FAILURE(400, "S3 객체를 읽는 중 오류가 발생했습니다."),
+    S3_DOWNLOAD_FAILURE(400, "S3 객체를 다운받는 중 오류가 발생했습니다."),
+    GPT_REQUEST_FAILURE(400, "GPT API 리퀘스트 중 오류가 발생했습니다.");
 
     private final int status;
     private final String message;
