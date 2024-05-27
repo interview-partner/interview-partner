@@ -13,6 +13,7 @@ public enum ErrorCode {
     AUTHENTICATION_REQUIRED(401, "인증이 필요합니다."),
     FORBIDDEN(403, "권한이 없습니다."),
     SERVER_ERROR(500, "서버에 에러가 발생하였습니다."),
+    OPENVIDU_SERVER_ERROR(500, "OpenVidu 서버에 에러가 발생하였습니다."),
     DUPLICATE_EMAIL(409, "Email is already in use."),
     DUPLICATE_NICKNAME(409, "Nickname is already in use."),
     LOGIN_FAILURE(401, "로그인에 실패했습니다."),
