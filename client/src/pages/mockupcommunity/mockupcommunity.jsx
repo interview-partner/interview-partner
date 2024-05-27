@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Marginer } from '../../components/common/marginer/marginer.jsx';
 import ModalComponent from './ModalComponent.jsx';
 import { Link } from 'react-router-dom';

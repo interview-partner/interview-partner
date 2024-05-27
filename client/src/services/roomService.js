@@ -29,7 +29,7 @@ export const createRoom = async (roomData) => {
 
 /**
  * 방 목록을 조회하는 함수
- * 
+ *
  * @param {string} status - 조회할 방의 상태 ('open' 또는 'closed')
  * @param {number} page - 조회할 페이지 번호 (0부터 시작)
  * @returns {Promise<Object>} 방 목록 조회 성공 시 응답 데이터 반환
