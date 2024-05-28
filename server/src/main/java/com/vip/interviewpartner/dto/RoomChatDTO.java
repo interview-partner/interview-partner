@@ -1,7 +1,6 @@
 package com.vip.interviewpartner.dto;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vip.interviewpartner.common.exception.CustomException;
 import com.vip.interviewpartner.common.exception.ErrorCode;
@@ -19,10 +18,10 @@ public class RoomChatDTO {
     private Long memberId;
     private Long roomId;
     private String content;
+    private String nickname;
 
     /**
      * JSON 문자열을 RoomChatDTO 객체로 변환합니다.
-     * Deserialization 중에 알 수 없는 속성은 무시합니다.
      *
      * @param json JSON 문자열
      * @return RoomChatDTO 객체
@@ -30,7 +29,6 @@ public class RoomChatDTO {
      */
     public static RoomChatDTO fromJson(String json) {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
             return objectMapper.readValue(json, RoomChatDTO.class);
         } catch (JsonProcessingException e) {
