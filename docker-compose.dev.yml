@@ -63,7 +63,7 @@ services:
       OPENVIDU_WEBHOOK: true
       OPENVIDU_WEBHOOK_ENDPOINT: http://server-container:8080/webhook
       OPENVIDU_WEBHOOK_HEADERS: '["Authorization: Basic cm9vdDpyb290MTIzNA=="]'
-      OPENVIDU_WEBHOOK_EVENTS: '["sessionDestroyed","participantJoined", "participantLeft"]'
+      OPENVIDU_WEBHOOK_EVENTS: '["sessionDestroyed","participantJoined", "participantLeft", "signalSent"]'
     networks:
       - network
 

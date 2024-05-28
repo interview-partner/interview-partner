@@ -18,8 +18,8 @@
 
 package com.vip.interviewpartner.service;
 
+import static com.vip.interviewpartner.common.exception.ErrorCode.OPENVIDU_SERVER_ERROR;
 import static com.vip.interviewpartner.common.exception.ErrorCode.ROOM_CLOSED;
-import static com.vip.interviewpartner.common.exception.ErrorCode.SERVER_ERROR;
 
 import com.vip.interviewpartner.common.exception.CustomException;
 import io.openvidu.java.client.Connection;
@@ -123,6 +123,6 @@ public class OpenViduService {
      */
     private CustomException handleOpenViduException(Exception e) {
         log.error("OpenVidu error: {}", e.getMessage(), e);
-        return new CustomException(SERVER_ERROR);
+        return new CustomException(OPENVIDU_SERVER_ERROR);
     }
 }

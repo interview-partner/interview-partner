@@ -1,11 +1,23 @@
 package com.vip.interviewpartner.service;
 
+import static com.vip.interviewpartner.common.constants.Constants.CHAT;
+import static com.vip.interviewpartner.common.constants.Constants.DATA;
+import static com.vip.interviewpartner.common.constants.Constants.EVENT;
+import static com.vip.interviewpartner.common.constants.Constants.SERVER_DATA;
+import static com.vip.interviewpartner.common.constants.Constants.SESSION_ID;
+import static com.vip.interviewpartner.common.constants.Constants.TYPE;
+
+import com.vip.interviewpartner.common.constants.WebhookEvent;
+import com.vip.interviewpartner.common.util.DateTimeUtil;
+import com.vip.interviewpartner.domain.Member;
+import com.vip.interviewpartner.domain.Message;
+import com.vip.interviewpartner.domain.Room;
+import com.vip.interviewpartner.dto.RoomChatDTO;
 import com.vip.interviewpartner.dto.RoomEnterUserData;
+import com.vip.interviewpartner.repository.MessageRepository;
 import com.vip.interviewpartner.repository.RoomParticipantRepository;
 import com.vip.interviewpartner.repository.RoomRepository;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * WebhookService 클래스는 OpenVidu 웹훅 이벤트를 처리하는 서비스입니다.
- * 이 서비스는 방 세션이 종료되거나, 참가자가 입장 또는 퇴장할 때 호출됩니다.
+ * 이 서비스는 방 세션이 종료되거나, 참가자가 입장 또는 퇴장할 때, 채팅 시 호출됩니다.
  */
 @Service
 @RequiredArgsConstructor
@@ -23,20 +35,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class WebhookService {
 
+    private final MemberService memberService;
+    private final RoomService roomService;
     private final RoomRepository roomRepository;
     private final RoomParticipantRepository roomParticipantRepository;
+    private final MessageRepository messageRepository;
 
     @Value("${openvidu.webhook.auth-header}")
     private String authHeaderValue;
-
-    private static final String EVENT = "event";
-    private static final String SESSION_DESTROYED = "sessionDestroyed";
-    private static final String PARTICIPANT_JOINED = "participantJoined";
-    private static final String PARTICIPANT_LEFT = "participantLeft";
-    private static final String SESSION_ID = "sessionId";
-    private static final String SERVER_DATA = "serverData";
-    private static final String TIMESTAMP = "timestamp";
-    private static final String TIME_ZONE = "Asia/Seoul";
 
     /**
      * 웹훅 인증 헤더가 유효한지 확인합니다.
@@ -56,7 +62,7 @@ public class WebhookService {
     @Transactional
     public void handleWebhookEvent(Map<String, Object> payload) {
         String eventType = payload.get(EVENT).toString();
-        switch (eventType) {
+        switch (WebhookEvent.findByEventType(eventType)) {
             case SESSION_DESTROYED:
                 handleSessionDestroyed(payload);
                 break;
@@ -66,6 +72,9 @@ public class WebhookService {
             case PARTICIPANT_LEFT:
                 handleParticipantLeft(payload);
                 break;
+            case SIGNAL_SENT:
+                handleSignalSent(payload);
+                break;
             default:
                 log.warn("Unknown event type: {}", eventType);
         }
@@ -73,6 +82,7 @@ public class WebhookService {
 
     /**
      * 세션이 종료될 때 호출됩니다.
+     * 방 상태를 종료로 변경합니다.
      *
      * @param payload 웹훅 이벤트의 페이로드
      */
@@ -81,6 +91,7 @@ public class WebhookService {
         roomRepository.findBySessionId(sessionId).ifPresent(room -> {
             room.close();
         });
+        log.info("Room with session ID {} closed.", sessionId);
     }
 
     /**
@@ -91,9 +102,10 @@ public class WebhookService {
      */
     private void handleParticipantJoined(Map<String, Object> payload) {
         RoomEnterUserData serverData = RoomEnterUserData.fromJson(payload.get(SERVER_DATA).toString());
-        LocalDateTime joinDate = getDateTime(payload);
+        LocalDateTime joinDate = DateTimeUtil.extractTimestamp(payload);
         roomParticipantRepository.findById(serverData.getRoomParticipantId())
                 .ifPresent(roomParticipant -> roomParticipant.join(joinDate));
+        log.info("Participant joined (memberId: {}, roomId: {}).", serverData.getMemberId(), serverData.getRoomId());
     }
 
     /**
@@ -104,21 +116,44 @@ public class WebhookService {
      */
     private void handleParticipantLeft(Map<String, Object> payload) {
         RoomEnterUserData serverData = RoomEnterUserData.fromJson(payload.get(SERVER_DATA).toString());
-        LocalDateTime leaveDate = getDateTime(payload);
+        LocalDateTime leaveDate = DateTimeUtil.extractTimestamp(payload);
         roomParticipantRepository.findById(serverData.getRoomParticipantId())
                 .ifPresent(roomParticipant -> roomParticipant.leave(leaveDate));
+        log.info("Participant left (memberId: {}, roomId: {}).", serverData.getMemberId(), serverData.getRoomId());
     }
 
     /**
-     * payload 에서 타임스탬프를 추출하고 LocalDateTime 객체로 변환합니다.
+     * 시그널이 전송될 때 호출됩니다.
      *
      * @param payload 웹훅 이벤트의 페이로드
-     * @return 타임스탬프를 기반으로 생성된 LocalDateTime 객체
      */
-    private LocalDateTime getDateTime(Map<String, Object> payload) {
-        Long timestamp = (Long) payload.get(TIMESTAMP);
-        return Instant.ofEpochMilli(timestamp)
-                .atZone(ZoneId.of(TIME_ZONE))
-                .toLocalDateTime();
+    private void handleSignalSent(Map<String, Object> payload) {
+        String type = payload.get(TYPE).toString();
+        if (type.equals(CHAT)) {
+            handleChatSignal(payload);
+        } else {
+            log.warn("Unhandled signal type: {}", type);
+        }
+    }
+
+    /**
+     * 채팅 시그널이 전송 될 때 호출됩니다.
+     * 채팅을 저장합니다.
+     *
+     * @param payload 웹훅 이벤트의 페이로드
+     */
+    private void handleChatSignal(Map<String, Object> payload) {
+        String data = payload.get(DATA).toString();
+        LocalDateTime messageTimestamp = DateTimeUtil.extractTimestamp(payload);
+        RoomChatDTO roomChatDTO = RoomChatDTO.fromJson(data);
+        Member member = memberService.getMemberById(roomChatDTO.getMemberId());
+        Room room = roomService.getRoomById(roomChatDTO.getRoomId());
+        messageRepository.save(Message.builder()
+                .sender(member)
+                .room(room)
+                .content(roomChatDTO.getContent())
+                .createDate(messageTimestamp)
+                .build());
+        log.info("Chat message in room {} by memberId {}: {}", roomChatDTO.getRoomId(), roomChatDTO.getMemberId(), roomChatDTO.getContent());
     }
 }
