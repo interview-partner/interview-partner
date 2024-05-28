@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Marginer } from '../../components/common/marginer/marginer.jsx';
-import ModalComponent from './ModalComponent.jsx';
+import CreateRoomModalComponent from './CreateRoomModalComponent.jsx';
+import ResumeSelectModal from './ResumeSelectModal.jsx';
 import { Link } from 'react-router-dom';
 import {
   PageContainer, Header, HeaderContainer, HeaderTitle, MainTitle, SubTitle, CreateRoomButton,
@@ -34,6 +35,8 @@ function Mockupcommunity() {
   const [openPage, setOpenPage] = useState(1);
   const [closedPage, setClosedPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState(null);
   const [error, setError] = useState('');
   const [status, setStatus] = useState('open');
   const [openTotalPages, setOpenTotalPages] = useState(1);
@@ -45,6 +48,16 @@ function Mockupcommunity() {
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+  //이력서 모달
+  const openResumeModal = (room) => {
+    setSelectedRoom(room);
+    setIsResumeModalOpen(true);
+  };
+  const closeResumeModal = () => {
+    setIsResumeModalOpen(false);
+    setSelectedRoom(null);
+  };
 
   // 페이지네이션
   const handleChangePage = (page) => {
@@ -75,6 +88,12 @@ function Mockupcommunity() {
 
     loadRooms();
   }, [status, currentPage]);
+
+  const handleSelectResume = (filePath) => {
+    console.log(`Selected resume: ${filePath}`);
+    // Resume selection logic here
+    //closeResumeModal();
+  };
 
   return (
     <PageContainer>
@@ -114,9 +133,7 @@ function Mockupcommunity() {
             <CardFooter>
               <div>입장하기</div>
               <Marginer direction="horizontal" margin={10} />
-              <Link to="/mockuproom">
-                <EnterButton>-&gt;</EnterButton>
-              </Link>
+              <EnterButton onClick={() => openResumeModal(room)}>-&gt;</EnterButton>
             </CardFooter>
             <Marginer direction="vertical" margin={30} />
             <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
@@ -143,9 +160,15 @@ function Mockupcommunity() {
           &gt;
         </PaginationButton>
       </PaginationContainer>
-      <ModalComponent
+      <CreateRoomModalComponent
         isModalOpen={isModalOpen}
         closeModal={closeModal}
+      />
+      <ResumeSelectModal
+        isModalOpen={isResumeModalOpen}
+        closeModal={closeResumeModal}
+        onSelectResume={handleSelectResume}
+        roomId={selectedRoom ? selectedRoom.id : null} // Pass selectedRoom.id to the modal
       />
     </PageContainer>
   );
