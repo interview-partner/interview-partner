@@ -15,8 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @ToString
 public class RoomChatDTO {
-    private Long memberId;
-    private Long roomId;
+    private Long roomParticipantId;
     private String content;
     private String nickname;
 

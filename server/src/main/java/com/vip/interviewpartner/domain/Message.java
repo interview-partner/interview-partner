@@ -26,21 +26,17 @@ public class Message {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id")
-    private Room room;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_id")
-    private Member sender;
+    @JoinColumn(name = "room_participant_id")
+    private RoomParticipant roomParticipant;
 
     private String content;
 
     private LocalDateTime createDate;
 
     @Builder
-    public Message(Room room, Member sender, String content, LocalDateTime createDate) {
-        this.room = room;
-        this.sender = sender;
+
+    public Message(RoomParticipant roomParticipant, String content, LocalDateTime createDate) {
+        this.roomParticipant = roomParticipant;
         this.content = content;
         this.createDate = createDate;
     }
