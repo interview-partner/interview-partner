@@ -32,6 +32,7 @@ public enum ErrorCode {
     DUPLICATE_NICKNAME(409, "Nickname is already in use."),
     DUPLICATE_TAG_NAME(409, "이미 존재하는 태그 이름입니다."),
     ROOM_FULL(409, "방이 꽉 찼습니다."),
+    DUPLICATE_FEEDBACK(409, "동일한 참가자에게 중복된 피드백을 작성할 수 없습니다."),
     ROOM_CLOSED(410, "방이 종료되었습니다."),
     INVALID_FILE_TYPE(415, "PDF 파일만 업로드 가능합니다."),
     SERVER_ERROR(500, "서버에 에러가 발생하였습니다."),
