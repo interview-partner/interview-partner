@@ -146,18 +146,15 @@ CREATE TABLE `message`
 
 CREATE TABLE `feedback`
 (
-    `id`          bigint                          NOT NULL AUTO_INCREMENT,
-    `room_id`     bigint                          NOT NULL,
-    `sender_id`   bigint                          NOT NULL,
-    `receiver_id` bigint                          NOT NULL,
-    `content`     text COLLATE utf8mb4_general_ci NOT NULL,
-    `create_date` datetime(6) NOT NULL,
-    `update_date` datetime(6) NOT NULL,
+    `id`                           bigint                          NOT NULL AUTO_INCREMENT,
+    `room_participant_sender_id`   int                             NOT NULL,
+    `room_participant_receiver_id` int                             NOT NULL,
+    `content`                      text COLLATE utf8mb4_general_ci NOT NULL,
+    `create_date`                  datetime(6) NOT NULL,
+    `update_date`                  datetime(6) NOT NULL,
     PRIMARY KEY (`id`),
-    KEY           `idx_feedback_room_id` (`room_id`),
-    KEY           `idx_feedback_sender_id` (`sender_id`),
-    KEY           `idx_feedback_receiver_id` (`receiver_id`),
-    CONSTRAINT `fk_feedback_room` FOREIGN KEY (`room_id`) REFERENCES `room` (`id`),
-    CONSTRAINT `fk_feedback_sender` FOREIGN KEY (`sender_id`) REFERENCES `member` (`id`),
-    CONSTRAINT `fk_feedback_receiver` FOREIGN KEY (`receiver_id`) REFERENCES `member` (`id`)
+    KEY                            `idx_feedback_sender_id` (`room_participant_sender_id`),
+    KEY                            `idx_feedback_receiver_id` (`room_participant_receiver_id`),
+    CONSTRAINT `fk_feedback_sender` FOREIGN KEY (`room_participant_sender_id`) REFERENCES `room_participant` (`id`),
+    CONSTRAINT `fk_feedback_receiver` FOREIGN KEY (`room_participant_receiver_id`) REFERENCES `room_participant` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
