@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,13 +26,20 @@ public class Feedback extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_participant_sender_id")
+    @JoinColumn(name = "sender_participant_id")
     private RoomParticipant sender;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_participant_receiver_id")
+    @JoinColumn(name = "receiver_participant_id")
     private RoomParticipant receiver;
 
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    @Builder
+    public Feedback(RoomParticipant sender, RoomParticipant receiver, String content) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.content = content;
+    }
 }
