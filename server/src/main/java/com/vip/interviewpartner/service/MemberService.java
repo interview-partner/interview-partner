@@ -3,6 +3,7 @@ package com.vip.interviewpartner.service;
 import com.vip.interviewpartner.common.exception.CustomException;
 import com.vip.interviewpartner.common.exception.ErrorCode;
 import com.vip.interviewpartner.domain.Member;
+import com.vip.interviewpartner.dto.MemberInfoResponse;
 import com.vip.interviewpartner.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,19 @@ public class MemberService {
      */
     public Member getMemberById(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    /**
+     * 주어진 ID로 회원 정보를 조회하여 MemberInfoResponse DTO로 반환합니다.
+     * 내부적으로 getMemberById 메서드를 호출하여 Member 객체를 조회합니다.
+     *
+     * @param memberId 조회할 회원의 ID
+     * @return 조회된 회원 정보를 담은 MemberInfoResponse 객체
+     * @throws CustomException 해당 ID의 Member 객체를 찾지 못한 경우 발생
+     */
+    public MemberInfoResponse getMemberInfo(Long memberId) {
+        Member member = getMemberById(memberId);
+        return MemberInfoResponse.of(member);
     }
 }
