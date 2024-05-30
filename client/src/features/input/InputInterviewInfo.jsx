@@ -206,4 +206,3 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
 }
 
 export default InputInterviewInfo;
-

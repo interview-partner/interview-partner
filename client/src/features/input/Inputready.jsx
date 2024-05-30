@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
 import Circle from "../../assets/icons/circle.png";
+import CheckMethod from "../../assets/images/checkMethodType.png";
+import BigSquareButton from "../../components/button/bigsquareButton.jsx";
 
 const Container = styled.div`
     width: 100%;
@@ -11,6 +13,12 @@ const Container = styled.div`
     padding: 40px;
 `;
 
+const TextContainer = styled.div`
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+`;
+
 const Title = styled.div`
     display: flex;
     flex-direction: row;
@@ -18,13 +26,21 @@ const Title = styled.div`
     gap: 8px;
     color: ${COLORS.font_black};
     font-size: 20px;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
 `;
+
+const GuideText = styled.div`
+  display: flex;
+  color: ${COLORS.gray};
+  font-size: 16px;
+  margin-bottom: 40px;
+`
 
 
 const GuideContainer = styled.div`
     display: flex;
     flex-direction: column;
+    margin-bottom: 20px;
 `
 
 const GuideList = styled.div`
@@ -34,12 +50,17 @@ const GuideList = styled.div`
     gap: 8px;
     font-size: 14px;
     color: ${COLORS.font_black};
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 `
 
 const Icon = styled.img`
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
+`;
+
+const Img = styled.img`
+  width: 228px;
+  height: 133px;
 `;
 
 function InputPersonalInfo() {
@@ -48,20 +69,29 @@ function InputPersonalInfo() {
       <Title>
         면접 준비
       </Title>
-      <GuideContainer>
-        <GuideList>
-            <Icon src={Circle} alt="Circle" />
-            주어진 질문에 음성으로 답변합니다
-        </GuideList>
-        <GuideList>
-            <Icon src={Circle} alt="Circle" />
-            각 질문에 대한 답변이 이루어진 후, 다음질문/꼬리질문을 설정할 수 있습니다
-        </GuideList>
-        <GuideList>
-            <Icon src={Circle} alt="Circle" />
-            각 면접 기록은 마이페이지에서 확인할 수 있습니다
-        </GuideList>
-      </GuideContainer>
+      <TextContainer>
+        <Img src={CheckMethod} alt="CheckMethod"/>
+        <GuideText>
+          면접 방식을 한번 더 확인해 주세요
+        </GuideText>
+        <GuideContainer>
+          <GuideList>
+              <Icon src={Circle} alt="Circle" />
+              주어진 질문에 음성으로 답변합니다
+          </GuideList>
+          <GuideList>
+              <Icon src={Circle} alt="Circle" />
+              각 질문에 대한 답변이 이루어진 후, 다음질문/꼬리질문을 설정할 수 있습니다
+          </GuideList>
+          <GuideList>
+              <Icon src={Circle} alt="Circle" />
+              각 면접 기록은 마이페이지에서 확인할 수 있습니다
+          </GuideList>
+        </GuideContainer>
+        <BigSquareButton to="/promptroom">
+          면접 시작하기
+        </BigSquareButton>
+      </TextContainer>
     </Container>
   );
 }
