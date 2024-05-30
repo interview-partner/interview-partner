@@ -123,6 +123,7 @@ public class MemberController {
                     @ApiResponse(responseCode = "200", description = "회원정보 조회 성공"),
                     @ApiResponse(responseCode = "400", description = "유효한 요청이 아님", content = @Content),
                     @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content),
+                    @ApiResponse(responseCode = "409", description = "닉네임 중복", content = @Content),
             }
     )
     @PutMapping("/me")
