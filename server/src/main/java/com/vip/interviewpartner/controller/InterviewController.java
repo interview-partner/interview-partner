@@ -69,14 +69,14 @@ public class InterviewController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "질문 조회 성공"),
                     @ApiResponse(responseCode = "400", description = "질문이 존재하지 않습니다", content = @Content),
+                    @ApiResponse(responseCode = "403", description = "요청자와 인터뷰의 소유자가 일치하지 않습니다", content = @Content),
             }
     )
 
-    @SecurityRequirements(value = {})
     @GetMapping("/{interviewId}/questions")
     @ResponseStatus(HttpStatus.OK)
-    public ApiCommonResponse<List<QuestionLookupResponse>> getQuestions(@NotNull(message = "인터뷰 아이디는 필수입니다.") @PathVariable Long interviewId) {
-        List<QuestionLookupResponse> questions = questionFinderService.getQuestionsByInterviewId(interviewId);
+    public ApiCommonResponse<List<QuestionLookupResponse>> getQuestions(@AuthenticationPrincipal CustomUserDetails customUserDetails, @NotNull(message = "인터뷰 아이디는 필수입니다.") @PathVariable Long interviewId) {
+        List<QuestionLookupResponse> questions = questionFinderService.getQuestionsByInterviewId(customUserDetails, interviewId);
         return ApiCommonResponse.successResponse(questions);
     }
 
