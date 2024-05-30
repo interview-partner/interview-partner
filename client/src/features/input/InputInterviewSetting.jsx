@@ -19,13 +19,12 @@ const Title = styled.div`
   display: flex;
   color: ${COLORS.font_black};
   font-size: 20px;
-  margin-bottom: 40px;
 `;
 
 const SettingContainer = styled.div`
+  margin-top: 40px;
   display: flex;
   flex-direction: column;
-  margin-bottom: 40px;
 `;
 
 const SemiTitle = styled.div`

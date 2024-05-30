@@ -57,14 +57,14 @@ const CardContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 28px;
-  margin-left: 180px;
+  margin-left: 490px;
   transition: transform 0.5s ease-in-out;
-  transform: ${({ currentIndex }) => `translateX(-${currentIndex * 83}%)`};
+  transform: ${({ currentIndex }) => `translateX(-${currentIndex * 62.2}%)`};
   width: 500%;
 `;
 
 const Card = styled.div`
-  min-width: 80%;
+  min-width: 60%;
   height: 85%;
   background-color: white;
   display: flex;
@@ -75,6 +75,7 @@ const Card = styled.div`
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2);
   padding: 20px;
+  overflow-y: auto;  // Add this line to enable scrolling if content overflows
 `;
 
 const ButtonContainer = styled.div`
@@ -103,95 +104,87 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
         <CardContainer currentIndex={currentIndex}>
           <Card>
             <InputInterviewSetting />
-            {currentIndex === 0 && (
-              <ButtonContainer>
-                <RoundButton
-                  onClick={prevCard}
-                  disabled={currentIndex === 0}
-                  color="white"
-                  bgColor={COLORS.blue_black}
-                >
-                  Previous
-                </RoundButton>
-                <RoundButton
-                  onClick={nextCard}
-                  disabled={currentIndex === 3}
-                  color="white"
-                  bgColor={COLORS.blue_black}
-                >
-                  Next
-                </RoundButton>
-              </ButtonContainer>
-            )}
+            <ButtonContainer>
+              <RoundButton
+                onClick={prevCard}
+                disabled={currentIndex === 0}
+                color="white"
+                bgColor={COLORS.blue_black}
+              >
+                Previous
+              </RoundButton>
+              <RoundButton
+                onClick={nextCard}
+                disabled={currentIndex === 3}
+                color="white"
+                bgColor={COLORS.blue_black}
+              >
+                Next
+              </RoundButton>
+            </ButtonContainer>
           </Card>
           <Card>
             <InputPersonalInfo />
-            {currentIndex === 1 && (
-              <ButtonContainer>
-                <RoundButton
-                  onClick={prevCard}
-                  disabled={currentIndex === 0}
-                  color="white"
-                  bgColor={COLORS.blue_black}
-                >
-                  Previous
-                </RoundButton>
-                <RoundButton
-                  onClick={nextCard}
-                  disabled={currentIndex === 3}
-                  color="white"
-                  bgColor={COLORS.blue_black}
-                >
-                  Next
-                </RoundButton>
-              </ButtonContainer>
-            )}
+            <ButtonContainer>
+              <RoundButton
+                onClick={prevCard}
+                disabled={currentIndex === 0}
+                color="white"
+                bgColor={COLORS.blue_black}
+              >
+                Previous
+              </RoundButton>
+              <RoundButton
+                onClick={nextCard}
+                disabled={currentIndex === 3}
+                color="white"
+                bgColor={COLORS.blue_black}
+              >
+                Next
+              </RoundButton>
+            </ButtonContainer>
           </Card>
           <Card>
             <InputResumeSelect />
-            {currentIndex === 2 && (
-              <ButtonContainer>
-                <RoundButton
-                  onClick={prevCard}
-                  disabled={currentIndex === 0}
-                  color="white"
-                  bgColor={COLORS.blue_black}
-                >
-                  Previous
-                </RoundButton>
-                <RoundButton
-                  onClick={nextCard}
-                  disabled={currentIndex === 3}
-                  color="white"
-                  bgColor={COLORS.blue_black}
-                >
-                  Next
-                </RoundButton>
-              </ButtonContainer>
-            )}
+            <ButtonContainer>
+              <RoundButton
+                onClick={prevCard}
+                disabled={currentIndex === 0}
+                color="white"
+                bgColor={COLORS.blue_black}
+              >
+                Previous
+              </RoundButton>
+              <RoundButton
+                onClick={nextCard}
+                disabled={currentIndex === 3}
+                color="white"
+                bgColor={COLORS.blue_black}
+              >
+                Next
+              </RoundButton>
+            </ButtonContainer>
           </Card>
           <Card>
             <Inputready />
-            {currentIndex === 3 && (
-              <ButtonContainer>
-                <RoundButton
-                  onClick={prevCard}
-                  disabled={currentIndex === 0}
-                  color="white"
-                  bgColor={COLORS.blue_black}
-                >
-                  Previous
-                </RoundButton>
-                <RoundButton
-                  onClick={nextCard}
-                  disabled={currentIndex === 3}
-                  color="white"
-                  bgColor={COLORS.blue_black}
-                >
-                  Next
-                </RoundButton>
-              </ButtonContainer>
-            )}
+            <ButtonContainer>
+              <RoundButton
+                onClick={prevCard}
+                disabled={currentIndex === 0}
+                color="white"
+                bgColor={COLORS.blue_black}
+              >
+                Previous
+              </RoundButton>
+              <RoundButton
+                onClick={nextCard}
+                disabled={currentIndex === 3}
+                color="white"
+                bgColor={COLORS.blue_black}
+              >
+                Next
+              </RoundButton>
+            </ButtonContainer>
           </Card>
         </CardContainer>
       </Carousel>

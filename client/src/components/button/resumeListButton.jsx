@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { COLORS } from "../../styles/colors";
 import ActiveCheckCircle from "../../assets/icons/activeCheckCircle.png";
 import UnactiveCheckCircle from "../../assets/icons/unactiveCheckCircle.png";
 
@@ -9,7 +8,7 @@ const ResumeContainer = styled.div`
     flex-direction: row;
     text-align: center;
     width: 100%;
-    margin-bottom: 16px; 
+    margin-bottom: 5px; 
     background: white;
     border-radius: 10px;
     box-shadow: ${({ borderColor }) => borderColor ? `inset 0 0 0 2px ${borderColor}` : '0 2px 8px rgba(99, 99, 99, 0.2)'};
@@ -27,19 +26,11 @@ const MoveText = styled.div`
     padding-top: 3px;
 `;
 
-const ResumeListButton = ({ children }) => {
-    const [borderColor, setBorderColor] = useState(null);
-    const [isActive, setIsActive] = useState(false);
-
-    const toggleBorderColor = () => {
-        setBorderColor(prevColor => 
-            prevColor === null ? '#62AED5' : null
-        );
-        setIsActive(prevActive => !prevActive);
-    };
+const ResumeListButton = ({ children, isActive, onClick }) => {
+    const borderColor = isActive ? '#62AED5' : null;
 
     return (
-        <ResumeContainer borderColor={borderColor} onClick={toggleBorderColor}>
+        <ResumeContainer borderColor={borderColor} onClick={onClick}>
             <Icon src={isActive ? ActiveCheckCircle : UnactiveCheckCircle} alt="CheckCircle" />
             <MoveText>
                 {children}
