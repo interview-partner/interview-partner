@@ -3,22 +3,24 @@ package com.vip.interviewpartner.controller;
 import com.vip.interviewpartner.common.ApiCommonResponse;
 import com.vip.interviewpartner.dto.AiInterviewRequest;
 import com.vip.interviewpartner.dto.CustomUserDetails;
+import com.vip.interviewpartner.dto.QuestionLookupResponse;
 import com.vip.interviewpartner.service.AiInterviewCreateService;
+import com.vip.interviewpartner.service.QuestionFinderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 인터뷰 컨트롤러 입니다. 이 컨트롤러는 인터뷰 관련 API를 처리합니다.
@@ -30,8 +32,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @Validated
 public class InterviewController {
-
     private final AiInterviewCreateService aiInterviewCreateService;
+    private final QuestionFinderService questionFinderService;
 
     /**
      * 인터뷰 생성 매서드입니다.
@@ -53,6 +55,29 @@ public class InterviewController {
 
         Long InterviewId = aiInterviewCreateService.create(customUserDetails.getMemberId(), aiInterviewRequest);
         return ApiCommonResponse.successResponse(InterviewId);
+    }
+
+
+    /**
+     * 질문 조회 API 입니다.
+     *
+     * @param interviewId 질문을 조회하고자 하는 인터뷰의 아이디 입니다.
+     * @return ApiCommonResponse<List<QuestionLookupResponse>> 조회된 질문 리스트 응답 객체
+     */
+    @Operation(summary = "이력서 조회 API",
+            description = "현재 인터뷰 방의 질문들을 조회합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "질문 조회 성공"),
+                    @ApiResponse(responseCode = "400", description = "질문이 존재하지 않습니다", content = @Content),
+                    @ApiResponse(responseCode = "403", description = "요청자와 인터뷰의 소유자가 일치하지 않습니다", content = @Content),
+            }
+    )
+
+    @GetMapping("/{interviewId}/questions")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiCommonResponse<List<QuestionLookupResponse>> getQuestions(@AuthenticationPrincipal CustomUserDetails customUserDetails, @NotNull(message = "인터뷰 아이디는 필수입니다.") @PathVariable Long interviewId) {
+        List<QuestionLookupResponse> questions = questionFinderService.getQuestionsByInterviewId(customUserDetails, interviewId);
+        return ApiCommonResponse.successResponse(questions);
     }
 
 }
