@@ -66,14 +66,14 @@ const CardContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 28px;
-  margin-left: 490px;
+  margin-left: 630px;
   transition: transform 0.5s ease-in-out;
-  transform: ${({ currentIndex }) => `translateX(-${currentIndex * 62.2}%)`};
+  transform: ${({ currentIndex }) => `translateX(-${currentIndex * 57}%)`};
   width: 500%;
 `;
 
 const Card = styled.div`
-  min-width: 60%;
+  min-width: 55%;
   height: 85%;
   background-color: white;
   display: flex;
