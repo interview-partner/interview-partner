@@ -4,6 +4,7 @@ import { COLORS } from "../../styles/colors";
 import RoundButton from '../../components/button/RoundButton';
 import InputInterviewSetting from './InputInterviewSetting';
 import InputPersonalInfo from '../../features/input/InputPersonalInfo';
+import InputResumeSelect from '../../features/input/InputResumeSelect.jsx';
 import Inputready from '../../features/input/Inputready';
 
 const fadeIn = keyframes`
@@ -147,7 +148,7 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
             )}
           </Card>
           <Card>
-            <div>디자인 수정필요</div>
+            <InputResumeSelect />
             {currentIndex === 2 && (
               <ButtonContainer>
                 <RoundButton
