@@ -126,7 +126,7 @@ public class MemberController {
                     @ApiResponse(responseCode = "409", description = "닉네임 중복", content = @Content),
             }
     )
-    @PutMapping("/me")
+    @PatchMapping("/me")
     @ResponseStatus(HttpStatus.OK)
     public ApiCommonResponse<?> updateMemberInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                  @Valid @RequestBody MemberUpdateRequest request) {
