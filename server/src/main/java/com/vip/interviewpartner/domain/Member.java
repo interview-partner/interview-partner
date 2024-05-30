@@ -1,5 +1,6 @@
 package com.vip.interviewpartner.domain;
 
+import com.vip.interviewpartner.dto.MemberUpdateRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -65,5 +66,9 @@ public class Member extends BaseTimeEntity {
         this.providerId = providerId;
         this.isActive = true;
         this.role = Role.ROLE_USER;
+    }
+
+    public void updateInfo(MemberUpdateRequest request) {
+        this.nickname = request.getNickname();
     }
 }

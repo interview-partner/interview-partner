@@ -1,9 +1,12 @@
 package com.vip.interviewpartner.service;
 
+import static com.vip.interviewpartner.common.exception.ErrorCode.DUPLICATE_NICKNAME;
+
 import com.vip.interviewpartner.common.exception.CustomException;
 import com.vip.interviewpartner.common.exception.ErrorCode;
 import com.vip.interviewpartner.domain.Member;
 import com.vip.interviewpartner.dto.MemberInfoResponse;
+import com.vip.interviewpartner.dto.MemberUpdateRequest;
 import com.vip.interviewpartner.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,6 +36,19 @@ public class MemberService {
     }
 
     /**
+     * 입력된 닉네임이 이미 존재하는지 확인합니다.
+     * 이미 존재하는 경우 CustomException을 발생시킵니다.
+     *
+     * @param nickname 확인할 닉네임
+     * @throws CustomException 이미 존재하는 닉네임인 경우 발생하는 예외
+     */
+    public void checkNicknameDuplication(String nickname) {
+        if (memberRepository.existsByNickname(nickname)) {
+            throw new CustomException(DUPLICATE_NICKNAME);
+        }
+    }
+
+    /**
      * 주어진 ID로 회원 정보를 조회하여 MemberInfoResponse DTO로 반환합니다.
      * 내부적으로 getMemberById 메서드를 호출하여 Member 객체를 조회합니다.
      *
@@ -43,5 +59,20 @@ public class MemberService {
     public MemberInfoResponse getMemberInfo(Long memberId) {
         Member member = getMemberById(memberId);
         return MemberInfoResponse.of(member);
+    }
+
+    /**
+     * 주어진 ID의 회원 정보를 업데이트합니다.
+     * 닉네임의 중복 여부를 확인하고, 중복되지 않으면 회원 정보를 업데이트합니다.
+     *
+     * @param memberId 업데이트할 회원의 ID
+     * @param request 업데이트할 정보를 담고 있는 MemberUpdateRequest 객체
+     * @throws CustomException 닉네임이 중복되는 경우 발생하는 예외
+     */
+    @Transactional
+    public void updateInfo(Long memberId, MemberUpdateRequest request) {
+        checkNicknameDuplication(request.getNickname());
+        Member member = getMemberById(memberId);
+        member.updateInfo(request);
     }
 }
