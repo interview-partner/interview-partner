@@ -4,6 +4,7 @@ import com.vip.interviewpartner.common.ApiCommonResponse;
 import com.vip.interviewpartner.dto.CustomUserDetails;
 import com.vip.interviewpartner.dto.MemberInfoResponse;
 import com.vip.interviewpartner.dto.MemberJoinRequest;
+import com.vip.interviewpartner.dto.MemberUpdateRequest;
 import com.vip.interviewpartner.dto.NicknameCheckResponse;
 import com.vip.interviewpartner.dto.ResumeLookupResponse;
 import com.vip.interviewpartner.service.MemberJoinService;
@@ -71,7 +72,7 @@ public class MemberController {
      * 닉네임이 사용 가능한 경우 true를, 그렇지 않을 경우 false를 담아서 반환합니다.
      *
      * @param nickname 확인할 닉네임
-     * @return ApiCommonResponse<NicknameCheckResponse> 닉네임 중복 확인 응답 객체;
+     * @return ApiCommonResponse<NicknameCheckResponse> 닉네임 중복 확인 응답 객체
      */
     @Operation(summary = "닉네임 중복 확인 API",
             description = "회원가입시 닉네임 중복 확인",
@@ -108,6 +109,28 @@ public class MemberController {
     public ApiCommonResponse<MemberInfoResponse> getMemberInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         MemberInfoResponse memberInfoResponse = memberService.getMemberInfo(customUserDetails.getMemberId());
         return ApiCommonResponse.successResponse(memberInfoResponse);
+    }
+
+    /**
+     * 현재 로그인된 사용자의 회원 정보를 수정하는 API입니다.
+     *
+     * @param customUserDetails 사용자 인증 정보
+     * @return ApiCommonResponse.successWithNoContent
+     */
+    @Operation(summary = "회원정보 수정 API",
+            description = "현재 로그인된 사용자의 회원 정보를 수정합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "회원정보 조회 성공"),
+                    @ApiResponse(responseCode = "400", description = "유효한 요청이 아님", content = @Content),
+                    @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content),
+            }
+    )
+    @PutMapping("/me")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiCommonResponse<?> updateMemberInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                 @Valid @RequestBody MemberUpdateRequest request) {
+        memberService.updateInfo(customUserDetails.getMemberId(), request);
+        return ApiCommonResponse.successWithNoContent();
     }
 
     /**
