@@ -1,9 +1,8 @@
 package com.vip.interviewpartner.service;
 
-import static com.vip.interviewpartner.common.exception.ErrorCode.*;
+import static com.vip.interviewpartner.common.exception.ErrorCode.DUPLICATE_EMAIL;
 
 import com.vip.interviewpartner.common.exception.CustomException;
-import com.vip.interviewpartner.common.exception.ErrorCode;
 import com.vip.interviewpartner.domain.Member;
 import com.vip.interviewpartner.dto.MemberJoinRequest;
 import com.vip.interviewpartner.repository.MemberRepository;
@@ -21,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MemberJoinService {
 
+    private final MemberService memberService;
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -34,15 +34,14 @@ public class MemberJoinService {
     @Transactional
     public void join(MemberJoinRequest memberJoinRequest) {
         checkEmailDuplication(memberJoinRequest.getEmail());
-        checkNicknameDuplication(memberJoinRequest.getNickname());
+        memberService.checkNicknameDuplication(memberJoinRequest.getNickname());
         String encodePassword = bCryptPasswordEncoder.encode(memberJoinRequest.getPassword());
         Member member = memberJoinRequest.toEntity(encodePassword);
         memberRepository.save(member);
     }
 
     /**
-     * 주어진 닉네임의 사용 가능 여부를 확인하는 메서드입니다.
-     * 닉네임이 사용 중인지 아닌지를 판단합니다.
+     * 주어진 닉네임의 사용 가능 여부를 확인하는 메서드입니다. 닉네임이 사용 중인지 아닌지를 판단합니다.
      *
      * @param nickname 검사하고자 하는 사용자의 닉네임
      * @return 닉네임이 사용 가능할 경우 true, 그렇지 않을 경우 false를 반환합니다.
@@ -61,19 +60,6 @@ public class MemberJoinService {
     private void checkEmailDuplication(String email) {
         if (memberRepository.existsByEmail(email)) {
             throw new CustomException(DUPLICATE_EMAIL);
-        }
-    }
-
-    /**
-     * 입력된 닉네임이 이미 존재하는지 확인합니다.
-     * 이미 존재하는 경우 CustomException을 발생시킵니다.
-     *
-     * @param nickname 확인할 닉네임
-     * @throws CustomException 이미 존재하는 닉네임인 경우 발생하는 예외
-     */
-    private void checkNicknameDuplication(String nickname) {
-        if (memberRepository.existsByNickname(nickname)) {
-            throw new CustomException(DUPLICATE_NICKNAME);
         }
     }
 }
