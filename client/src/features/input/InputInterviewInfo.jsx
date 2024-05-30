@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import { COLORS } from "../../styles/colors";
 import RoundButton from '../../components/button/RoundButton';
 import InputInterviewSetting from './InputInterviewSetting';
@@ -13,6 +13,15 @@ const fadeIn = keyframes`
   }
   to {
     opacity: 1;
+  }
+`;
+
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 `;
 
@@ -82,7 +91,11 @@ const ButtonContainer = styled.div`
   display: flex;
   justify-content: space-between;
   width: 100%;
-  animation: ${fadeIn} 0.5s ease-in-out;
+  ${({ isVisible }) => css`
+    visibility: ${isVisible ? 'visible' : 'hidden'};
+    opacity: ${isVisible ? 1 : 0};
+    animation: ${isVisible ? fadeIn : fadeOut} 0.5s ease-in-out;
+  `}
 `;
 
 function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
@@ -104,7 +117,7 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
         <CardContainer currentIndex={currentIndex}>
           <Card>
             <InputInterviewSetting />
-            <ButtonContainer>
+            <ButtonContainer isVisible={currentIndex === 0}>
               <RoundButton
                 onClick={prevCard}
                 disabled={currentIndex === 0}
@@ -125,7 +138,7 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
           </Card>
           <Card>
             <InputPersonalInfo />
-            <ButtonContainer>
+            <ButtonContainer isVisible={currentIndex === 1}>
               <RoundButton
                 onClick={prevCard}
                 disabled={currentIndex === 0}
@@ -146,7 +159,7 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
           </Card>
           <Card>
             <InputResumeSelect />
-            <ButtonContainer>
+            <ButtonContainer isVisible={currentIndex === 2}>
               <RoundButton
                 onClick={prevCard}
                 disabled={currentIndex === 0}
@@ -167,7 +180,7 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
           </Card>
           <Card>
             <Inputready />
-            <ButtonContainer>
+            <ButtonContainer isVisible={currentIndex === 3}>
               <RoundButton
                 onClick={prevCard}
                 disabled={currentIndex === 0}
@@ -193,3 +206,4 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
 }
 
 export default InputInterviewInfo;
+
