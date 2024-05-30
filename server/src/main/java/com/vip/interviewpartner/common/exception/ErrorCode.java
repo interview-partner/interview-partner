@@ -27,6 +27,7 @@ public enum ErrorCode {
     INVALID_TOKEN(401, "유효하지 않는 토큰입니다."),
     REFRESH_TOKEN_NOT_EXIST(401, "리프레쉬 토큰이 존재하지 않습니다."),
     FORBIDDEN(403, "권한이 없습니다."),
+    MEMBER_ID_MISMATCH(403, "요청자와 인터뷰의 소유자가 일치하지 않습니다."),
     RESOURCE_NOT_FOUND(404, "요청한 리소스가 존재하지 않습니다."),
     DUPLICATE_EMAIL(409, "Email is already in use."),
     DUPLICATE_NICKNAME(409, "Nickname is already in use."),
