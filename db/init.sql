@@ -1,7 +1,7 @@
 CREATE TABLE `tag`
 (
-    `id`         int                                     NOT NULL AUTO_INCREMENT,
-    `name`       varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+    `id`          int                                     NOT NULL AUTO_INCREMENT,
+    `name`        varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
     `usage_count` int                                     NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`),
     UNIQUE KEY `UK_NAME` (`name`)
@@ -47,7 +47,7 @@ CREATE TABLE `interview`
     `resume_id`         bigint                                  NOT NULL,
     `title`             varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
     `job_advertisement` text COLLATE utf8mb4_general_ci,
-    `interview_type`	varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+    `interview_type`    varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
     `create_date`       datetime(6) NOT NULL,
     `update_date`       datetime(6) NOT NULL,
     PRIMARY KEY (`id`),
@@ -88,18 +88,18 @@ CREATE TABLE `room_tag`
 
 CREATE TABLE `room_participant`
 (
-    `id`         int    NOT NULL AUTO_INCREMENT,
-    `room_id`    bigint NOT NULL,
-    `member_id`  bigint NOT NULL,
-    `resume_id`  bigint NOT NULL,
-    `join_date` datetime(6) DEFAULT NULL,
-    `leave_date` datetime(6) DEFAULT NULL,
+    `id`          int    NOT NULL AUTO_INCREMENT,
+    `room_id`     bigint NOT NULL,
+    `member_id`   bigint NOT NULL,
+    `resume_id`   bigint NOT NULL,
+    `join_date`   datetime(6) DEFAULT NULL,
+    `leave_date`  datetime(6) DEFAULT NULL,
     `create_date` datetime(6) NOT NULL,
     `update_date` datetime(6) NOT NULL,
     PRIMARY KEY (`id`),
-    KEY          `idx_room_participant_room_id` (`room_id`),
-    KEY          `idx_room_participant_member_id` (`member_id`),
-    KEY          `idx_room_participant_resume_id` (`resume_id`),
+    KEY           `idx_room_participant_room_id` (`room_id`),
+    KEY           `idx_room_participant_member_id` (`member_id`),
+    KEY           `idx_room_participant_resume_id` (`resume_id`),
     CONSTRAINT `fk_room_participant_room` FOREIGN KEY (`room_id`) REFERENCES `room` (`id`),
     CONSTRAINT `fk_room_participant_member` FOREIGN KEY (`member_id`) REFERENCES `member` (`id`),
     CONSTRAINT `fk_room_participant_resume` FOREIGN KEY (`resume_id`) REFERENCES `resume` (`id`)
@@ -134,32 +134,27 @@ CREATE TABLE `user_answer`
 
 CREATE TABLE `message`
 (
-    `id`          int                                     NOT NULL AUTO_INCREMENT,
-    `room_id`     bigint                                  NOT NULL,
-    `sender_id`   bigint                                  NOT NULL,
-    `content`     varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-    `create_date` datetime(6) NOT NULL,
+    `id`                  int                                     NOT NULL AUTO_INCREMENT,
+    `room_participant_id` int                                     NOT NULL,
+    `content`             varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+    `create_date`         datetime(6) NOT NULL,
     PRIMARY KEY (`id`),
-    KEY           `idx_message_sender_id` (`sender_id`),
-    KEY           `idx_message_room_id` (`room_id`),
-    CONSTRAINT `fk_message_sender` FOREIGN KEY (`sender_id`) REFERENCES `member` (`id`),
-    CONSTRAINT `fk_message_room` FOREIGN KEY (`room_id`) REFERENCES `room` (`id`)
+    KEY                   `idx_message_sender_id` (`sender_id`),
+    KEY                   `idx_message_room_id` (`room_id`),
+    CONSTRAINT `fk_message_room_participant` FOREIGN KEY (`room_participant_id`) REFERENCES `room_participant` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `feedback`
 (
-    `id`          bigint                          NOT NULL AUTO_INCREMENT,
-    `room_id`     bigint                          NOT NULL,
-    `sender_id`   bigint                          NOT NULL,
-    `receiver_id` bigint                          NOT NULL,
-    `content`     text COLLATE utf8mb4_general_ci NOT NULL,
-    `create_date` datetime(6) NOT NULL,
-    `update_date` datetime(6) NOT NULL,
+    `id`                      bigint NOT NULL AUTO_INCREMENT,
+    `sender_participant_id`   int    NOT NULL,
+    `receiver_participant_id` int    NOT NULL,
+    `content`                 text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+    `create_date`             datetime(6) NOT NULL,
+    `update_date`             datetime(6) NOT NULL,
     PRIMARY KEY (`id`),
-    KEY           `idx_feedback_room_id` (`room_id`),
-    KEY           `idx_feedback_sender_id` (`sender_id`),
-    KEY           `idx_feedback_receiver_id` (`receiver_id`),
-    CONSTRAINT `fk_feedback_room` FOREIGN KEY (`room_id`) REFERENCES `room` (`id`),
-    CONSTRAINT `fk_feedback_sender` FOREIGN KEY (`sender_id`) REFERENCES `member` (`id`),
-    CONSTRAINT `fk_feedback_receiver` FOREIGN KEY (`receiver_id`) REFERENCES `member` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+    KEY                       `idx_feedback_sender_id` (`sender_participant_id`),
+    KEY                       `idx_feedback_receiver_id` (`receiver_participant_id`),
+    CONSTRAINT `fk_feedback_receiver` FOREIGN KEY (`receiver_participant_id`) REFERENCES `room_participant` (`id`),
+    CONSTRAINT `fk_feedback_sender` FOREIGN KEY (`sender_participant_id`) REFERENCES `room_participant` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci

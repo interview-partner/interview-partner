@@ -1,5 +1,8 @@
 package com.vip.interviewpartner.service;
 
+import static com.vip.interviewpartner.common.exception.ErrorCode.ROOM_PARTICIPANT_NOT_FOUND;
+
+import com.vip.interviewpartner.common.exception.CustomException;
 import com.vip.interviewpartner.domain.Member;
 import com.vip.interviewpartner.domain.Resume;
 import com.vip.interviewpartner.domain.Room;
@@ -37,5 +40,18 @@ public class RoomParticipantService {
                 .build();
         roomParticipantRepository.save(roomParticipant);
         return roomParticipant;
+    }
+
+    /**
+     * 주어진 참가자 ID로 RoomParticipant 객체를 조회합니다.
+     * 참가자가 존재하지 않을 경우 CustomException을 발생시킵니다.
+     *
+     * @param participantId 조회할 RoomParticipant의 ID
+     * @return 조회된 RoomParticipant 객체
+     * @throws CustomException 참가자가 존재하지 않을 경우 발생합니다.
+     */
+    public RoomParticipant findRoomParticipant(Long participantId) {
+        return roomParticipantRepository.findById(participantId)
+                .orElseThrow(() -> new CustomException(ROOM_PARTICIPANT_NOT_FOUND));
     }
 }

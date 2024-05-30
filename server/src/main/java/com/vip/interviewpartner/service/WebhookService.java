@@ -8,10 +8,11 @@ import static com.vip.interviewpartner.common.constants.Constants.SESSION_ID;
 import static com.vip.interviewpartner.common.constants.Constants.TYPE;
 
 import com.vip.interviewpartner.common.constants.WebhookEvent;
+import com.vip.interviewpartner.common.exception.CustomException;
+import com.vip.interviewpartner.common.exception.ErrorCode;
 import com.vip.interviewpartner.common.util.DateTimeUtil;
-import com.vip.interviewpartner.domain.Member;
 import com.vip.interviewpartner.domain.Message;
-import com.vip.interviewpartner.domain.Room;
+import com.vip.interviewpartner.domain.RoomParticipant;
 import com.vip.interviewpartner.dto.RoomChatDTO;
 import com.vip.interviewpartner.dto.RoomEnterUserData;
 import com.vip.interviewpartner.repository.MessageRepository;
@@ -105,7 +106,7 @@ public class WebhookService {
         LocalDateTime joinDate = DateTimeUtil.extractTimestamp(payload);
         roomParticipantRepository.findById(serverData.getRoomParticipantId())
                 .ifPresent(roomParticipant -> roomParticipant.join(joinDate));
-        log.info("Participant joined (memberId: {}, roomId: {}).", serverData.getMemberId(), serverData.getRoomId());
+        log.info("Participant joined (roomParticipantId: {}, roomId: {}).", serverData.getRoomParticipantId(), serverData.getRoomId());
     }
 
     /**
@@ -119,7 +120,7 @@ public class WebhookService {
         LocalDateTime leaveDate = DateTimeUtil.extractTimestamp(payload);
         roomParticipantRepository.findById(serverData.getRoomParticipantId())
                 .ifPresent(roomParticipant -> roomParticipant.leave(leaveDate));
-        log.info("Participant left (memberId: {}, roomId: {}).", serverData.getMemberId(), serverData.getRoomId());
+        log.info("Participant left (roomParticipantId: {}, roomId: {}).", serverData.getRoomParticipantId(), serverData.getRoomId());
     }
 
     /**
@@ -146,14 +147,12 @@ public class WebhookService {
         String data = payload.get(DATA).toString();
         LocalDateTime messageTimestamp = DateTimeUtil.extractTimestamp(payload);
         RoomChatDTO roomChatDTO = RoomChatDTO.fromJson(data);
-        Member member = memberService.getMemberById(roomChatDTO.getMemberId());
-        Room room = roomService.getRoomById(roomChatDTO.getRoomId());
+        RoomParticipant roomParticipant = roomParticipantRepository.findById(roomChatDTO.getRoomParticipantId()).orElseThrow(() -> new CustomException(ErrorCode.ROOM_PARTICIPANT_NOT_FOUND));
         messageRepository.save(Message.builder()
-                .sender(member)
-                .room(room)
+                .roomParticipant(roomParticipant)
                 .content(roomChatDTO.getContent())
                 .createDate(messageTimestamp)
                 .build());
-        log.info("Chat message in room {} by memberId {}: {}", roomChatDTO.getRoomId(), roomChatDTO.getMemberId(), roomChatDTO.getContent());
+        log.info("Chat message by roomParticipantId {}: {}", roomChatDTO.getRoomParticipantId(), roomChatDTO.getContent());
     }
 }
