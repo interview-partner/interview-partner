@@ -6,12 +6,16 @@ import com.vip.interviewpartner.dto.MemberInfoResponse;
 import com.vip.interviewpartner.dto.MemberJoinRequest;
 import com.vip.interviewpartner.dto.MemberUpdateRequest;
 import com.vip.interviewpartner.dto.NicknameCheckResponse;
+import com.vip.interviewpartner.dto.PageCustom;
+import com.vip.interviewpartner.dto.ParticipationResponse;
 import com.vip.interviewpartner.dto.ResumeLookupResponse;
 import com.vip.interviewpartner.service.MemberJoinService;
 import com.vip.interviewpartner.service.MemberService;
+import com.vip.interviewpartner.service.ParticipantLookupService;
 import com.vip.interviewpartner.service.ResumeService;
 import com.vip.interviewpartner.service.ResumeUploadService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -22,6 +26,9 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -44,6 +51,7 @@ public class MemberController {
     private final MemberService memberService;
     private final ResumeUploadService resumeUploadService;
     private final ResumeService resumeService;
+    private final ParticipantLookupService participantLookupService;
 
     /**
      * 회원가입 API입니다.
@@ -174,6 +182,26 @@ public class MemberController {
     public ApiCommonResponse<List<ResumeLookupResponse>> getResumes(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         List<ResumeLookupResponse> resumes = resumeService.getResumesByMemberId(customUserDetails.getMemberId());
         return ApiCommonResponse.successResponse(resumes);
+    }
+
+    /**
+     * 현재 로그인된 사용자의 방 참가 이력을 조회하는 API입니다.
+     * @param customUserDetails 사용자 인증 정보
+     * @return ApiCommonResponse<PageCustom<ParticipationResponse>> 조회된 방 참가 이력 조회 응답 객체
+     */
+    @Operation(summary = "방 참가 이력 조회 API",
+            description = "현재 로그인된 사용자의 방 참가 이력을 조회합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "이력서 조회 성공"),
+                    @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content),
+            }
+    )
+    @GetMapping("/me/rooms/participations")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiCommonResponse<PageCustom<ParticipationResponse>> getParticipation(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                                           @Parameter(description = "페이지 기본값: page=0, size=10, sort=joinDate, direction=DESC") @PageableDefault(size = 10, sort = "joinDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        PageCustom<ParticipationResponse> participationResponses = participantLookupService.getParticipation(customUserDetails.getMemberId(), pageable);
+        return ApiCommonResponse.successResponse(participationResponses);
     }
 
 }
