@@ -1,236 +1,90 @@
-import React, { useRef, useEffect } from 'react';
-import styled, { keyframes } from 'styled-components';
-import userImage1 from '../../assets/images/userImage/userImage1.png';
-import userImage2 from '../../assets/images/userImage/userImage2.png';
-import userImage3 from '../../assets/images/userImage/userImage3.png';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { v4 as uuidv4 } from 'uuid'; // 고유 ID 생성을 위한 라이브러리
 import send_Icon from '../../assets/icons/send_Icon.png';
 import article_Icon from '../../assets/icons/article_Icon.png';
+import userImageTest1 from '../../assets/images/userImage/userImage2.png';
 import keyboard_arrow_down_Icon from '../../assets/icons/keyboard_arrow_down_Icon.png';
+import rate_review_Icon from '../../assets/icons/rate_review_Icon.png';
+import { ChatContainer, ChatCloseButton, Input, SendButton, UserList, User, Avatar, UserName, UserResumeButton, ChatBox, MessageContainer, InputContainer, MessageList, Message, UserButtonContainer, UserFeedbackButton } from './chatstyle';
 
-const slideIn = keyframes`
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-`;
-
-const slideOut = keyframes`
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(100%);
-  }
-`;
-
-const ChatContainer = styled.div`
-  display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
-  flex-direction: column;
-  height: 95%;
-  background-color: #2c2c2c;
-  border-radius: 10px;
-  padding: 20px;
-  margin: 10px;
-  right: 0;
-  bottom: 0;
-  width: 28%;
-  z-index: 1000;
-  animation: ${({ isOpen }) => (isOpen ? slideIn : slideOut)} 0.3s ease;
-`;
-
-const UserList = styled.div`
-  background-color: #3a3a3a;
-  border-radius: 10px;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-const User = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
-  background-color: #454545;
-  border-radius: 10px;
-  justify-content: space-between;
-`;
-
-const Avatar = styled.img`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-`;
-
-const UserName = styled.span`
-  color: #fff;
-  font-size: 16px;
-`;
-
-const UserResumeButton = styled.button`
-  background-color: rgba(255, 255, 255, 0.13);
-  border: none;
-  width: 40px;
-  height: 40px;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  img {
-    width: 20px;
-    height: 20px;
-  }
-
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-  }
-`;
-
-const ChatBox = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background-color: #2c2c2c;
-  border-radius: 10px;
-  margin-top: 20px;
-  overflow-y: auto;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const ChatCloseButton = styled.button`
-  align-self: flex-start;
-  height: 40px;
-  width: 40px;
-  background: none;
-  border: none;
-  font-size: 32px;
-  cursor: pointer;
-  color: white;
-
-  img {
-    height: 30px;
-    width: 30px;
-  }
-`;
-
-const MessageContainer = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 10px;
-  background: #444;
-  border-radius: 20px;
-`;
-
-const MessageList = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 10px;
-  background: #444;
-  border-radius: 20px;
-  overflow: auto;
-
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const Message = styled.div`
-  max-width: 80%;
-  padding: 10px;
-  border-radius: 10px;
-  background-color: rgba(245, 245, 245, 0.23);
-  align-self: ${({ isUser }) => (isUser ? 'flex-end' : 'flex-start')};
-  color: #fff;
-  word-wrap: break-word;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-`;
-
-const InputContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px;
-  background: #333;
-  border-radius: 20px;
-`;
-
-const Input = styled.textarea`
-  background: #333;
-  font-size: 20px;
-  line-height: 20px;
-  border: none;
-  outline: none;
-  color: #fff;
-  padding: 10px;
-  width: 100%;
-  height: 30px;
-  resize: none;
-  overflow: auto;
-  min-height: 30px;
-  max-height: 150px;
-
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const SendButton = styled.button`
-  background-color: rgba(98, 174, 213, 0.47);
-  border: none;
-  width: 40px;
-  height: 40px;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  display: flex;
-  margin-right: 5px;
-  margin-bottom: 5px;
-  justify-content: center;
-  align-items: center;
-
-  img {
-    width: 20px;
-    height: 20px;
-  }
-
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: rgba(98, 174, 213, 0.6);
-  }
-`;
-
-const Chat = ({ isOpen, messages, inputValue, setInputValue, handleSendMessage, handleClose }) => {
+const Chat = ({ isOpen, handleClose, session, users = [] }) => {
+  const [inputValue, setInputValue] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [currentView, setCurrentView] = useState('chat'); // State to manage current view
+  const [selectedUserResume, setSelectedUserResume] = useState(null); // State to manage selected user resume
+  const [selectedUserFeedback, setSelectedUserFeedback] = useState(null); // State to manage selected user feedback
   const messageListRef = useRef(null);
+  const messageIds = useRef(new Set()); // 이미 처리된 메시지 ID를 저장하는 Set
+  const [isAutoScroll, setIsAutoScroll] = useState(true);
+
+  const handleSendMessage = useCallback(() => {
+    if (inputValue.trim() !== '') {
+      const myUserName = "MyNickname"; // 닉네임 설정
+      const messageId = uuidv4(); // 고유 ID 생성
+      const messageData = {
+        user: myUserName,
+        text: inputValue,
+        id: messageId, // 메시지에 ID 추가
+      };
+
+      // 세션을 통해 메시지 전송
+      session.signal({
+        data: JSON.stringify(messageData),
+        to: [],
+        type: 'chat',
+      });
+
+      // 로컬 상태 업데이트
+      setMessages([...messages, { text: inputValue, isUser: true, user: myUserName, id: messageId }]);
+      messageIds.current.add(messageId); // 전송된 메시지 ID 저장
+      setInputValue('');
+    }
+  }, [inputValue, messages, session]);
 
   useEffect(() => {
-    if (messageListRef.current) {
-      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+    if (session) {
+      session.on('signal:chat', (event) => {
+        const messageData = JSON.parse(event.data);
+        if (!messageIds.current.has(messageData.id)) {
+          setMessages((prevMessages) => [...prevMessages, { text: messageData.text, isUser: false, user: messageData.user, id: messageData.id }]);
+          messageIds.current.add(messageData.id); // 수신된 메시지 ID 저장
+        }
+      });
     }
-  }, [messages]);
+  }, [session]);
+
+  useEffect(() => {
+    const messageList = messageListRef.current;
+    if (messageList) {
+      if (isAutoScroll) {
+        messageList.scrollTop = messageList.scrollHeight;
+      }
+    }
+  }, [messages, isAutoScroll]);
+
+  const handleScroll = () => {
+    const messageList = messageListRef.current;
+    if (messageList) {
+      const isScrolledToBottom = messageList.scrollHeight - messageList.clientHeight <= messageList.scrollTop + 1;
+      setIsAutoScroll(isScrolledToBottom);
+    }
+  };
+
+  const handleUserResumeClick = (resumeData) => {
+    setSelectedUserResume(resumeData);
+    setCurrentView('resume');
+  };
+
+  const handleUserFeedbackClick = (feedbackData) => {
+    setSelectedUserFeedback(feedbackData);
+    setCurrentView('feedback');
+  };
+
+  const handleBackToChat = () => {
+    setCurrentView('chat');
+    setSelectedUserResume(null);
+    setSelectedUserFeedback(null);
+  };
 
   return (
     <ChatContainer isOpen={isOpen}>
@@ -238,43 +92,66 @@ const Chat = ({ isOpen, messages, inputValue, setInputValue, handleSendMessage, 
         <img src={keyboard_arrow_down_Icon} alt="Close Chat" />
       </ChatCloseButton>
       <UserList>
-        <User>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Avatar src={userImage2} alt="User Avatar" />
-            <UserName>호랑이</UserName>
-          </div>
-          <UserResumeButton>
-            <img src={article_Icon} alt="User Resume" />
-          </UserResumeButton>
-        </User>
-        <User>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Avatar src={userImage3} alt="User Avatar" />
-            <UserName>흰둥이</UserName>
-          </div>
-          <UserResumeButton>
-            <img src={article_Icon} alt="User Resume" />
-          </UserResumeButton>
-        </User>
-        <User>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Avatar src={userImage1} alt="User Avatar" />
-            <UserName>햄스터</UserName>
-          </div>
-          <UserResumeButton>
-            <img src={article_Icon} alt="User Resume" />
-          </UserResumeButton>
-        </User>
+        {users.map(user => {
+          let parsedData = [{ nickname: "Unknown User" }];
+          try {
+            const parts = user.data.split('%/%');
+            parsedData = parts.map(part => JSON.parse(part));
+          } catch (error) {
+            console.error("JSON parsing error for user.data:", user.data, error);
+          }
+
+          return (
+            <User key={user.id}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Avatar src={userImageTest1} alt="User Avatar" />
+                <UserName>{parsedData[1]?.nickname || "Unknown User"}</UserName>
+              </div>
+              <UserButtonContainer>
+                <UserFeedbackButton onClick={() => handleUserFeedbackClick(parsedData)}>
+                  <img src={rate_review_Icon} alt="User Feedback" />
+                </UserFeedbackButton>
+
+                <UserResumeButton onClick={() => handleUserResumeClick(parsedData)}>
+                  <img src={article_Icon} alt="User Resume" />
+                </UserResumeButton>
+              </UserButtonContainer>
+            </User>
+          );
+        })}
       </UserList>
+
       <ChatBox>
         <MessageContainer>
-          <MessageList ref={messageListRef}>
-            {messages.map((message, index) => (
-              <Message key={index} isUser={message.isUser}>
-                {message.text}
-              </Message>
-            ))}
-          </MessageList>
+          {currentView === 'chat' ? (
+            <MessageList ref={messageListRef} onScroll={handleScroll}>
+              {messages.map((message, index) => (
+                <Message key={index} isUser={message.isUser}>
+                  {message.text}
+                </Message>
+              ))}
+            </MessageList>
+          ) : currentView === 'resume' ? (
+            <div>
+              <button onClick={handleBackToChat}>Back to Chat</button>
+              <div>
+                {/* Placeholder for user resume content */}
+                <h2>{selectedUserResume[1]?.nickname}'s Resume</h2>
+                <p>Details about the user...</p>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <button onClick={handleBackToChat}>Back to Chat</button>
+              <div>
+                {/* Placeholder for user feedback content */}
+                <h2>{selectedUserFeedback[1]?.nickname}'s Feedback</h2>
+                <p>Feedback about the user...</p>
+              </div>
+            </div>
+          )}
+        </MessageContainer>
+        {currentView === 'chat' && (
           <InputContainer>
             <Input
               value={inputValue}
@@ -290,7 +167,7 @@ const Chat = ({ isOpen, messages, inputValue, setInputValue, handleSendMessage, 
               <img src={send_Icon} alt="Send" />
             </SendButton>
           </InputContainer>
-        </MessageContainer>
+        )}
       </ChatBox>
     </ChatContainer>
   );

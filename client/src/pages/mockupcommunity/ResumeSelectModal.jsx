@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { enterRoom } from '../../services/roomService';
 import { fetchResumes } from '../../services/resumeService';
 import {
@@ -14,6 +15,7 @@ const ResumeSelectModal = ({ isModalOpen, closeModal, onSelectResume, roomId }) 
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [selectedResume, setSelectedResume] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const loadResumes = async () => {
@@ -101,7 +103,10 @@ const ResumeSelectModal = ({ isModalOpen, closeModal, onSelectResume, roomId }) 
 
         try {
             const token = await enterRoom(roomId, selectedResume.id);
+
             console.log('방 입장 토큰:', token);
+            navigate('/mockuproom', { state: { token } });
+
         } catch (error) {
             setError(error.message);
         }
