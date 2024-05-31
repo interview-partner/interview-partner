@@ -1,15 +1,14 @@
 package com.vip.interviewpartner.controller;
 
 import com.vip.interviewpartner.common.ApiCommonResponse;
-import com.vip.interviewpartner.dto.AiInterviewRequest;
+import com.vip.interviewpartner.dto.InterviewCreateRequest;
 import com.vip.interviewpartner.dto.CustomUserDetails;
 import com.vip.interviewpartner.dto.QuestionLookupResponse;
-import com.vip.interviewpartner.service.AiInterviewCreateService;
-import com.vip.interviewpartner.service.QuestionFinderService;
+import com.vip.interviewpartner.service.InterviewCreateService;
+import com.vip.interviewpartner.service.QuestionLookupService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -32,14 +31,14 @@ import java.util.List;
 @Slf4j
 @Validated
 public class InterviewController {
-    private final AiInterviewCreateService aiInterviewCreateService;
-    private final QuestionFinderService questionFinderService;
+    private final InterviewCreateService interviewCreateService;
+    private final QuestionLookupService questionLookupService;
 
     /**
      * 인터뷰 생성 매서드입니다.
      *
      * @param customUserDetails
-     * @param aiInterviewRequest aiInterviewRequest DTO
+     * @param interviewCreateRequest aiInterviewRequest DTO
      * @return 생성된 인터뷰의 ID를 리턴합니다.
      */
     @Operation(summary = "AI 면접 생성 API",
@@ -51,9 +50,9 @@ public class InterviewController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiCommonResponse<Long> createInterview(@AuthenticationPrincipal CustomUserDetails customUserDetails, @Valid @RequestBody AiInterviewRequest aiInterviewRequest) {
+    public ApiCommonResponse<Long> createInterview(@AuthenticationPrincipal CustomUserDetails customUserDetails, @Valid @RequestBody InterviewCreateRequest interviewCreateRequest) {
 
-        Long InterviewId = aiInterviewCreateService.create(customUserDetails.getMemberId(), aiInterviewRequest);
+        Long InterviewId = interviewCreateService.create(customUserDetails.getMemberId(), interviewCreateRequest);
         return ApiCommonResponse.successResponse(InterviewId);
     }
 
@@ -76,7 +75,7 @@ public class InterviewController {
     @GetMapping("/{interviewId}/questions")
     @ResponseStatus(HttpStatus.OK)
     public ApiCommonResponse<List<QuestionLookupResponse>> getQuestions(@AuthenticationPrincipal CustomUserDetails customUserDetails, @NotNull(message = "인터뷰 아이디는 필수입니다.") @PathVariable Long interviewId) {
-        List<QuestionLookupResponse> questions = questionFinderService.getQuestionsByInterviewId(customUserDetails, interviewId);
+        List<QuestionLookupResponse> questions = questionLookupService.getQuestionsByInterviewId(customUserDetails, interviewId);
         return ApiCommonResponse.successResponse(questions);
     }
 
