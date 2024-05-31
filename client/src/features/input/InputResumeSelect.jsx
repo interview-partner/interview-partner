@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
-import ResumeList from "../../features/show-list/resumeList.jsx";
+import ResumeList from "../../features/show-list/ResumeList";
 
 const Container = styled.div`
   width: 100%;
@@ -32,16 +32,21 @@ const data = [
   'Resume 8',
   'Resume 9',
   'Resume 10',
-  // 더 많은 데이터 추가
 ];
 
-function InputResumeSelect() {
+function InputResumeSelect({ interviewData, setInterviewData }) {
+  const [resumeId, setResumeId] = useState(interviewData.resumeId);
+
+  useEffect(() => {
+    setInterviewData({ ...interviewData, resumeId });
+  }, [resumeId]);
+
   return (
     <Container>
       <Title>
         이력서 제출
       </Title>
-      <ResumeList data={data} itemsPerPage={8} />
+      <ResumeList data={data} itemsPerPage={8} onSelect={(id) => setResumeId(id)} />
     </Container>
   );
 }

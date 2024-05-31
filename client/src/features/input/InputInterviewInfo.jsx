@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { COLORS } from "../../styles/colors";
 import RoundButton from '../../components/button/RoundButton';
 import InputInterviewSetting from './InputInterviewSetting';
 import InputPersonalInfo from '../../features/input/InputPersonalInfo';
-import InputResumeSelect from '../../features/input/InputResumeSelect.jsx';
-import Inputready from '../../features/input/Inputready';
+import InputResumeSelect from '../../features/input/InputResumeSelect';
+import InputReady from './InputReady';
+import { createInterviewRoom } from '../../services/interviewService';
 
 const fadeIn = keyframes`
   from {
@@ -84,7 +85,7 @@ const Card = styled.div`
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2);
   padding: 20px;
-  overflow-y: auto;  // Add this line to enable scrolling if content overflows
+  overflow-y: auto;
 `;
 
 const ButtonContainer = styled.div`
@@ -99,6 +100,14 @@ const ButtonContainer = styled.div`
 `;
 
 function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
+  const [interviewData, setInterviewData] = useState({
+    title: '',
+    interviewType: '',
+    questionNumber: 0,
+    jobAdvertisement: '',
+    resumeId: null
+  });
+
   const nextCard = () => {
     if (currentIndex < 3) {
       setCurrentIndex(currentIndex + 1);
@@ -111,12 +120,22 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
     }
   };
 
+  const handleCreateInterview = async () => {
+    try {
+      const response = await createInterviewRoom(interviewData);
+      alert('Interview room created successfully!');
+      console.log('Created interview room:', response);
+    } catch (error) {
+      alert(`Failed to create interview room: ${error.message}`);
+    }
+  };
+
   return (
     <Container>
       <Carousel>
         <CardContainer currentIndex={currentIndex}>
           <Card>
-            <InputInterviewSetting />
+            <InputInterviewSetting interviewData={interviewData} setInterviewData={setInterviewData} />
             <ButtonContainer isVisible={currentIndex === 0}>
               <RoundButton
                 onClick={prevCard}
@@ -137,7 +156,7 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
             </ButtonContainer>
           </Card>
           <Card>
-            <InputPersonalInfo />
+            <InputPersonalInfo interviewData={interviewData} setInterviewData={setInterviewData} />
             <ButtonContainer isVisible={currentIndex === 1}>
               <RoundButton
                 onClick={prevCard}
@@ -158,7 +177,7 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
             </ButtonContainer>
           </Card>
           <Card>
-            <InputResumeSelect />
+            <InputResumeSelect interviewData={interviewData} setInterviewData={setInterviewData} />
             <ButtonContainer isVisible={currentIndex === 2}>
               <RoundButton
                 onClick={prevCard}
@@ -179,7 +198,7 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
             </ButtonContainer>
           </Card>
           <Card>
-            <Inputready />
+            <InputReady interviewData={interviewData} setInterviewData={setInterviewData} />
             <ButtonContainer isVisible={currentIndex === 3}>
               <RoundButton
                 onClick={prevCard}
@@ -190,12 +209,12 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
                 Previous
               </RoundButton>
               <RoundButton
-                onClick={nextCard}
-                disabled={currentIndex === 3}
+                onClick={handleCreateInterview}
+                disabled={currentIndex !== 3}
                 color="white"
                 bgColor={COLORS.blue_black}
               >
-                Next
+                Create Interview
               </RoundButton>
             </ButtonContainer>
           </Card>

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
-import SmallsquareButton from '../../components/button/smallsquareButton';
-import CounterButton from '../../components/button/counterButton'; 
+import SmallsquareButton from '../../components/button/SmallsquareButton';
+import CounterButton from '../../components/button/CounterButton'; 
 import CounterOne from "../../assets/icons/counter_1.png";
 import CounterTwo from "../../assets/icons/counter_2.png";
 import CounterThree from "../../assets/icons/counter_3.png";
@@ -55,11 +55,17 @@ const ButtonContainer = styled.div`
   gap: 12px; 
 `;
 
-function InputInterviewSetting() {
-  const [activeButton, setActiveButton] = useState(''); // 'voice' or 'text'
+function InputInterviewSetting({ interviewData, setInterviewData }) {
+  const [title, setTitle] = useState(interviewData.title);
+  const [interviewType, setInterviewType] = useState(interviewData.interviewType);
+  const [questionNumber, setQuestionNumber] = useState(interviewData.questionNumber);
+
+  useEffect(() => {
+    setInterviewData({ ...interviewData, title, interviewType, questionNumber });
+  }, [title, interviewType, questionNumber]);
 
   const handleButtonClick = (buttonType) => {
-    setActiveButton(buttonType);
+    setInterviewType(buttonType);
   };
 
   return (
@@ -72,7 +78,7 @@ function InputInterviewSetting() {
           <Icon src={CounterOne} alt="Counter One" />
           면접 이름 설정
         </SemiTitle>
-        <Input />
+        <Input value={title} onChange={(e) => setTitle(e.target.value)} />
       </SettingContainer>
       <SettingContainer>
         <SemiTitle>
@@ -81,13 +87,13 @@ function InputInterviewSetting() {
         </SemiTitle>
         <ButtonContainer>
           <SmallsquareButton
-            active={activeButton === 'voice'}
+            active={interviewType === 'voice'}
             onClick={() => handleButtonClick('voice')}
           >
             음성
           </SmallsquareButton>
           <SmallsquareButton
-            active={activeButton === 'text'}
+            active={interviewType === 'text'}
             onClick={() => handleButtonClick('text')}
           >
             텍스트
@@ -99,7 +105,7 @@ function InputInterviewSetting() {
           <Icon src={CounterThree} alt="Counter Three" />
           질문 개수 설정
         </SemiTitle>
-        <CounterButton /> 
+        <CounterButton value={questionNumber} onChange={(num) => setQuestionNumber(num)} /> 
       </SettingContainer>
     </Container>
   );

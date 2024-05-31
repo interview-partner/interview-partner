@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
 import Circle from "../../assets/icons/circle.png";
 import CheckMethod from "../../assets/images/checkMethodType.png";
-import BigSquareButton from "../../components/button/bigsquareButton.jsx";
+import BigSquareButton from "../../components/button/BigsquareButton";
 
 const Container = styled.div`
     width: 100%;
@@ -36,7 +36,6 @@ const GuideText = styled.div`
   margin-bottom: 40px;
 `
 
-
 const GuideContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -63,7 +62,7 @@ const Img = styled.img`
   height: 133px;
 `;
 
-function InputPersonalInfo() {
+function InputReady({ interviewData, setInterviewData, handleCreateInterview }) {
   return (
     <Container>
       <Title>
@@ -77,7 +76,7 @@ function InputPersonalInfo() {
         <GuideContainer>
           <GuideList>
               <Icon src={Circle} alt="Circle" />
-              주어진 질문에 음성으로 답변합니다
+              선택한 면접 방식에 따라 주어진 질문에 음성/텍스트로 답변합니다
           </GuideList>
           <GuideList>
               <Icon src={Circle} alt="Circle" />
@@ -88,7 +87,7 @@ function InputPersonalInfo() {
               각 면접 기록은 마이페이지에서 확인할 수 있습니다
           </GuideList>
         </GuideContainer>
-        <BigSquareButton to="/promptroom">
+        <BigSquareButton onClick={handleCreateInterview}>
           면접 시작하기
         </BigSquareButton>
       </TextContainer>
@@ -96,4 +95,4 @@ function InputPersonalInfo() {
   );
 }
 
-export default InputPersonalInfo;
+export default InputReady;
