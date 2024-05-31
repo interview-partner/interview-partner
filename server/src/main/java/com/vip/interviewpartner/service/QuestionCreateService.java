@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class QuestionMakingService {
+public class QuestionCreateService {
     private final OkHttpClient httpClient = new OkHttpClient();
 
     @Value("${gpt.credentials.secretKey}")
