@@ -22,16 +22,7 @@ const Title = styled.div`
 `;
 
 const data = [
-  'Resume 1',
-  'Resume 2',
-  'Resume 3',
-  'Resume 4',
-  'Resume 5',
-  'Resume 6',
-  'Resume 7',
-  'Resume 8',
-  'Resume 9',
-  'Resume 10',
+  1,2,3,4,5,6,7
 ];
 
 function InputResumeSelect({ interviewData, setInterviewData }) {

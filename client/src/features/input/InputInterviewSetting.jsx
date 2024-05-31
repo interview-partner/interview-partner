@@ -105,7 +105,7 @@ function InputInterviewSetting({ interviewData, setInterviewData }) {
           <Icon src={CounterThree} alt="Counter Three" />
           질문 개수 설정
         </SemiTitle>
-        <CounterButton value={questionNumber} onChange={(num) => setQuestionNumber(num)} /> 
+        <CounterButton value={questionNumber} onChange={setQuestionNumber} /> 
       </SettingContainer>
     </Container>
   );

@@ -39,7 +39,7 @@ const PageButton = styled.button`
   }
 `;
 
-const ResumeList = ({ data, itemsPerPage = 8 }) => {
+const ResumeList = ({ data, itemsPerPage = 8, onSelect }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeIndex, setActiveIndex] = useState(null); // State to manage active button
 
@@ -51,6 +51,7 @@ const ResumeList = ({ data, itemsPerPage = 8 }) => {
 
   const handleButtonClick = (index) => {
     setActiveIndex(index);
+    onSelect(index + (currentPage - 1) * itemsPerPage); // Adjust index based on pagination
   };
 
   const renderPageButtons = () => {
