@@ -196,7 +196,7 @@ public class MemberController {
                     @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content),
             }
     )
-    @GetMapping("/me/rooms")
+    @GetMapping("/me/rooms/participations")
     @ResponseStatus(HttpStatus.OK)
     public ApiCommonResponse<PageCustom<ParticipationResponse>> getParticipation(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                                            @Parameter(description = "페이지 기본값: page=0, size=10, sort=createDate, direction=DESC") @PageableDefault(size = 10, sort = "joinDate", direction = Sort.Direction.DESC) Pageable pageable) {
