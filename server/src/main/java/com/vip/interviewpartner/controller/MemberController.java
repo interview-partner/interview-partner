@@ -199,7 +199,7 @@ public class MemberController {
     @GetMapping("/me/rooms/participations")
     @ResponseStatus(HttpStatus.OK)
     public ApiCommonResponse<PageCustom<ParticipationResponse>> getParticipation(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                                           @Parameter(description = "페이지 기본값: page=0, size=10, sort=createDate, direction=DESC") @PageableDefault(size = 10, sort = "joinDate", direction = Sort.Direction.DESC) Pageable pageable) {
+                                                                           @Parameter(description = "페이지 기본값: page=0, size=10, sort=joinDate, direction=DESC") @PageableDefault(size = 10, sort = "joinDate", direction = Sort.Direction.DESC) Pageable pageable) {
         PageCustom<ParticipationResponse> participationResponses = participantLookupService.getParticipation(customUserDetails.getMemberId(), pageable);
         return ApiCommonResponse.successResponse(participationResponses);
     }
