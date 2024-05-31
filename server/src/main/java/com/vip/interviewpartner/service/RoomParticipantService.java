@@ -9,6 +9,8 @@ import com.vip.interviewpartner.domain.Room;
 import com.vip.interviewpartner.domain.RoomParticipant;
 import com.vip.interviewpartner.repository.RoomParticipantRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,5 +55,16 @@ public class RoomParticipantService {
     public RoomParticipant findRoomParticipant(Long participantId) {
         return roomParticipantRepository.findById(participantId)
                 .orElseThrow(() -> new CustomException(ROOM_PARTICIPANT_NOT_FOUND));
+    }
+
+    /**
+     * 주어진 멤버 ID로 RoomParticipant 객체 목록을 페이지로 조회합니다.
+     *
+     * @param memberId 조회할 멤버의 ID
+     * @param pageable 페이징 정보
+     * @return 페이징된 RoomParticipant 객체 목록
+     */
+    public Page<RoomParticipant> findByMemberId(Long memberId, Pageable pageable) {
+        return roomParticipantRepository.findByMemberId(memberId, pageable);
     }
 }
