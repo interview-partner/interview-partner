@@ -46,7 +46,7 @@ export const VideoContent = styled.div`
   height: 100%;
 `;
 
-export const ChatIcon = styled.div`
+export const ToggleChatButton = styled.div`
   position: fixed;
   bottom: 20px;
   right: 40px;
