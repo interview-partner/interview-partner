@@ -71,8 +71,10 @@ export const UserName = styled.span`
   font-size: 16px;
 `;
 
-export const UserResumeButton = styled.button`
-  background-color: rgba(255, 255, 255, 0.13);
+export const UserOptionButton = styled.button.attrs(props => ({
+  isActive: props.isActive,
+}))`
+  background-color: ${({ isActive }) => (isActive ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.13)')};
   border: none;
   width: 40px;
   height: 40px;
@@ -95,29 +97,6 @@ export const UserResumeButton = styled.button`
   }
 `;
 
-export const UserFeedbackButton = styled.button`
-  background-color: rgba(255, 255, 255, 0.13);
-  border: none;
-  width: 40px;
-  height: 40px;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  img {
-    width: 20px;
-    height: 20px;
-  }
-
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-  }
-`;
 
 export const ChatBox = styled.div`
   flex: 1;
