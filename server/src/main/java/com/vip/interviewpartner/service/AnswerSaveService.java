@@ -6,7 +6,6 @@ import com.vip.interviewpartner.domain.Interview;
 import com.vip.interviewpartner.domain.Question;
 import com.vip.interviewpartner.domain.UserAnswer;
 import com.vip.interviewpartner.dto.AnswerSaveRequest;
-import com.vip.interviewpartner.repository.InterviewRepository;
 import com.vip.interviewpartner.repository.QuestionRepository;
 import com.vip.interviewpartner.repository.UserAnswerRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,16 +22,23 @@ public class AnswerSaveService {
 
     private final QuestionRepository questionRepository;
     private final UserAnswerRepository userAnswerRepository;
-    private final InterviewRepository interviewRepository;
 
     private final InterviewService interviewService;
 
+    /**
+     * 사용자의 답변 저장 요청을 처리합니다.
+     *
+     * @param memberId 사용자의 Id
+     * @param questionId 질문 Id
+     * @param answerSaveRequest 프론트 단에서 받은 answerSaveRequest
+     */
     @Transactional(readOnly = false)
     public void saveAnswer(Long memberId, Long questionId, AnswerSaveRequest answerSaveRequest){
 
-        Interview interview = interviewRepository.findByQuestionsId(questionId);
+        Interview interview = questionRepository.findInterviewByQuestionId(questionId)
+                .orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
 
-        interviewService.validateInterviewOwnership(memberId, interview.getId());
+        interviewService.validateInterviewOwnership(memberId, interview);
 
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
