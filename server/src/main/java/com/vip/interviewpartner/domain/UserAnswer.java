@@ -28,5 +28,12 @@ public class UserAnswer extends BaseCreateDateEntity {
     private Question question;
 
     private String content;
+
     private String audioPath;
+
+    public UserAnswer(Question question, String content, String audioPath) {
+        this.question = question;
+        this.content = content;
+        this.audioPath = audioPath;
+    }
 }
