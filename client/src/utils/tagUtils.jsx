@@ -1,4 +1,4 @@
-export const addTag = (tags, setTags, newTag, maxTags = 5) => {
+export const addTag = (tags, setTags, newTag, maxTags = 3) => {
     if (newTag && !tags.some(tag => tag.id === newTag.id) && tags.length < maxTags) {
         setTags([...tags, newTag]);
     } else if (tags.length >= maxTags) {
