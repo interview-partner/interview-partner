@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
-import ResumeList from "../../features/show-list/ResumeList";
+import ResumeList from "../../features/show-list/resumeList";
 
 const Container = styled.div`
   width: 100%;

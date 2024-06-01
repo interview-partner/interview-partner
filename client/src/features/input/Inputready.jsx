@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
 import Circle from "../../assets/icons/circle.png";
 import CheckMethod from "../../assets/images/checkMethodType.png";
-import BigSquareButton from "../../components/button/BigsquareButton";
+import BigSquareButton from "../../components/button/bigsquareButton";
 
 const Container = styled.div`
     width: 100%;

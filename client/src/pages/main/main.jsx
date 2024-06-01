@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors"
 import roundlogoWhite from '../../assets/images/roundlogoWhite.png';
-import BigsquareButton from "../../components/button/BigsquareButton.jsx";
+import BigsquareButton from "../../components/button/bigsquareButton.jsx";
 import './main.css';
 
 function Main() {

@@ -5,7 +5,7 @@ import RoundButton from '../../components/button/RoundButton';
 import InputInterviewSetting from './InputInterviewSetting';
 import InputPersonalInfo from '../../features/input/InputPersonalInfo';
 import InputResumeSelect from '../../features/input/InputResumeSelect';
-import InputReady from './InputReady';
+import InputReady from './Inputready';
 import { createInterviewRoom } from '../../services/interviewService';
 
 const fadeIn = keyframes`

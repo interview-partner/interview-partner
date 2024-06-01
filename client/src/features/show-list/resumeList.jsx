@@ -101,7 +101,6 @@ const ResumeList = ({ data, itemsPerPage = 8, onSelect }) => {
         <ModalPortal>
           <Modal isOpen={modalOn} onClose={handleModal}>
             <h2>이력서 업로드</h2>
-            <p>여기에 이력서를 업로드하세요.</p>
           </Modal>
         </ModalPortal>
       )}
