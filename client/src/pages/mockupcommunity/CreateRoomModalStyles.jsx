@@ -1,8 +1,30 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { COLORS } from '../../styles/colors.jsx';
 
 export const IconImage = styled.img`
   width: 100%;
+`;
+
+// 페이드 인 애니메이션 정의
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
+// 슬라이드 인 애니메이션 정의
+const slideIn = keyframes`
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 `;
 
 export const ModalBackdrop = styled.div`
@@ -16,8 +38,10 @@ export const ModalBackdrop = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  animation: ${fadeIn} 0.3s ease-out;  // 페이드 인 애니메이션 적용
 `;
 
+// 모달 컨테이너 스타일
 export const ModalContainer = styled.div`
   background-color: #fff;
   width: 630px;
@@ -26,6 +50,7 @@ export const ModalContainer = styled.div`
   border-radius: 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: relative;
+  animation: ${slideIn} 0.3s ease-out;  // 슬라이드 인 애니메이션 적용
 `;
 
 export const ModalContent = styled.div`

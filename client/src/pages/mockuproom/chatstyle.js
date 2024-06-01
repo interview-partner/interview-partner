@@ -2,26 +2,26 @@ import styled, { keyframes } from 'styled-components';
 
 export const slideIn = keyframes`
   from {
-    transform: translateY(100%);
+    transform: translateX(100%);
   }
   to {
-    transform: translateY(0);
+    transform: translateX(0);
   }
 `;
 
 export const slideOut = keyframes`
   from {
-    transform: translateY(0);
+    transform: translateX(0);
   }
   to {
-    transform: translateY(100%);
+    transform: translateX(100%);
   }
 `;
 
 export const ChatContainer = styled.div`
-  display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
+  display: flex;
   flex-direction: column;
-  height: 95%;
+  height: 100%;
   background-color: #2c2c2c;
   border-radius: 10px;
   padding: 20px;

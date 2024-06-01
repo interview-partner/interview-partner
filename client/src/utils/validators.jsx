@@ -187,5 +187,8 @@ export const validateTagNumber = (tags) => {
     if (tags.length === 0) {
         return '적어도 하나의 태그를 추가해야 합니다.'
     }
+    if (tags.length > 3) {
+        return '태그는 최대 3개까지 추가할 수 있습니다.';
+    }
     return '';
 };

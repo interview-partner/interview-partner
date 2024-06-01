@@ -1,34 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Marginer } from '../../components/common/marginer/marginer.jsx';
-import CreateRoomModalComponent from './CreateRoomModalComponent.jsx';
+import CreateRoomModal from './CreateRoomModal.jsx';
 import ResumeSelectModal from './ResumeSelectModal.jsx';
 import { Link } from 'react-router-dom';
 import {
-  PageContainer, Header, HeaderContainer, HeaderTitle, MainTitle, SubTitle, CreateRoomButton,
-  CardContainer, Card, CardHeader, CardTitle, TagContainer, Tag, CardBody, CardFooter,
-  EnterButton, PaginationContainer, PaginationButton, PageNumberButton
+  PageContainer, Header, HeaderContainer, HeaderTitle, MainTitle, SubTitle, RoomOptionButton, RoomOptionButtonContainer,
+  CardContainer, Card, CardHeader, CardTitle, TagContainer, Tag, CardBody, CardFooter, HeaderIconImage,
+  EnterButton, Overlay
 } from './MockupCommunityStyles';
-import styled from 'styled-components';
 import { fetchRooms } from '../../services/roomService.js';
-
-const TabsContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
-`;
-
-const Tab = styled.button`
-  background-color: ${props => (props.active ? '#007bff' : '#e9ecef')};
-  color: ${props => (props.active ? 'white' : '#495057')};
-  border: 1px solid #dee2e6;
-  border-radius: 10px;
-  padding: 10px 20px;
-  cursor: pointer;
-  outline: none;
-  &:not(:last-child) {
-    border-right: none;
-  }
-`;
+import Pagination from './Pagination.jsx';
+import { formatTimeAgoInSeconds } from '../../utils/dateUtils.jsx';
+import diversity_3_Icon from '../../assets/icons/diversity_3_Icon.png'
 
 function Mockupcommunity() {
   const [rooms, setRooms] = useState([]);
@@ -100,21 +83,29 @@ function Mockupcommunity() {
       <Header>
         <HeaderContainer>
           <HeaderTitle>
-            <MainTitle>모의 면접</MainTitle>
-            <SubTitle>실시간 화상면접</SubTitle>
+            <HeaderIconImage src={diversity_3_Icon} alt="Diversity Icon" />
+            <div>
+              <MainTitle>모의 면접</MainTitle>
+              <SubTitle>실시간 화상면접</SubTitle>
+            </div>
           </HeaderTitle>
-          <CreateRoomButton style={{ marginTop: '77px' }} onClick={openModal}>
-            방 만들기
-          </CreateRoomButton>
+          <RoomOptionButtonContainer>
+            {status === 'open' ? (
+              <RoomOptionButton style={{ marginTop: '77px' }} onClick={() => { setStatus('closed'); setClosedPage(1); }}>
+                닫힌 방 보기
+              </RoomOptionButton>
+            ) : (
+              <RoomOptionButton style={{ marginTop: '77px' }} onClick={() => { setStatus('open'); setOpenPage(1); }}>
+                열린 방 보기
+              </RoomOptionButton>
+            )}
+            <RoomOptionButton style={{ marginTop: '77px' }} onClick={openModal}>
+              방 만들기
+            </RoomOptionButton>
+          </RoomOptionButtonContainer>
         </HeaderContainer>
       </Header>
       {error && <div>{error}</div>}
-
-      <TabsContainer>
-        <Tab active={status === 'open'} onClick={() => { setStatus('open'); setOpenPage(1); }}>열린 방</Tab>
-        <Tab active={status === 'closed'} onClick={() => { setStatus('closed'); setClosedPage(1); }}>닫힌 방</Tab>
-      </TabsContainer>
-
       <CardContainer>
         {rooms.map((room) => (
           <Card key={room.id}>
@@ -136,31 +127,21 @@ function Mockupcommunity() {
               <EnterButton onClick={() => openResumeModal(room)}>-&gt;</EnterButton>
             </CardFooter>
             <Marginer direction="vertical" margin={30} />
-            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-              방 생성 시간: {room.createdTime}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', color: 'gray' }}>
+              {formatTimeAgoInSeconds(room.createdTime)}
             </div>
+            {status === 'closed' && <Overlay>방이 종료되었습니다!</Overlay>}
           </Card>
         ))}
       </CardContainer>
 
-      <PaginationContainer>
-        <PaginationButton onClick={() => handleChangePage(currentPage - 1)} disabled={currentPage === 1 || currentPage === ''}>
-          &lt;
-        </PaginationButton>
-        {Array.from({ length: totalPages }, (_, index) => (
-          <PageNumberButton
-            key={index + 1}
-            active={currentPage === index + 1}
-            onClick={() => handleChangePage(index + 1)}
-          >
-            {index + 1}
-          </PageNumberButton>
-        ))}
-        <PaginationButton onClick={() => handleChangePage(currentPage + 1)} disabled={currentPage === totalPages || currentPage === 1}>
-          &gt;
-        </PaginationButton>
-      </PaginationContainer>
-      <CreateRoomModalComponent
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onChangePage={handleChangePage}
+      />
+
+      <CreateRoomModal
         isModalOpen={isModalOpen}
         closeModal={closeModal}
       />

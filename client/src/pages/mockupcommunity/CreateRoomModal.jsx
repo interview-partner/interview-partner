@@ -107,6 +107,7 @@ const ModalComponent = ({
   };
 
   const handleTagSelect = async (tag) => {
+
     if (typeof tag === 'string') {
       try {
         const data = await createTag(tag);
@@ -162,6 +163,7 @@ const ModalComponent = ({
     try {
       const response = await createRoom(roomData);
       alert('방이 성공적으로 생성되었습니다.');
+      window.location.reload(); // 페이지 새로고침
       closeModal();
     } catch (err) {
       alert(err.message);
