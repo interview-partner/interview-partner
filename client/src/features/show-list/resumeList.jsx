@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import ResumeListButton from '../../components/button/resumeListButton.jsx';
 import ResumeUploadButton from '../../components/button/resumeUploadButton.jsx';
+import ModalPortal from "../../ModalPortal.js";
+import Modal from "../modal/ResumeUploadModal.jsx";
 import { COLORS } from "../../styles/colors";
 
 const ListContainer = styled.div`
@@ -43,6 +45,11 @@ const PageButton = styled.button`
 const ResumeList = ({ data, itemsPerPage = 8, onSelect }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeIndex, setActiveIndex] = useState(null); 
+  const [modalOn, setModalOn] = useState(false);
+
+  const handleModal = () => {
+    setModalOn(!modalOn);
+  };
 
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
@@ -76,7 +83,7 @@ const ResumeList = ({ data, itemsPerPage = 8, onSelect }) => {
   return (
     <ListContainer>
       <GridContainer>
-        <ResumeUploadButton onClick={() => handleButtonClick(-1)} />
+        <ResumeUploadButton onClick={handleModal} />
         {currentData.map((item, index) => (
           <ResumeListButton
             key={index}
@@ -90,6 +97,14 @@ const ResumeList = ({ data, itemsPerPage = 8, onSelect }) => {
       <PaginationContainer>
         {renderPageButtons()}
       </PaginationContainer>
+      {modalOn && (
+        <ModalPortal>
+          <Modal isOpen={modalOn} onClose={handleModal}>
+            <h2>이력서 업로드</h2>
+            <p>여기에 이력서를 업로드하세요.</p>
+          </Modal>
+        </ModalPortal>
+      )}
     </ListContainer>
   );
 };
