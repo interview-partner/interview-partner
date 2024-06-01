@@ -3,8 +3,10 @@ package com.vip.interviewpartner.common.util;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 public class DateTimeUtil {
+    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
 
     private static final String TIMESTAMP = "timestamp";
     private static final String TIME_ZONE = "Asia/Seoul";

@@ -1,10 +1,10 @@
 package com.vip.interviewpartner.dto;
 
+import com.vip.interviewpartner.common.util.DateTimeUtil;
 import com.vip.interviewpartner.domain.Resume;
 import com.vip.interviewpartner.domain.Room;
 import com.vip.interviewpartner.domain.RoomParticipant;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
@@ -21,8 +21,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Schema(description = "방 참가 이력 상세 조회 응답 DTO")
 public class ParticipantDetailsResponse {
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
-
     @Schema(description = "방 제목", example = "네카라쿠배 면접 대비 방")
     private String title;
 
@@ -65,8 +63,8 @@ public class ParticipantDetailsResponse {
                         .toList())
                 .originalFileName(resume.getOriginalFileName())
                 .filePath(resume.getFilePath())
-                .joinDate(Optional.ofNullable(participant.getJoinDate()).map(date -> date.format(formatter)).orElse(""))
-                .leaveDate(Optional.ofNullable(participant.getLeaveDate()).map(date -> date.format(formatter)).orElse(""))
+                .joinDate(Optional.ofNullable(participant.getJoinDate()).map(date -> date.format(DateTimeUtil.FORMATTER)).orElse(""))
+                .leaveDate(Optional.ofNullable(participant.getLeaveDate()).map(date -> date.format(DateTimeUtil.FORMATTER)).orElse(""))
                 .build();
     }
 

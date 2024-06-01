@@ -1,9 +1,8 @@
 package com.vip.interviewpartner.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.vip.interviewpartner.common.util.DateTimeUtil;
 import com.vip.interviewpartner.domain.Feedback;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,15 +19,15 @@ public class FeedbackResponse {
     private String content;
 
     @Schema(description = "피드백 날짜", example = "2024.05.24 14:30")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm", timezone = "Asia/Seoul")
-    private LocalDateTime createdTime;
+    private String createdTime;
 
     /**
      * Feedback Entity -> FeedbackResponse DTO 변환하는 메소드입니다.
+     *
      * @param feedback 변환할 Feedback 엔티티
      * @return 변환된 FeedbackResponse 객체
      */
     public static FeedbackResponse of(Feedback feedback) {
-        return new FeedbackResponse(feedback.getContent(), feedback.getCreateDate());
+        return new FeedbackResponse(feedback.getContent(), feedback.getCreateDate().format(DateTimeUtil.FORMATTER));
     }
 }
