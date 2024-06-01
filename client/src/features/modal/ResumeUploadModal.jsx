@@ -4,6 +4,7 @@ import CloseIcon from '../../assets/icons/close_Icon.png';
 import UploadResumeButton from '../../components/button/UploadResumeButton';
 import RoundButton from '../../components/button/RoundButton.jsx';
 import { COLORS } from "../../styles/colors";
+import { uploadResume } from '../../services/resumeUploadService';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -62,10 +63,21 @@ const FileName = styled.div`
 `;
 
 const ResumeUploadModal = ({ isOpen, onClose, children }) => {
-  const [uploadedFileName, setUploadedFileName] = useState(null);
+  const [uploadedFile, setUploadedFile] = useState(null);
 
   const handleFileSelect = (file) => {
-    setUploadedFileName(file.name);
+    setUploadedFile(file);
+  };
+
+  const handleUpload = async () => {
+    if (uploadedFile) {
+      try {
+        await uploadResume(uploadedFile);
+        onClose(); // 업로드 완료 후 모달 창 닫기
+      } catch (error) {
+        alert(error.message); // 오류 메시지 표시
+      }
+    }
   };
 
   if (!isOpen) return null;
@@ -79,10 +91,10 @@ const ResumeUploadModal = ({ isOpen, onClose, children }) => {
         {children}
         <ContentContainer>
           <UploadResumeButton onFileSelect={handleFileSelect} />
-          {uploadedFileName && <FileName>{uploadedFileName}</FileName>}
+          {uploadedFile && <FileName>{uploadedFile.name}</FileName>}
         </ContentContainer>
         <ButtonContainer>
-          <RoundButton color="white" bgColor={COLORS.blue_black}>
+          <RoundButton color="white" bgColor={COLORS.blue_black} onClick={handleUpload}>
             이력서 업로드 하기
           </RoundButton>
         </ButtonContainer>
