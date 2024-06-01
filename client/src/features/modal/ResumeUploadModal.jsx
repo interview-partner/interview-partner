@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import CloseIcon from '../../assets/icons/close_Icon.png';
 import UploadResumeButton from '../../components/button/UploadResumeButton';
@@ -52,21 +52,34 @@ const ButtonContainer = styled.div`
 const Icon = styled.img`
   width: 24px;
   height: 24px;
-  cursor: pointer; /* 커서 추가 */
+  cursor: pointer;
+`;
+
+const FileName = styled.div`
+  margin-top: 20px;
+  color: ${COLORS.gray};
+  font-size: 16px;
 `;
 
 const ResumeUploadModal = ({ isOpen, onClose, children }) => {
+  const [uploadedFileName, setUploadedFileName] = useState(null);
+
+  const handleFileSelect = (file) => {
+    setUploadedFileName(file.name);
+  };
+
   if (!isOpen) return null;
 
   return (
     <ModalOverlay>
       <ModalContent>
         <CloseContainer>
-          <Icon src={CloseIcon} alt="Close Icon" onClick={onClose} /> {/* onClick 핸들러 추가 */}
+          <Icon src={CloseIcon} alt="Close Icon" onClick={onClose} />
         </CloseContainer>
         {children}
         <ContentContainer>
-          <UploadResumeButton />
+          <UploadResumeButton onFileSelect={handleFileSelect} />
+          {uploadedFileName && <FileName>{uploadedFileName}</FileName>}
         </ContentContainer>
         <ButtonContainer>
           <RoundButton color="white" bgColor={COLORS.blue_black}>
