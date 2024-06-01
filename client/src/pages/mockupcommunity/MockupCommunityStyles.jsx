@@ -25,8 +25,15 @@ export const HeaderContainer = styled.div`
 
 export const HeaderTitle = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 `;
+
+export const HeaderIconImage = styled.img`
+  width: 40px;  // 너비 설정
+  height: 40px;  // 높이 설정
+  margin-right: 15px;
+`;
+
 
 export const MainTitle = styled.h1`
   margin: 0;
@@ -37,8 +44,16 @@ export const SubTitle = styled.div`
   color: ${COLORS.gray};
 `;
 
-export const CreateRoomButton = styled.button`
-  width: 100px;
+export const RoomOptionButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;  // 버튼 간 간격 설정
+`;
+
+
+export const RoomOptionButton = styled.button`
+  width: 108px;
   height: 40px;
   padding: 8px 20px;
   color: #fff;
@@ -47,11 +62,11 @@ export const CreateRoomButton = styled.button`
   border: none;
   border-radius: 100px;
   cursor: pointer;
-  transition: background 240ms ease-in-out;
   background: #254366;
 
   &:hover {
     background: linear-gradient(
+      58deg,
       #3b6aa0 20%,
       #3b6aa0 100%
     );
@@ -77,6 +92,7 @@ export const CardContainer = styled.div`
 `;
 
 export const Card = styled.div`
+  position: relative;
   background-color: #fff;
   width: 100%;
   height: 100%;
@@ -86,6 +102,7 @@ export const Card = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  transition: opacity 0.3s;
 `;
 
 export const CardHeader = styled.div`
@@ -141,42 +158,19 @@ export const EnterButton = styled.button`
   }
 `;
 
-export const PaginationContainer = styled.div`
+export const Overlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3); // 반투명한 회색
+  border-radius: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 120px;
-`;
-
-export const PaginationButton = styled.button`
-  margin: 0 5px;
-  padding: 8px 16px;
-  color: ${COLORS.gray};
-  border: none;
-  background: none;
-  font-size: 20px;
-  cursor: pointer;
-
-  &:disabled {
-    color: ${COLORS.light_gray};
-    cursor: not-allowed;
-  }
-
-  &:hover:not(:disabled) {
-    color: ${COLORS.sky_blue};
-  }
-`;
-
-export const PageNumberButton = styled.button`
-  margin: 0 5px;
-  padding: 8px 16px;
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: ${({ active }) => (active ? COLORS.sky_blue : '#000000')};
-
-  &:hover:not(:disabled) {
-    color: ${({ active }) => (active ? COLORS.sky_blue : '#c0c0c0')};
-  }
+  color: white;
+  font-size: 25px;
+  font-weight: 700;
+  z-index: 10;
 `;

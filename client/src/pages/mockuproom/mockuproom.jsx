@@ -1,135 +1,197 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import Chat from './chat';
-import { COLORS } from '../../styles/colors';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import UserVideoComponent from '../../components/UserVideoComponent';
+import { initializeSession } from '../../services/openviduService';
 import voiceIcon from '../../assets/icons/voice_Icon.png';
 import headphoneIcon from '../../assets/icons/headphone_Icon.png';
 import callEndIcon from '../../assets/icons/call_end_Icon.png';
-import chatIcon from '../../assets/icons/chat_Icon.png';
+import Chat from './chat';
+import { Container, VideoContainer, ButtonContainer, IconButton, IconImage, ToggleChatButton } from './mockuproomstyle';
 
-const Container = styled.div`
-  display: flex;
-  height: 95%;
-  background-color: #121212;
-  box-sizing: border-box;
-  justify-content: center;
-`;
-
-const VideoContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 45%);
-  grid-template-rows: repeat(2, auto);
-  gap: 10px;
-  transition: all 0.3s ease;
-  width: ${({ isOpen }) => (isOpen ? '80%' : '70%')};
-  justify-content: center;
-  align-content: center;
-`;
-
-const VideoBox = styled.div`
-  width: 100%;
-  background-color: #333;
-  position: relative;
-  padding-top: 56.25%;
-  height: 0;
-  border-radius: 20px;
-`;
-
-const VideoContent = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-`;
-
-const ChatIcon = styled.div`
-  position: fixed;
-  bottom: 20px;
-  right: 40px;
-  width: 55px;
-  height: 55px;
-  background-color: black;
-  background-image: url(${chatIcon});
-  background-size: 55%;
-  background-repeat: no-repeat;
-  background-position: center;
-  color: #fff;
-  padding: 10px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 24px;
-  z-index: 1000;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: #555;
-  }
-`;
-
-const RoundButton = styled.button`
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  background-color: ${COLORS.sky_blue};
-  color: #fff;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  background-size: cover;
-  background-position: center;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  border: none;
-  outline: none;
-
-  &:hover {
-    background-color: rgba(118, 194, 233, 1);
-  }
-`;
-
-const ButtonContainer = styled.div`
-  position: fixed;
-  width: 300px;
-  display: flex;
-  justify-content: space-between;
-  bottom: 20px;
-`;
-
-const IconButton = styled(RoundButton)`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const IconImage = styled.img`
-  width: 60%;
-`;
+const MAX_PARTICIPANTS = 4;
 
 function Mockuproom() {
+  // 입장 토큰
+  const location = useLocation();
+  const { token } = location.state || {};
+
+  const navigate = useNavigate();
+
+  // 채팅창 열고 닫기
   const [isOpen, setIsOpen] = useState(false);
-  const toggleChat = () => setIsOpen(!isOpen);
-
-  const [messages, setMessages] = useState([]);
-  const [inputValue, setInputValue] = useState('');
-
-  const handleSendMessage = () => {
-    if (inputValue.trim() !== '') {
-      setMessages([...messages, { text: inputValue, isUser: true }]);
-      setInputValue('');
+  const toggleChat = () => {
+    if (!isOpen) {
+      setShouldRender(true);
     }
+    setIsOpen(!isOpen);
   };
+  const handleCloseChat = () => setIsOpen(false);
 
-  const handleCloseChat = () => {
-    setIsOpen(false);
-  };
+  const [session, setSession] = useState(undefined);
+
+  const [mainStreamManager, setMainStreamManager] = useState(undefined);
+  const [publisher, setPublisher] = useState(undefined);
+  const [subscribers, setSubscribers] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [users, setUsers] = useState([]);
+
+  const OV = useRef(null);
+  const hasJoined = useRef(false);
+  const [shouldRender, setShouldRender] = useState(isOpen);
+
+  const handleMainVideoStream = useCallback((stream) => {
+    if (mainStreamManager !== stream) {
+      setMainStreamManager(stream);
+    }
+  }, [mainStreamManager]);
+
+  const updateUsers = useCallback(() => {
+    console.log("------유저 업데이트 하기-------", session);
+    if (session) {
+      console.log('----세션 연결 데이터----', session.connection.data);
+      // Map 객체인 session.remoteConnections를 배열로 변환하여 사용
+      const userList = [
+        { id: session.connection.connectionId, data: session.connection.data },
+        ...Array.from(session.remoteConnections.values()).map((conn) => ({
+          id: conn.connectionId,
+          data: conn.data,
+        }))
+      ];
+      setUsers(userList);
+      console.log('Updated users:', userList);
+    }
+  }, [session]);
+
+  useEffect(() => {
+    console.log("세션 상태 변경 후 유저 목록 업데이트 시도");
+    updateUsers();
+  }, [session, updateUsers]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      const timer = setTimeout(() => setShouldRender(false), 300); // 애니메이션 지속 시간과 동일하게 설정
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  const joinSession = useCallback(async () => {
+    console.log("----조인 세션 호출하기---------");
+
+    if (hasJoined.current) {
+      console.log('Already joined the session.');
+      return;
+    }
+
+    const { OV: newOV, mySession } = initializeSession({
+      addSubscriber: (subscriber) => setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]),
+      deleteSubscriber: (streamManager) => setSubscribers((prevSubscribers) => {
+        const index = prevSubscribers.indexOf(streamManager);
+        if (index > -1) {
+          const newSubscribers = [...prevSubscribers];
+          newSubscribers.splice(index, 1);
+          return newSubscribers;
+        } else {
+          return prevSubscribers;
+        }
+      }),
+      addMessage: (message) => setMessages((prevMessages) => [...prevMessages, message]),
+    });
+
+    console.log("------------마이세션 출력하기---------", mySession);
+
+    OV.current = newOV;
+
+    try {
+      await mySession.connect(token, { clientData: 'MyNickname' });
+      const currentParticipants = mySession.remoteConnections.length + 1;
+
+      if (currentParticipants > MAX_PARTICIPANTS) {
+        alert('The room is full. Please try again later.');
+        navigate('/');
+        return;
+      }
+
+      let publisher = await OV.current.initPublisherAsync(undefined, {
+        audioSource: undefined,
+        videoSource: undefined,
+        publishAudio: true,
+        publishVideo: true,
+        resolution: '640x480',
+        frameRate: 30,
+        insertMode: 'APPEND',
+        mirror: false,
+      });
+
+      mySession.publish(publisher);
+      setPublisher(publisher);
+
+      const devices = await OV.current.getDevices();
+      const videoDevices = devices.filter(device => device.kind === 'videoinput');
+      const currentVideoDeviceId = publisher.stream.getMediaStream().getVideoTracks()[0].getSettings().deviceId;
+      const currentVideoDevice = videoDevices.find(device => device.deviceId === currentVideoDeviceId);
+
+      setMainStreamManager(publisher);
+
+      setSession(mySession); // 세션 설정
+
+      hasJoined.current = true;
+      mySession.on('connectionCreated', updateUsers);
+      mySession.on('connectionDestroyed', updateUsers);
+
+      updateUsers();
+    } catch (error) {
+      console.log('There was an error connecting to the session:', error.code, error.message);
+      if (error.code === 401) {
+        alert('Authentication error');
+        navigate('/mockupcommunity');
+      }
+    }
+  }, [navigate, updateUsers]);
+
+  const leaveSession = useCallback(async () => {
+    if (session) {
+      if (publisher) {
+        publisher.stream.getMediaStream().getTracks().forEach(track => track.stop());
+        await session.unpublish(publisher);
+      }
+      await session.disconnect();
+    }
+
+    // 상태 초기화
+    setSession(undefined);
+    setSubscribers([]);
+    setMainStreamManager(undefined);
+    setPublisher(undefined);
+    hasJoined.current = false;
+
+    // 상태 업데이트가 반영된 후 navigate 실행
+    setTimeout(() => navigate('/mockupcommunity'), 500);
+  }, [session, publisher, navigate])
+
+  useEffect(() => {
+    joinSession();
+    return () => {
+      if (session) {
+        session.disconnect();
+      }
+      OV.current = null;
+      setSession(undefined);
+      hasJoined.current = false;
+    };
+  }, []);
 
   return (
-    <Container>
+    <Container isOpen={isOpen}>
       <VideoContainer isOpen={isOpen}>
-        {[...Array(4)].map((_, index) => (
-          <VideoBox key={index}>
-            <VideoContent />
-          </VideoBox>
+        {mainStreamManager && (
+          <div onClick={() => handleMainVideoStream(mainStreamManager)}>
+            <UserVideoComponent streamManager={mainStreamManager} />
+          </div>
+        )}
+        {subscribers.map((sub, i) => (
+          <div key={i} onClick={() => handleMainVideoStream(sub)}>
+            <UserVideoComponent streamManager={sub} />
+          </div>
         ))}
       </VideoContainer>
       <ButtonContainer>
@@ -139,19 +201,19 @@ function Mockuproom() {
         <IconButton>
           <IconImage src={headphoneIcon} alt="Headphone Icon" />
         </IconButton>
-        <IconButton>
+        <IconButton onClick={leaveSession}>
           <IconImage src={callEndIcon} alt="Call End Icon" />
         </IconButton>
       </ButtonContainer>
-      {!isOpen && <ChatIcon onClick={toggleChat} />}
-      <Chat
-        isOpen={isOpen}
-        messages={messages}
-        inputValue={inputValue}
-        setInputValue={setInputValue}
-        handleSendMessage={handleSendMessage}
-        handleClose={handleCloseChat}
-      />
+      {!isOpen && <ToggleChatButton onClick={toggleChat} />}
+      {shouldRender && (
+        <Chat
+          isOpen={isOpen}
+          handleClose={handleCloseChat}
+          session={session}
+          users={users}
+        />
+      )}
     </Container>
   );
 }

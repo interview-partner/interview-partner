@@ -20,12 +20,14 @@ class MemberJoinServiceTest {
     private MemberRepository memberRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private MemberJoinService memberJoinService;
+    private MemberService memberService;
 
     @BeforeEach
     void setUp() {
         memberRepository = Mockito.mock(MemberRepository.class);
         bCryptPasswordEncoder = Mockito.mock(BCryptPasswordEncoder.class);
-        memberJoinService = new MemberJoinService(memberRepository, bCryptPasswordEncoder);
+        memberService = new MemberService(memberRepository);
+        memberJoinService = new MemberJoinService(memberService, memberRepository, bCryptPasswordEncoder);
     }
 
     @Test
@@ -61,13 +63,12 @@ class MemberJoinServiceTest {
     void checkNicknameDuplication() {
         // given
         MemberJoinRequest member1 = new MemberJoinRequest("asd@naver.com", "12345678", "홍길동");
-        MemberJoinRequest member2 = new MemberJoinRequest("asdasd@naver.com", "12345678", "홍길동");
 
         when(memberRepository.existsByEmail(member1.getEmail())).thenReturn(false);
         when(memberRepository.existsByNickname(member1.getNickname())).thenReturn(true);
 
         // then
-        assertThatThrownBy(() -> memberJoinService.join(member2))
+        assertThatThrownBy(() -> memberJoinService.join(member1))
                 .isInstanceOf(CustomException.class)
                 .extracting("errorCode")
                 .isEqualTo(DUPLICATE_NICKNAME);

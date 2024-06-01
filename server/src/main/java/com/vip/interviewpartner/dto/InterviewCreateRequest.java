@@ -19,7 +19,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Schema(description = "AI 인터뷰생성 Request")
-public class AiInterviewRequest {
+public class InterviewCreateRequest {
     @NotBlank(message = "타이틀은 필수입니다.")
     @Schema(description = "타이틀", example = "네이버 면접")
     private String title;
