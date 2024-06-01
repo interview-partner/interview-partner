@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import ResumeListButton from '../../components/button/resumeListButton.jsx';
+import ResumeUploadButton from '../../components/button/ResumeUploadButton.jsx';
 import { COLORS } from "../../styles/colors";
 
 const ListContainer = styled.div`
@@ -75,6 +76,7 @@ const ResumeList = ({ data, itemsPerPage = 8, onSelect }) => {
   return (
     <ListContainer>
       <GridContainer>
+        <ResumeUploadButton onClick={() => handleButtonClick(-1)} />
         {currentData.map((item, index) => (
           <ResumeListButton
             key={index}
