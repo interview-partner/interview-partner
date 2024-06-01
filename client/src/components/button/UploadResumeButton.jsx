@@ -1,7 +1,8 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
 import UploadIcon from '../../assets/icons/uploadIcon.png';
+import RefreshIcon from '../../assets/icons/refreshIcon.png';
 
 const Container = styled.div`
   display: flex;
@@ -48,6 +49,7 @@ const HiddenInput = styled.input`
 `;
 
 const UploadResumeButton = ({ onFileSelect }) => {
+  const [isFileUploaded, setIsFileUploaded] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleButtonClick = () => {
@@ -57,14 +59,15 @@ const UploadResumeButton = ({ onFileSelect }) => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      onFileSelect(file); // 파일 선택 핸들러 호출
+      setIsFileUploaded(true);
+      onFileSelect(file); 
     }
   };
 
   return (
     <Container>
       <CircleButton onClick={handleButtonClick}>
-        <Icon src={UploadIcon} alt="Upload Icon" />
+        <Icon src={isFileUploaded ? RefreshIcon : UploadIcon} alt="Upload Icon" />
       </CircleButton>
       <Content>
         이력서 파일을 업로드 해주세요
