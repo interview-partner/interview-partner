@@ -2,6 +2,7 @@ package com.vip.interviewpartner.service;
 
 import com.vip.interviewpartner.common.exception.CustomException;
 import com.vip.interviewpartner.common.exception.ErrorCode;
+import com.vip.interviewpartner.domain.Interview;
 import com.vip.interviewpartner.domain.Member;
 import com.vip.interviewpartner.repository.InterviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,17 +19,30 @@ import org.springframework.transaction.annotation.Transactional;
 public class InterviewService {
 
     private final InterviewRepository interviewRepository;
+
     /**
      * 요청을 보낸 사용자가 인터뷰의 소유자와 일치하는지 검증합니다.
      *
      * @param memberId 요청을 보낸 사용자의 Id
      * @param interviewId 인터뷰Id
      */
-
     public void validateInterviewOwnership(Long memberId, Long interviewId){
         Member interviewMember = interviewRepository.findMemberById(interviewId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         if(!interviewMember.getId().equals(memberId)) {
+            throw new CustomException(ErrorCode.MEMBER_ID_MISMATCH);
+        }
+    }
+
+    /**
+     * 요청을 보낸 사용자가 인터뷰의 소유자와 일치하는지 검증합니다.
+     *
+     * @param memberId 요청을 보낸 사용자의 Id
+     * @param interview 인터뷰 객체
+     */
+    public void validateInterviewOwnership(Long memberId, Interview interview){
+        Long interviewMemberId = interview.getMember().getId();
+        if(!interviewMemberId.equals(memberId)) {
             throw new CustomException(ErrorCode.MEMBER_ID_MISMATCH);
         }
     }
