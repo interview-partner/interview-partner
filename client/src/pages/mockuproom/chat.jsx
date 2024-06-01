@@ -3,9 +3,10 @@ import { v4 as uuidv4 } from 'uuid'; // 고유 ID 생성을 위한 라이브러�
 import send_Icon from '../../assets/icons/send_Icon.png';
 import article_Icon from '../../assets/icons/article_Icon.png';
 import userImageTest1 from '../../assets/images/userImage/userImage2.png';
-import keyboard_arrow_down_Icon from '../../assets/icons/keyboard_arrow_down_Icon.png';
+import chevron_right_Icon from '../../assets/icons/chevron_right_Icon.png';
 import rate_review_Icon from '../../assets/icons/rate_review_Icon.png';
-import { ChatContainer, ChatCloseButton, Input, SendButton, UserList, User, Avatar, UserName, UserResumeButton, ChatBox, MessageContainer, InputContainer, MessageList, Message, UserButtonContainer, UserFeedbackButton } from './chatstyle';
+import ResumeViewer from './ResumeViewer';
+import { ChatContainer, ChatCloseButton, Input, SendButton, UserList, User, Avatar, UserName, UserOptionButton, ChatBox, MessageContainer, InputContainer, MessageList, Message, UserButtonContainer } from './chatstyle';
 
 const Chat = ({ isOpen, handleClose, session, users = [] }) => {
   const [inputValue, setInputValue] = useState('');
@@ -16,6 +17,7 @@ const Chat = ({ isOpen, handleClose, session, users = [] }) => {
   const messageListRef = useRef(null);
   const messageIds = useRef(new Set()); // 이미 처리된 메시지 ID를 저장하는 Set
   const [isAutoScroll, setIsAutoScroll] = useState(true);
+  const [activeUserId, setActiveUserId] = useState(null); // 사용자(참여자)ID 관리용, roomParticipantId 예: 버튼클릭시 해당 사용의 이력서 제공
 
   const handleSendMessage = useCallback(() => {
     if (inputValue.trim() !== '') {
@@ -70,26 +72,40 @@ const Chat = ({ isOpen, handleClose, session, users = [] }) => {
     }
   };
 
-  const handleUserResumeClick = (resumeData) => {
-    setSelectedUserResume(resumeData);
-    setCurrentView('resume');
+  const handleUserResumeClick = (parsedData) => {
+    if (currentView === 'resume' && activeUserId === parsedData[1].roomParticipantId) {
+      setCurrentView('chat');
+      setSelectedUserResume(null);
+      setActiveUserId(null);
+    } else {
+      setCurrentView('resume');
+      setSelectedUserResume(parsedData);
+      setActiveUserId(parsedData[1].roomParticipantId);
+    }
   };
 
-  const handleUserFeedbackClick = (feedbackData) => {
-    setSelectedUserFeedback(feedbackData);
-    setCurrentView('feedback');
+  const handleUserFeedbackClick = (parsedData) => {
+    if (currentView === 'feedback' && activeUserId === parsedData[1].roomParticipantId) {
+      setCurrentView('chat');
+      setSelectedUserFeedback(null);
+      setActiveUserId(null);
+    } else {
+      setSelectedUserFeedback(parsedData);
+      setCurrentView('feedback');
+      setActiveUserId(parsedData[1].roomParticipantId);
+    }
   };
 
-  const handleBackToChat = () => {
-    setCurrentView('chat');
-    setSelectedUserResume(null);
-    setSelectedUserFeedback(null);
-  };
+  useEffect(() => {
+    if (currentView === 'resume' && selectedUserResume) {
+      console.log("이력서가 로드되었습니다:", selectedUserResume[1]?.resumeUrl);
+    }
+  }, [currentView, selectedUserResume]);
 
   return (
     <ChatContainer isOpen={isOpen}>
       <ChatCloseButton onClick={handleClose}>
-        <img src={keyboard_arrow_down_Icon} alt="Close Chat" />
+        <img src={chevron_right_Icon} alt="Close Chat" />
       </ChatCloseButton>
       <UserList>
         {users.map(user => {
@@ -108,13 +124,19 @@ const Chat = ({ isOpen, handleClose, session, users = [] }) => {
                 <UserName>{parsedData[1]?.nickname || "Unknown User"}</UserName>
               </div>
               <UserButtonContainer>
-                <UserFeedbackButton onClick={() => handleUserFeedbackClick(parsedData)}>
+                <UserOptionButton
+                  onClick={() => handleUserFeedbackClick(parsedData)}
+                  isActive={currentView === 'feedback' && activeUserId === parsedData[1].roomParticipantId}
+                >
                   <img src={rate_review_Icon} alt="User Feedback" />
-                </UserFeedbackButton>
+                </UserOptionButton>
 
-                <UserResumeButton onClick={() => handleUserResumeClick(parsedData)}>
+                <UserOptionButton
+                  onClick={() => handleUserResumeClick(parsedData)}
+                  isActive={currentView === 'resume' && activeUserId === parsedData[1].roomParticipantId}
+                >
                   <img src={article_Icon} alt="User Resume" />
-                </UserResumeButton>
+                </UserOptionButton>
               </UserButtonContainer>
             </User>
           );
@@ -123,33 +145,33 @@ const Chat = ({ isOpen, handleClose, session, users = [] }) => {
 
       <ChatBox>
         <MessageContainer>
-          {currentView === 'chat' ? (
-            <MessageList ref={messageListRef} onScroll={handleScroll}>
-              {messages.map((message, index) => (
-                <Message key={index} isUser={message.isUser}>
-                  {message.text}
-                </Message>
-              ))}
-            </MessageList>
-          ) : currentView === 'resume' ? (
-            <div>
-              <button onClick={handleBackToChat}>Back to Chat</button>
-              <div>
-                {/* Placeholder for user resume content */}
-                <h2>{selectedUserResume[1]?.nickname}'s Resume</h2>
-                <p>Details about the user...</p>
-              </div>
-            </div>
-          ) : (
-            <div>
-              <button onClick={handleBackToChat}>Back to Chat</button>
-              <div>
-                {/* Placeholder for user feedback content */}
-                <h2>{selectedUserFeedback[1]?.nickname}'s Feedback</h2>
-                <p>Feedback about the user...</p>
-              </div>
-            </div>
-          )}
+          {(() => {
+            switch (currentView) {
+              case 'chat':
+                return (
+                  <MessageList ref={messageListRef} onScroll={handleScroll}>
+                    {messages.map((message, index) => (
+                      <Message key={index} isUser={message.isUser}>
+                        {message.text}
+                      </Message>
+                    ))}
+                  </MessageList>
+                );
+              case 'resume':
+                return <ResumeViewer resumeUrl={selectedUserResume[1]?.resumeUrl} />;
+              case 'feedback':
+                return (
+                  <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                      <h2>{selectedUserFeedback[1]?.nickname}'s Feedback</h2>
+                      <p>Feedback about the user...</p>
+                    </div>
+                  </div>
+                );
+              default:
+                return null;
+            }
+          })()}
         </MessageContainer>
         {currentView === 'chat' && (
           <InputContainer>
@@ -169,7 +191,7 @@ const Chat = ({ isOpen, handleClose, session, users = [] }) => {
           </InputContainer>
         )}
       </ChatBox>
-    </ChatContainer>
+    </ChatContainer >
   );
 };
 
