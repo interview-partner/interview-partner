@@ -20,5 +20,4 @@ public interface InterviewRepository extends JpaRepository<Interview, Long> {
     @Query("SELECT i.member FROM Interview i WHERE i.id = :id")
     Optional<Member> findMemberById(Long id);
 
-    Interview findByQuestionsId(Long questionId);
 }
