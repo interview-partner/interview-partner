@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import ResumeListButton from '../../components/button/resumeListButton.jsx';
-import ResumeUploadButton from '../../components/button/ResumeUploadButton.jsx';
+import ResumeUploadButton from '../../components/button/resumeUploadButton.jsx';
 import { COLORS } from "../../styles/colors";
 
 const ListContainer = styled.div`
