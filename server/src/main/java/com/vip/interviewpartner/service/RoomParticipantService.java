@@ -93,7 +93,7 @@ public class RoomParticipantService {
      * @param roomParticipant 검증할 RoomParticipant 객체
      * @throws CustomException 소유자가 일치하지 않을 경우 발생합니다.
      */
-    private void validateMemberOwnership(Long memberId, RoomParticipant roomParticipant) {
+    public void validateMemberOwnership(Long memberId, RoomParticipant roomParticipant) {
         if (!roomParticipant.getMember().getId().equals(memberId)) {
             throw new CustomException(FORBIDDEN);
         }
