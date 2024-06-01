@@ -6,7 +6,7 @@ import voiceIcon from '../../assets/icons/voice_Icon.png';
 import headphoneIcon from '../../assets/icons/headphone_Icon.png';
 import callEndIcon from '../../assets/icons/call_end_Icon.png';
 import Chat from './chat';
-import { Container, VideoContainer, ButtonContainer, IconButton, IconImage, ChatIcon } from './mockuproomstyle';
+import { Container, VideoContainer, ButtonContainer, IconButton, IconImage, ToggleChatButton } from './mockuproomstyle';
 
 const MAX_PARTICIPANTS = 4;
 
@@ -205,7 +205,7 @@ function Mockuproom() {
           <IconImage src={callEndIcon} alt="Call End Icon" />
         </IconButton>
       </ButtonContainer>
-      {!isOpen && <ChatIcon onClick={toggleChat} />}
+      {!isOpen && <ToggleChatButton onClick={toggleChat} />}
       {shouldRender && (
         <Chat
           isOpen={isOpen}
