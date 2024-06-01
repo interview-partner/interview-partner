@@ -16,6 +16,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Builder
+@Schema(description = "방 생성 응답 DTO")
 public class RoomResponseDTO {
     @Schema(description = "방 ID", example = "1")
     private Long id;
