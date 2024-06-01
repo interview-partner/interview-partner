@@ -11,15 +11,20 @@ import { Container, VideoContainer, ButtonContainer, IconButton, IconImage, Chat
 const MAX_PARTICIPANTS = 4;
 
 function Mockuproom() {
-  //입장토큰 
+  // 입장 토큰
   const location = useLocation();
   const { token } = location.state || {};
 
   const navigate = useNavigate();
 
-  //채탕창 열고 닫기
+  // 채팅창 열고 닫기
   const [isOpen, setIsOpen] = useState(false);
-  const toggleChat = () => setIsOpen(!isOpen);
+  const toggleChat = () => {
+    if (!isOpen) {
+      setShouldRender(true);
+    }
+    setIsOpen(!isOpen);
+  };
   const handleCloseChat = () => setIsOpen(false);
 
   const [session, setSession] = useState(undefined);
@@ -32,6 +37,7 @@ function Mockuproom() {
 
   const OV = useRef(null);
   const hasJoined = useRef(false);
+  const [shouldRender, setShouldRender] = useState(isOpen);
 
   const handleMainVideoStream = useCallback((stream) => {
     if (mainStreamManager !== stream) {
@@ -40,7 +46,7 @@ function Mockuproom() {
   }, [mainStreamManager]);
 
   const updateUsers = useCallback(() => {
-    console.log("------유저 업데이트 하기-------", session)
+    console.log("------유저 업데이트 하기-------", session);
     if (session) {
       console.log('----세션 연결 데이터----', session.connection.data);
       // Map 객체인 session.remoteConnections를 배열로 변환하여 사용
@@ -61,8 +67,15 @@ function Mockuproom() {
     updateUsers();
   }, [session, updateUsers]);
 
+  useEffect(() => {
+    if (!isOpen) {
+      const timer = setTimeout(() => setShouldRender(false), 300); // 애니메이션 지속 시간과 동일하게 설정
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
   const joinSession = useCallback(async () => {
-    console.log("----조인 세션 호출하기---------")
+    console.log("----조인 세션 호출하기---------");
 
     if (hasJoined.current) {
       console.log('Already joined the session.');
@@ -129,29 +142,31 @@ function Mockuproom() {
     } catch (error) {
       console.log('There was an error connecting to the session:', error.code, error.message);
       if (error.code === 401) {
-        alert('Authentication error. Please log in again.');
-        navigate('/');
+        alert('Authentication error');
+        navigate('/mockupcommunity');
       }
     }
   }, [navigate, updateUsers]);
 
-  const leaveSession = useCallback(() => {
+  const leaveSession = useCallback(async () => {
     if (session) {
       if (publisher) {
         publisher.stream.getMediaStream().getTracks().forEach(track => track.stop());
-        session.unpublish(publisher);
+        await session.unpublish(publisher);
       }
-      session.disconnect();
+      await session.disconnect();
     }
 
-    OV.current = null;
+    // 상태 초기화
     setSession(undefined);
     setSubscribers([]);
     setMainStreamManager(undefined);
     setPublisher(undefined);
-
     hasJoined.current = false;
-  }, [session, publisher]);
+
+    // 상태 업데이트가 반영된 후 navigate 실행
+    setTimeout(() => navigate('/mockupcommunity'), 500);
+  }, [session, publisher, navigate])
 
   useEffect(() => {
     joinSession();
@@ -173,11 +188,6 @@ function Mockuproom() {
             <UserVideoComponent streamManager={mainStreamManager} />
           </div>
         )}
-        {mainStreamManager && (
-          <div onClick={() => handleMainVideoStream(mainStreamManager)}>
-            <UserVideoComponent streamManager={mainStreamManager} />
-          </div>
-        )}
         {subscribers.map((sub, i) => (
           <div key={i} onClick={() => handleMainVideoStream(sub)}>
             <UserVideoComponent streamManager={sub} />
@@ -191,17 +201,19 @@ function Mockuproom() {
         <IconButton>
           <IconImage src={headphoneIcon} alt="Headphone Icon" />
         </IconButton>
-        <IconButton onClick={() => { leaveSession(); navigate('/mockupcommunity'); }}>
+        <IconButton onClick={leaveSession}>
           <IconImage src={callEndIcon} alt="Call End Icon" />
         </IconButton>
       </ButtonContainer>
       {!isOpen && <ChatIcon onClick={toggleChat} />}
-      <Chat
-        isOpen={isOpen}
-        handleClose={handleCloseChat}
-        session={session}
-        users={users}
-      />
+      {shouldRender && (
+        <Chat
+          isOpen={isOpen}
+          handleClose={handleCloseChat}
+          session={session}
+          users={users}
+        />
+      )}
     </Container>
   );
 }
