@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid'; // 고유 ID 생성을 위한 라이브러�
 import send_Icon from '../../assets/icons/send_Icon.png';
 import article_Icon from '../../assets/icons/article_Icon.png';
 import userImageTest1 from '../../assets/images/userImage/userImage2.png';
-import keyboard_arrow_down_Icon from '../../assets/icons/keyboard_arrow_down_Icon.png';
+import chevron_right_Icon from '../../assets/icons/chevron_right_Icon.png';
 import rate_review_Icon from '../../assets/icons/rate_review_Icon.png';
 import { ChatContainer, ChatCloseButton, Input, SendButton, UserList, User, Avatar, UserName, UserResumeButton, ChatBox, MessageContainer, InputContainer, MessageList, Message, UserButtonContainer, UserFeedbackButton } from './chatstyle';
 
@@ -89,7 +89,7 @@ const Chat = ({ isOpen, handleClose, session, users = [] }) => {
   return (
     <ChatContainer isOpen={isOpen}>
       <ChatCloseButton onClick={handleClose}>
-        <img src={keyboard_arrow_down_Icon} alt="Close Chat" />
+        <img src={chevron_right_Icon} alt="Close Chat" />
       </ChatCloseButton>
       <UserList>
         {users.map(user => {
@@ -157,7 +157,7 @@ const Chat = ({ isOpen, handleClose, session, users = [] }) => {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' && e.nativeEvent.isComposing === false) {
                   e.preventDefault();
                   handleSendMessage();
                 }
