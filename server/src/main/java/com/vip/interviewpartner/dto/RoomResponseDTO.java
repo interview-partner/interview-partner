@@ -37,6 +37,12 @@ public class RoomResponseDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createdTime;
 
+    /**
+     * Room Entity -> RoomResponseDTO DTO 변환
+     * @param room 변환할 Room 엔티티
+     * @param currentParticipants 현재 참가자 수
+     * @return
+     */
     public static RoomResponseDTO of(Room room, int currentParticipants) {
         return RoomResponseDTO.builder()
                 .id(room.getId())
