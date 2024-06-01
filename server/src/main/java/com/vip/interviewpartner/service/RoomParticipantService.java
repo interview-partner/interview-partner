@@ -1,5 +1,6 @@
 package com.vip.interviewpartner.service;
 
+import static com.vip.interviewpartner.common.exception.ErrorCode.*;
 import static com.vip.interviewpartner.common.exception.ErrorCode.ROOM_PARTICIPANT_NOT_FOUND;
 
 import com.vip.interviewpartner.common.exception.CustomException;
@@ -7,6 +8,7 @@ import com.vip.interviewpartner.domain.Member;
 import com.vip.interviewpartner.domain.Resume;
 import com.vip.interviewpartner.domain.Room;
 import com.vip.interviewpartner.domain.RoomParticipant;
+import com.vip.interviewpartner.dto.ParticipantDetailsResponse;
 import com.vip.interviewpartner.repository.RoomParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -66,5 +68,34 @@ public class RoomParticipantService {
      */
     public Page<RoomParticipant> findByMemberId(Long memberId, Pageable pageable) {
         return roomParticipantRepository.findByMemberId(memberId, pageable);
+    }
+
+    /**
+     * 주어진 멤버 ID와 참가자 ID로 RoomParticipant의 세부 정보를 조회합니다.
+     * 소유권 검증을 통해 접근 권한을 확인합니다.
+     *
+     * @param memberId 조회할 멤버의 ID
+     * @param participantId 조회할 RoomParticipant의 ID
+     * @return RoomParticipant의 세부 정보를 담은 ParticipationDetailsDTO 객체
+     */
+    public ParticipantDetailsResponse findRoomParticipantDetails(Long memberId, Long participantId) {
+        RoomParticipant roomParticipant = roomParticipantRepository.findWithDetailsById(participantId)
+                .orElseThrow(() -> new CustomException(ROOM_PARTICIPANT_NOT_FOUND));
+        validateMemberOwnership(memberId, roomParticipant);
+        return ParticipantDetailsResponse.of(roomParticipant, roomParticipant.getRoom(), roomParticipant.getResume());
+    }
+
+    /**
+     * 주어진 멤버 ID와 RoomParticipant 객체의 소유권을 검증합니다.
+     * 소유자가 일치하지 않을 경우 CustomException을 발생시킵니다.
+     *
+     * @param memberId 검증할 멤버의 ID
+     * @param roomParticipant 검증할 RoomParticipant 객체
+     * @throws CustomException 소유자가 일치하지 않을 경우 발생합니다.
+     */
+    private void validateMemberOwnership(Long memberId, RoomParticipant roomParticipant) {
+        if (!roomParticipant.getMember().getId().equals(memberId)) {
+            throw new CustomException(FORBIDDEN);
+        }
     }
 }
