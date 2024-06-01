@@ -32,7 +32,7 @@ const PageButton = styled.button`
   margin: 0 4px;
   border: none;
   border-radius: 4px;
-  color: ${({ active }) => (active ? '#62AED5' : '#17171B')}; // Active page is blue, others are gray
+  color: ${({ active }) => (active ? '#62AED5' : '#17171B')};
   cursor: pointer;
 
   &:hover {
@@ -42,7 +42,7 @@ const PageButton = styled.button`
 
 const ResumeList = ({ data, itemsPerPage = 8, onSelect }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [activeIndex, setActiveIndex] = useState(null); // State to manage active button
+  const [activeIndex, setActiveIndex] = useState(null); 
 
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
@@ -52,7 +52,7 @@ const ResumeList = ({ data, itemsPerPage = 8, onSelect }) => {
 
   const handleButtonClick = (index) => {
     setActiveIndex(index);
-    onSelect(index + (currentPage - 1) * itemsPerPage); // Adjust index based on pagination
+    onSelect(index + (currentPage - 1) * itemsPerPage); 
   };
 
   const renderPageButtons = () => {

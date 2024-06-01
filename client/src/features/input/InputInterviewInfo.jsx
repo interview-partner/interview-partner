@@ -67,7 +67,7 @@ const CardContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 28px;
-  margin-left: 630px;
+  margin-left: 600px;
   transition: transform 0.5s ease-in-out;
   transform: ${({ currentIndex }) => `translateX(-${currentIndex * 57}%)`};
   width: 500%;
@@ -75,6 +75,7 @@ const CardContainer = styled.div`
 
 const Card = styled.div`
   min-width: 55%;
+  max-width: 55%;
   height: 85%;
   background-color: white;
   display: flex;
