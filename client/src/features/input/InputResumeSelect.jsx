@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
 import ResumeList from "../../features/show-list/resumeList";
+import { checkResume } from '../../services/checkResumeService';
 
 const Container = styled.div`
   width: 100%;
@@ -21,12 +22,22 @@ const Title = styled.div`
   margin-bottom: 40px;
 `;
 
-const data = [
-  1,2,3,4,5,6,7
-];
+function InputResumeSelect({ interviewData = {}, setInterviewData }) {
+  const [resumeId, setResumeId] = useState(interviewData.resumeId || null);
+  const [resumes, setResumes] = useState([]);
 
-function InputResumeSelect({ interviewData, setInterviewData }) {
-  const [resumeId, setResumeId] = useState(interviewData.resumeId);
+  useEffect(() => {
+    const fetchResumes = async () => {
+      try {
+        const resumeData = await checkResume();
+        setResumes(resumeData.data);
+      } catch (error) {
+        console.error('이력서 조회 오류:', error.message);
+      }
+    };
+
+    fetchResumes();
+  }, []);
 
   useEffect(() => {
     setInterviewData({ ...interviewData, resumeId });
@@ -37,7 +48,11 @@ function InputResumeSelect({ interviewData, setInterviewData }) {
       <Title>
         이력서 제출
       </Title>
-      <ResumeList data={data} itemsPerPage={8} onSelect={(id) => setResumeId(id)} />
+      <ResumeList 
+        data={resumes} 
+        itemsPerPage={8} 
+        onSelect={(id) => setResumeId(id)} 
+      />
     </Container>
   );
 }

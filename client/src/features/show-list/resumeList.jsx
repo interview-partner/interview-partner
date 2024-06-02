@@ -51,15 +51,15 @@ const ResumeList = ({ data, itemsPerPage = 8, onSelect }) => {
     setModalOn(!modalOn);
   };
 
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const totalPages = Math.ceil((data.length + 1) / itemsPerPage); // Adjust total pages to account for the ResumeUploadButton
 
   const handleClick = (page) => {
     setCurrentPage(page);
   };
 
-  const handleButtonClick = (index) => {
+  const handleButtonClick = (index, id) => {
     setActiveIndex(index);
-    onSelect(index + (currentPage - 1) * itemsPerPage); 
+    onSelect(id);
   };
 
   const renderPageButtons = () => {
@@ -78,19 +78,21 @@ const ResumeList = ({ data, itemsPerPage = 8, onSelect }) => {
     return pageNumbers;
   };
 
-  const currentData = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + (currentPage === 1 ? 7 : 8); // Show 7 items on the first page, 8 items on subsequent pages
+  const currentData = data.slice(startIndex, endIndex);
 
   return (
     <ListContainer>
       <GridContainer>
-        <ResumeUploadButton onClick={handleModal} />
+        {currentPage === 1 && <ResumeUploadButton onClick={handleModal} />}
         {currentData.map((item, index) => (
           <ResumeListButton
-            key={index}
+            key={item.id}
             isActive={activeIndex === index}
-            onClick={() => handleButtonClick(index)}
+            onClick={() => handleButtonClick(index, item.id)}
           >
-            {item}
+            {item.originalFileName}
           </ResumeListButton>
         ))}
       </GridContainer>

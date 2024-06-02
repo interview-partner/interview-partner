@@ -7,7 +7,7 @@ const ResumeContainer = styled.div`
   flex-direction: row;
   text-align: center;
   justify-content: center; 
-  width: 100%;
+  min-width: 100%;
   margin-bottom: 5px; 
   background: rgba(217, 217, 217, 0.38);
   border-radius: 10px;

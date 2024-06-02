@@ -67,14 +67,14 @@ const CardContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 28px;
-  margin-left: 600px;
+  margin-left: 430px;
   transition: transform 0.5s ease-in-out;
-  transform: ${({ currentIndex }) => `translateX(-${currentIndex * 57}%)`};
+  transform: ${({ currentIndex }) => `translateX(-${currentIndex * 67}%)`};
   width: 500%;
 `;
 
 const Card = styled.div`
-  min-width: 55%;
+  min-width: 65%;
   max-width: 55%;
   height: 85%;
   background-color: white;

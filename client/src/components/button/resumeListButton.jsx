@@ -6,14 +6,14 @@ import UnactiveCheckCircle from "../../assets/icons/unactiveCheckCircle.png";
 const ResumeContainer = styled.div`
   display: flex;
   flex-direction: row;
-  text-align: center;
-  width: 100%;
+  align-items: center; /* Center content vertically */
+  min-width: 100%;
   margin-bottom: 5px; 
   background: white;
   border-radius: 10px;
   box-shadow: ${({ borderColor }) => borderColor ? `inset 0 0 0 2px ${borderColor}` : '0 2px 8px rgba(99, 99, 99, 0.2)'};
   padding: 16px;
-  cursor: pointer; 
+  cursor: pointer;
 `;
 
 const Icon = styled.img`
@@ -23,6 +23,10 @@ const Icon = styled.img`
 `;
 
 const MoveText = styled.div`
+  flex-grow: 1; /* Ensure text takes up available space */
+  white-space: nowrap; /* Prevent text from wrapping */
+  overflow: hidden; /* Hide overflow text */
+  text-overflow: ellipsis; /* Add ellipsis for overflow text */
   padding-top: 3px;
 `;
 
@@ -30,7 +34,7 @@ const ResumeListButton = ({ children, isActive, onClick }) => {
   const borderColor = isActive ? '#62AED5' : null;
 
   return (
-    <ResumeContainer borderColor={borderColor} onClick={onClick}>
+    <ResumeContainer borderColor={borderColor} onClick={onClick} title={children}>
       <Icon src={isActive ? ActiveCheckCircle : UnactiveCheckCircle} alt="CheckCircle" />
       <MoveText>
         {children}
