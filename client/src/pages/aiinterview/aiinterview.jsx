@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import SelectInterviewInfo from "../../features/show-progress/SelectInterviewInfo.jsx";
 import InputInterviewInfo from '../../features/input/InputInterviewInfo.jsx';
+import MyModal from "../../"
 
 const PageContainer = styled.div`
     display: flex;

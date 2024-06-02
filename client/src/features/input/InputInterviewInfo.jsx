@@ -1,10 +1,12 @@
-import React from 'react';
-import styled, { keyframes } from 'styled-components';
+import React, { useState } from 'react';
+import styled, { keyframes, css } from 'styled-components';
 import { COLORS } from "../../styles/colors";
 import RoundButton from '../../components/button/RoundButton';
 import InputInterviewSetting from './InputInterviewSetting';
 import InputPersonalInfo from '../../features/input/InputPersonalInfo';
-import Inputready from '../../features/input/Inputready';
+import InputResumeSelect from '../../features/input/InputResumeSelect';
+import InputReady from './Inputready';
+import { createInterviewRoom } from '../../services/interviewService';
 
 const fadeIn = keyframes`
   from {
@@ -12,6 +14,15 @@ const fadeIn = keyframes`
   }
   to {
     opacity: 1;
+  }
+`;
+
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 `;
 
@@ -56,14 +67,15 @@ const CardContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 28px;
-  margin-left: 180px;
+  margin-left: 430px;
   transition: transform 0.5s ease-in-out;
-  transform: ${({ currentIndex }) => `translateX(-${currentIndex * 83}%)`};
+  transform: ${({ currentIndex }) => `translateX(-${currentIndex * 67}%)`};
   width: 500%;
 `;
 
 const Card = styled.div`
-  min-width: 80%;
+  min-width: 65%;
+  max-width: 55%;
   height: 85%;
   background-color: white;
   display: flex;
@@ -74,16 +86,29 @@ const Card = styled.div`
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2);
   padding: 20px;
+  overflow-y: auto;
 `;
 
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: space-between;
   width: 100%;
-  animation: ${fadeIn} 0.5s ease-in-out;
+  ${({ isVisible }) => css`
+    visibility: ${isVisible ? 'visible' : 'hidden'};
+    opacity: ${isVisible ? 1 : 0};
+    animation: ${isVisible ? fadeIn : fadeOut} 0.5s ease-in-out;
+  `}
 `;
 
 function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
+  const [interviewData, setInterviewData] = useState({
+    title: '',
+    interviewType: '',
+    questionNumber: 0,
+    jobAdvertisement: '',
+    resumeId: null
+  });
+
   const nextCard = () => {
     if (currentIndex < 3) {
       setCurrentIndex(currentIndex + 1);
@@ -96,101 +121,104 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
     }
   };
 
+  const handleCreateInterview = async () => {
+    try {
+      const response = await createInterviewRoom(interviewData);
+      alert('Interview room created successfully!');
+      console.log('Created interview room:', response);
+    } catch (error) {
+      alert(`Failed to create interview room: ${error.message}`);
+    }
+  };
+
   return (
     <Container>
       <Carousel>
         <CardContainer currentIndex={currentIndex}>
           <Card>
-            <InputInterviewSetting />
-            {currentIndex === 0 && (
-              <ButtonContainer>
-                <RoundButton
-                  onClick={prevCard}
-                  disabled={currentIndex === 0}
-                  color="white"
-                  bgColor={COLORS.blue_black}
-                >
-                  Previous
-                </RoundButton>
-                <RoundButton
-                  onClick={nextCard}
-                  disabled={currentIndex === 3}
-                  color="white"
-                  bgColor={COLORS.blue_black}
-                >
-                  Next
-                </RoundButton>
-              </ButtonContainer>
-            )}
+            <InputInterviewSetting interviewData={interviewData} setInterviewData={setInterviewData} />
+            <ButtonContainer isVisible={currentIndex === 0}>
+              <RoundButton
+                onClick={prevCard}
+                disabled={currentIndex === 0}
+                color="white"
+                bgColor={COLORS.blue_black}
+                style={{ visibility: currentIndex === 0 ? 'hidden' : 'visible' }}
+              >
+                이전
+              </RoundButton>
+              <RoundButton
+                onClick={nextCard}
+                disabled={currentIndex === 3}
+                color="white"
+                bgColor={COLORS.blue_black}
+              >
+                다음
+              </RoundButton>
+            </ButtonContainer>
           </Card>
           <Card>
-            <InputPersonalInfo />
-            {currentIndex === 1 && (
-              <ButtonContainer>
-                <RoundButton
-                  onClick={prevCard}
-                  disabled={currentIndex === 0}
-                  color="white"
-                  bgColor={COLORS.blue_black}
-                >
-                  Previous
-                </RoundButton>
-                <RoundButton
-                  onClick={nextCard}
-                  disabled={currentIndex === 3}
-                  color="white"
-                  bgColor={COLORS.blue_black}
-                >
-                  Next
-                </RoundButton>
-              </ButtonContainer>
-            )}
+            <InputPersonalInfo interviewData={interviewData} setInterviewData={setInterviewData} />
+            <ButtonContainer isVisible={currentIndex === 1}>
+              <RoundButton
+                onClick={prevCard}
+                disabled={currentIndex === 0}
+                color="white"
+                bgColor={COLORS.blue_black}
+                style={{ visibility: currentIndex === 0 ? 'hidden' : 'visible' }}
+              >
+                이전
+              </RoundButton>
+              <RoundButton
+                onClick={nextCard}
+                disabled={currentIndex === 3}
+                color="white"
+                bgColor={COLORS.blue_black}
+              >
+                다음
+              </RoundButton>
+            </ButtonContainer>
           </Card>
           <Card>
-            <div>디자인 수정필요</div>
-            {currentIndex === 2 && (
-              <ButtonContainer>
-                <RoundButton
-                  onClick={prevCard}
-                  disabled={currentIndex === 0}
-                  color="white"
-                  bgColor={COLORS.blue_black}
-                >
-                  Previous
-                </RoundButton>
-                <RoundButton
-                  onClick={nextCard}
-                  disabled={currentIndex === 3}
-                  color="white"
-                  bgColor={COLORS.blue_black}
-                >
-                  Next
-                </RoundButton>
-              </ButtonContainer>
-            )}
+            <InputResumeSelect interviewData={interviewData} setInterviewData={setInterviewData} />
+            <ButtonContainer isVisible={currentIndex === 2}>
+              <RoundButton
+                onClick={prevCard}
+                disabled={currentIndex === 0}
+                color="white"
+                bgColor={COLORS.blue_black}
+                style={{ visibility: currentIndex === 0 ? 'hidden' : 'visible' }}
+              >
+                이전
+              </RoundButton>
+              <RoundButton
+                onClick={nextCard}
+                disabled={currentIndex === 3}
+                color="white"
+                bgColor={COLORS.blue_black}
+              >
+                다음
+              </RoundButton>
+            </ButtonContainer>
           </Card>
           <Card>
-            <Inputready />
-            {currentIndex === 3 && (
-              <ButtonContainer>
-                <RoundButton
-                  onClick={prevCard}
-                  disabled={currentIndex === 0}
-                  color="white"
-                  bgColor={COLORS.blue_black}
-                >
-                  Previous
-                </RoundButton>
-                <RoundButton
-                  onClick={nextCard}
-                  disabled={currentIndex === 3}
-                  color="white"
-                  bgColor={COLORS.blue_black}
-                >
-                  Next
-                </RoundButton>
-              </ButtonContainer>
-            )}
+            <InputReady 
+              interviewData={interviewData} 
+              setInterviewData={setInterviewData} 
+              handleCreateInterview={handleCreateInterview} 
+              currentIndex={currentIndex}
+            />
+            <ButtonContainer isVisible={currentIndex === 3}>
+              <RoundButton
+                onClick={prevCard}
+                disabled={currentIndex === 0}
+                color="white"
+                bgColor={COLORS.blue_black}
+                style={{ visibility: currentIndex === 0 ? 'hidden' : 'visible' }}
+              >
+                이전
+              </RoundButton>
+            </ButtonContainer>
           </Card>
         </CardContainer>
       </Carousel>

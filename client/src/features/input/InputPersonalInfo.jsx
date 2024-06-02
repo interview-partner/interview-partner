@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
 
@@ -37,7 +37,13 @@ const Textarea = styled.textarea`
   resize: none; 
 `;
 
-function InputPersonalInfo() {
+function InputPersonalInfo({ interviewData, setInterviewData }) {
+  const [jobAdvertisement, setJobAdvertisement] = useState(interviewData.jobAdvertisement);
+
+  useEffect(() => {
+    setInterviewData({ ...interviewData, jobAdvertisement });
+  }, [jobAdvertisement]);
+
   return (
     <Container>
       <Title>
@@ -46,7 +52,11 @@ function InputPersonalInfo() {
           (선택)
         </Info>
       </Title>
-      <Textarea placeholder="채용 공고를 복사 후 텍스트로 붙여넣어 주세요" />
+      <Textarea 
+        placeholder="채용 공고를 복사 후 텍스트로 붙여넣어 주세요" 
+        value={jobAdvertisement}
+        onChange={(e) => setJobAdvertisement(e.target.value)}
+      />
     </Container>
   );
 }

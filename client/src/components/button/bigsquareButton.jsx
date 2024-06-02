@@ -1,7 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { COLORS } from "../../styles/colors"
+import { COLORS } from "../../styles/colors";
 
 const Button = styled.button`
   width: 120px;
@@ -11,16 +10,15 @@ const Button = styled.button`
   border: none;
   border-radius: 15px;
   font-size: 16px;
-  font-weight: bold;
   cursor: pointer;
 `;
 
-const BigsquareButton = ({ to, children }) => {
+const BigSquareButton = ({ to, children, onClick }) => {
   return (
-    <Link to={to}>
-      <Button>{children}</Button>
-    </Link>
+    <Button onClick={onClick}>
+      {children}
+    </Button>
   );
 };
 
-export default BigsquareButton;
+export default BigSquareButton;
