@@ -26,7 +26,12 @@ export const initializeSession = (config) => {
 
     mySession.on('signal:chat', (event) => {
         const messageData = JSON.parse(event.data);
-        config.addMessage({ user: messageData.user, text: messageData.text });
+        config.addMessage({
+            user: messageData.user,
+            text: messageData.text,
+            id: messageData.id,
+            roomParticipantId: messageData.roomParticipantId, // roomParticipantId 추가
+        });
     });
     // signal:chat 이벤트 핸들러: 채팅 신호가 도착했을 때 발생하는 이벤트입니다.
     // 이벤트 데이터(event.data)를 파싱하여 메시지 데이터를 추출하고 이를 session.addMessage 메서드를 통해 세션에 추가합니다.

@@ -36,7 +36,7 @@ public class FeedbackCreateService {
         RoomParticipant sender = roomParticipantService.findRoomParticipant(request.getSenderParticipantId());
         RoomParticipant receiver = roomParticipantService.findRoomParticipant(request.getReceiverParticipantId());
         validateSender(memberId, sender.getMember());;
-        validateSameRoom(sender, receiver);
+        validateFeedbackParticipants(sender, receiver);
         validateDuplicateFeedback(sender, receiver);
         feedbackRepository.save(Feedback.builder()
                 .sender(sender)
@@ -59,14 +59,17 @@ public class FeedbackCreateService {
     }
 
     /**
-     * 피드백의 보낸 사람과 받는 사람이 동일한 방에 있는지 검증합니다.
+     * 피드백의 보낸 사람과 받는 사람이 동일한 방에 있는지, 그리고 동일한 사용자가 아닌지 검증합니다.
      *
      * @param sender 피드백의 보낸 사람
      * @param receiver 피드백의 받는 사람
-     * @throws CustomException 두 사용자가 다른 방에 있으면 발생합니다.
+     * @throws CustomException 두 사용자가 다른 방에 있거나 동일한 사용자이면 발생합니다.
      */
-    private void validateSameRoom(RoomParticipant sender, RoomParticipant receiver) {
+    private void validateFeedbackParticipants(RoomParticipant sender, RoomParticipant receiver) {
         if (!sender.getRoom().equals(receiver.getRoom())) {
+            throw new CustomException(INVALID_REQUEST);
+        }
+        if (sender.getMember().equals(receiver.getMember())) {
             throw new CustomException(INVALID_REQUEST);
         }
     }

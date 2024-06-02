@@ -1,8 +1,8 @@
 package com.vip.interviewpartner.dto;
 
+import com.vip.interviewpartner.common.util.DateTimeUtil;
 import com.vip.interviewpartner.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,8 +18,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Schema(description = "회원정보 조회 응답 DTO")
 public class MemberInfoResponse {
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
-
     @Schema(description = "회원의 고유 ID", example = "1")
     private Long id;
 
@@ -43,7 +41,7 @@ public class MemberInfoResponse {
                 .id(member.getId())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
-                .createdDate(member.getCreateDate().format(formatter))
+                .createdDate(member.getCreateDate().format(DateTimeUtil.FORMATTER))
                 .build();
     }
 
