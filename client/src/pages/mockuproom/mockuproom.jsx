@@ -16,56 +16,29 @@ function Mockuproom() {
   const { token } = location.state || {};
 
   const navigate = useNavigate();
+  const handleCloseChat = () => setIsOpen(false);
+  const [session, setSession] = useState(undefined);
+  const [mainStreamManager, setMainStreamManager] = useState(undefined);
+  const [publisher, setPublisher] = useState(undefined);
+  const [subscribers, setSubscribers] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const OV = useRef(null);
+  const hasJoined = useRef(false);
+  const [isOpen, setIsOpen] = useState(false);  // 채팅창 열고 닫기
+  const [shouldRender, setShouldRender] = useState(isOpen);
 
-  // 채팅창 열고 닫기
-  const [isOpen, setIsOpen] = useState(false);
   const toggleChat = () => {
     if (!isOpen) {
       setShouldRender(true);
     }
     setIsOpen(!isOpen);
   };
-  const handleCloseChat = () => setIsOpen(false);
-
-  const [session, setSession] = useState(undefined);
-
-  const [mainStreamManager, setMainStreamManager] = useState(undefined);
-  const [publisher, setPublisher] = useState(undefined);
-  const [subscribers, setSubscribers] = useState([]);
-  const [messages, setMessages] = useState([]);
-  const [users, setUsers] = useState([]);
-
-  const OV = useRef(null);
-  const hasJoined = useRef(false);
-  const [shouldRender, setShouldRender] = useState(isOpen);
 
   const handleMainVideoStream = useCallback((stream) => {
     if (mainStreamManager !== stream) {
       setMainStreamManager(stream);
     }
   }, [mainStreamManager]);
-
-  const updateUsers = useCallback(() => {
-    console.log("------유저 업데이트 하기-------", session);
-    if (session) {
-      console.log('----세션 연결 데이터----', session.connection.data);
-      // Map 객체인 session.remoteConnections를 배열로 변환하여 사용
-      const userList = [
-        { id: session.connection.connectionId, data: session.connection.data },
-        ...Array.from(session.remoteConnections.values()).map((conn) => ({
-          id: conn.connectionId,
-          data: conn.data,
-        }))
-      ];
-      setUsers(userList);
-      console.log('Updated users:', userList);
-    }
-  }, [session]);
-
-  useEffect(() => {
-    console.log("세션 상태 변경 후 유저 목록 업데이트 시도");
-    updateUsers();
-  }, [session, updateUsers]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -102,7 +75,7 @@ function Mockuproom() {
     OV.current = newOV;
 
     try {
-      await mySession.connect(token, { clientData: 'MyNickname' });
+      await mySession.connect(token);
       const currentParticipants = mySession.remoteConnections.length + 1;
 
       if (currentParticipants > MAX_PARTICIPANTS) {
@@ -135,23 +108,26 @@ function Mockuproom() {
       setSession(mySession); // 세션 설정
 
       hasJoined.current = true;
-      mySession.on('connectionCreated', updateUsers);
-      mySession.on('connectionDestroyed', updateUsers);
 
-      updateUsers();
     } catch (error) {
       console.log('There was an error connecting to the session:', error.code, error.message);
-      if (error.code === 401) {
+      if (error) {
         alert('Authentication error');
-        navigate('/mockupcommunity');
+        leaveSession()
       }
     }
-  }, [navigate, updateUsers]);
+  }, [navigate]);
 
   const leaveSession = useCallback(async () => {
     if (session) {
-      if (publisher) {
-        publisher.stream.getMediaStream().getTracks().forEach(track => track.stop());
+      if (publisher && publisher.stream && publisher.stream.getMediaStream) {
+        const mediaStream = publisher.stream.getMediaStream();
+        if (mediaStream && mediaStream.getTracks) {
+          mediaStream.getTracks().forEach(track => track.stop());
+        }
+      }
+
+      if (session.unpublish) {
         await session.unpublish(publisher);
       }
       await session.disconnect();
@@ -165,8 +141,21 @@ function Mockuproom() {
     hasJoined.current = false;
 
     // 상태 업데이트가 반영된 후 navigate 실행
-    setTimeout(() => navigate('/mockupcommunity'), 500);
-  }, [session, publisher, navigate])
+    setTimeout(() => navigate('/mockupcommunity'), 1000);
+  }, [session, publisher]);
+
+  const handleBeforeUnload = async (event) => {
+    await leaveSession();
+    navigate('/mockupcommunity');
+  };
+
+  const handlePopState = async (event) => {
+    await leaveSession();
+    navigate('/mockupcommunity');
+  };
+
+  window.addEventListener('beforeunload', handleBeforeUnload);
+  window.addEventListener('popstate', handlePopState);
 
   useEffect(() => {
     joinSession();
@@ -211,7 +200,8 @@ function Mockuproom() {
           isOpen={isOpen}
           handleClose={handleCloseChat}
           session={session}
-          users={users}
+          messages={messages} // 메시지 상태 전달
+          setMessages={setMessages} // 메시지 상태 변경 함수 전달
         />
       )}
     </Container>
