@@ -31,4 +31,12 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
     @Query("SELECT new com.vip.interviewpartner.dto.FeedbackCountDTO(f.receiver.id, COUNT(f))"
             + "FROM Feedback f WHERE f.receiver.id IN :receiverIds GROUP BY f.receiver.id")
     List<FeedbackCountDTO> countFeedbacksByReceiverIds(@Param("receiverIds") List<Long> receiverIds);
+
+    /**
+     * 주어진 참가자 ID를 기준으로 피드백을 조회합니다.
+     *
+     * @param participantId 피드백을 받을 참가자의 ID
+     * @return List<Feedback> 조회된 피드백 목록
+     */
+    List<Feedback> findByReceiverId(Long participantId);
 }

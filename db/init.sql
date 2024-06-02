@@ -139,8 +139,7 @@ CREATE TABLE `message`
     `content`             varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
     `create_date`         datetime(6) NOT NULL,
     PRIMARY KEY (`id`),
-    KEY                   `idx_message_sender_id` (`sender_id`),
-    KEY                   `idx_message_room_id` (`room_id`),
+    KEY                   `idx_message_room_participant_id` (`room_participant_id`),
     CONSTRAINT `fk_message_room_participant` FOREIGN KEY (`room_participant_id`) REFERENCES `room_participant` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

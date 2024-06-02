@@ -1,8 +1,8 @@
 package com.vip.interviewpartner.dto;
 
+import com.vip.interviewpartner.common.util.DateTimeUtil;
 import com.vip.interviewpartner.domain.RoomParticipant;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,8 +17,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Schema(description = "방 참가 이력 조회 응답 DTO")
 public class ParticipationResponse {
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
-
     @Schema(description = "참가 ID", example = "1")
     private Long participantId;
 
@@ -46,7 +44,7 @@ public class ParticipationResponse {
                 .participantId(participant.getId())
                 .roomId(participant.getRoom().getId())
                 .roomTitle(participant.getRoom().getTitle())
-                .joinDate(participant.getJoinDate().format(formatter))
+                .joinDate(participant.getJoinDate().format(DateTimeUtil.FORMATTER))
                 .feedbackCount(feedbackCount)
                 .build();
     }
