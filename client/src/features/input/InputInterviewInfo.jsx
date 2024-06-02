@@ -143,8 +143,9 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
                 disabled={currentIndex === 0}
                 color="white"
                 bgColor={COLORS.blue_black}
+                style={{ visibility: currentIndex === 0 ? 'hidden' : 'visible' }}
               >
-                Previous
+                이전
               </RoundButton>
               <RoundButton
                 onClick={nextCard}
@@ -152,7 +153,7 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
                 color="white"
                 bgColor={COLORS.blue_black}
               >
-                Next
+                다음
               </RoundButton>
             </ButtonContainer>
           </Card>
@@ -164,8 +165,9 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
                 disabled={currentIndex === 0}
                 color="white"
                 bgColor={COLORS.blue_black}
+                style={{ visibility: currentIndex === 0 ? 'hidden' : 'visible' }}
               >
-                Previous
+                이전
               </RoundButton>
               <RoundButton
                 onClick={nextCard}
@@ -173,7 +175,7 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
                 color="white"
                 bgColor={COLORS.blue_black}
               >
-                Next
+                다음
               </RoundButton>
             </ButtonContainer>
           </Card>
@@ -185,8 +187,9 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
                 disabled={currentIndex === 0}
                 color="white"
                 bgColor={COLORS.blue_black}
+                style={{ visibility: currentIndex === 0 ? 'hidden' : 'visible' }}
               >
-                Previous
+                이전
               </RoundButton>
               <RoundButton
                 onClick={nextCard}
@@ -194,28 +197,26 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
                 color="white"
                 bgColor={COLORS.blue_black}
               >
-                Next
+                다음
               </RoundButton>
             </ButtonContainer>
           </Card>
           <Card>
-            <InputReady interviewData={interviewData} setInterviewData={setInterviewData} />
+            <InputReady 
+              interviewData={interviewData} 
+              setInterviewData={setInterviewData} 
+              handleCreateInterview={handleCreateInterview} 
+              currentIndex={currentIndex}
+            />
             <ButtonContainer isVisible={currentIndex === 3}>
               <RoundButton
                 onClick={prevCard}
                 disabled={currentIndex === 0}
                 color="white"
                 bgColor={COLORS.blue_black}
+                style={{ visibility: currentIndex === 0 ? 'hidden' : 'visible' }}
               >
-                Previous
-              </RoundButton>
-              <RoundButton
-                onClick={handleCreateInterview}
-                disabled={currentIndex !== 3}
-                color="white"
-                bgColor={COLORS.blue_black}
-              >
-                Create Interview
+                이전
               </RoundButton>
             </ButtonContainer>
           </Card>
