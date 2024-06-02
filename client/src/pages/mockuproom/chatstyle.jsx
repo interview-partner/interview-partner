@@ -33,11 +33,13 @@ export const ChatContainer = styled.div`
   width: 28%;
   z-index: 1000;
   animation: ${({ isOpen }) => (isOpen ? slideIn : slideOut)} 0.3s ease;
+  animation-fill-mode: forwards;
 `;
 
 export const UserButtonContainer = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: 10px;
   width: 90px;
 `;
 
@@ -158,7 +160,20 @@ export const MessageList = styled.div`
   }
 `;
 
-export const Message = styled.div`
+export const MessageWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: ${({ isUser }) => (isUser ? 'flex-end' : 'flex-start')};
+`;
+
+export const Nickname = styled.div`
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #FFFFFF; /* Gold color for nickname */
+  font-size: 14px; /* Adjust font size */
+`;
+
+export const MessageContent = styled.div`
   max-width: 60%;
   padding: 10px;
   margin: 5px 0;
@@ -230,3 +245,4 @@ export const SendButton = styled.button`
     background-color: rgba(98, 174, 213, 0.6);
   }
 `;
+
