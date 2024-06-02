@@ -4,6 +4,7 @@ import { COLORS } from "../../styles/colors";
 import Circle from "../../assets/icons/circle.png";
 import CheckMethod from "../../assets/images/checkMethodType.png";
 import BigSquareButton from "../../components/button/bigsquareButton";
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
   width: 100%;
@@ -63,6 +64,18 @@ const Img = styled.img`
 `;
 
 function InputReady({ interviewData, setInterviewData, handleCreateInterview, currentIndex }) {
+  const navigate = useNavigate();
+
+  const handleButtonClick = async () => {
+    try {
+      await handleCreateInterview();
+      localStorage.setItem('interviewData', JSON.stringify(interviewData));
+      navigate('/promptroom');
+    } catch (error) {
+      console.error('Failed to create interview room:', error);
+    }
+  };
+
   return (
     <Container>
       <Title>면접 준비</Title>
@@ -84,7 +97,7 @@ function InputReady({ interviewData, setInterviewData, handleCreateInterview, cu
           </GuideList>
         </GuideContainer>
         <BigSquareButton 
-          onClick={handleCreateInterview} 
+          onClick={handleButtonClick} 
           disabled={currentIndex !== 3}
         >
           면접 시작하기
@@ -95,4 +108,3 @@ function InputReady({ interviewData, setInterviewData, handleCreateInterview, cu
 }
 
 export default InputReady;
-
