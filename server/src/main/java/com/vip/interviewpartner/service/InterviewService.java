@@ -38,12 +38,8 @@ public class InterviewService {
         validateInterviewOwnership(memberId, interviewId);
         Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_REQUEST));
-        String createDate = interviewRepository.findCreateDateById(interviewId)
-                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_REQUEST));
-        String originalFileName = resumeRepository.findOriginalFileNameById(interview.getResume().getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_REQUEST));
 
-        return new InterviewLookupResponse(interview, originalFileName, createDate);
+        return new InterviewLookupResponse(interview, interview.getResume().getOriginalFileName());
     }
 
     /**
