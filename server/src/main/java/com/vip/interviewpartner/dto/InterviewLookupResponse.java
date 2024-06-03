@@ -1,11 +1,11 @@
 package com.vip.interviewpartner.dto;
 
+import com.vip.interviewpartner.common.util.DateTimeUtil;
 import com.vip.interviewpartner.domain.Interview;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 
 @Getter
 @NoArgsConstructor
@@ -27,13 +27,13 @@ public class InterviewLookupResponse {
     @Schema(description = "인터뷰 생성 날짜", example = "2024-05-22 14:19")
     private String createDate;
 
-    public InterviewLookupResponse (Interview interview, String resumeFileName, String createDate){
+    public InterviewLookupResponse (Interview interview, String resumeFileName){
 
         this.interviewId = interview.getId();
         this.title = interview.getTitle();
         this.interviewType = interview.getInterviewType();
         this.resumeFileName = resumeFileName;
-        this.createDate = createDate;
+        this.createDate = interview.getCreateDate().format(DateTimeUtil.FORMATTER);
     }
 
 }
