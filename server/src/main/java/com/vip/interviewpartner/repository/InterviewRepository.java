@@ -4,6 +4,7 @@ import com.vip.interviewpartner.domain.Interview;
 import com.vip.interviewpartner.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -20,4 +21,12 @@ public interface InterviewRepository extends JpaRepository<Interview, Long> {
     @Query("SELECT i.member FROM Interview i WHERE i.id = :id")
     Optional<Member> findMemberById(Long id);
 
+    /**
+     * 인터뷰 ID가 주어지면 createDate를 반환하는 매서드입니다.
+     *
+     * @param id 인터뷰 ID
+     * @return 인터뷰의 createDate
+     */
+    @Query(value = "SELECT DATE_FORMAT(create_date, '%Y-%m-%d %H:%i') FROM interview WHERE id = :id", nativeQuery = true)
+    Optional<String> findCreateDateById(@Param("id") Long id);
 }
