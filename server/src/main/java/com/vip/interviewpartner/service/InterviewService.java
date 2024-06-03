@@ -4,7 +4,9 @@ import com.vip.interviewpartner.common.exception.CustomException;
 import com.vip.interviewpartner.common.exception.ErrorCode;
 import com.vip.interviewpartner.domain.Interview;
 import com.vip.interviewpartner.domain.Member;
+import com.vip.interviewpartner.dto.InterviewLookupResponse;
 import com.vip.interviewpartner.repository.InterviewRepository;
+import com.vip.interviewpartner.repository.ResumeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,26 @@ import org.springframework.transaction.annotation.Transactional;
 public class InterviewService {
 
     private final InterviewRepository interviewRepository;
+    private final ResumeRepository resumeRepository;
+
+    /**
+     * 주어진 ID로 Interview 객체를 조회합니다.
+     * 만약 해당 ID의 Interview 객체를 찾지 못하면 CustomException을 발생시킵니다.
+     *
+     * @param interviewId 조회할 Interview 객체의 ID
+     * @return 조회된 Interview 객체
+     * @throws CustomException 해당 ID의 Interview 객체를 찾지 못한 경우 발생
+     * @throws CustomException 해당 ID의 Interview의 createDate를 찾지 못한 경우 발생
+     * @throws CustomException 해당 ID의 Interview의 Resume의 originalFileName을 찾지 못한 경우 발생
+     */
+    public InterviewLookupResponse getInterviewById(Long memberId, Long interviewId) {
+
+        validateInterviewOwnership(memberId, interviewId);
+        Interview interview = interviewRepository.findById(interviewId)
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_REQUEST));
+
+        return new InterviewLookupResponse(interview, interview.getResume().getOriginalFileName());
+    }
 
     /**
      * 요청을 보낸 사용자가 인터뷰의 소유자와 일치하는지 검증합니다.
@@ -35,7 +57,7 @@ public class InterviewService {
     }
 
     /**
-     * 요청을 보낸 사용자가 인터뷰의 소유자와 일치하는지 검증합니다.
+     * 요청을 보낸 사용자가 인터뷰의 소유자와 일치하는지 검증합니다. (디비 접근을 최소화 하기 위해 오버로딩 했습니다.)
      *
      * @param memberId 요청을 보낸 사용자의 Id
      * @param interview 인터뷰 객체

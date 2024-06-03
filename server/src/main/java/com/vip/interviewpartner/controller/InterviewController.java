@@ -3,8 +3,10 @@ package com.vip.interviewpartner.controller;
 import com.vip.interviewpartner.common.ApiCommonResponse;
 import com.vip.interviewpartner.dto.InterviewCreateRequest;
 import com.vip.interviewpartner.dto.CustomUserDetails;
+import com.vip.interviewpartner.dto.InterviewLookupResponse;
 import com.vip.interviewpartner.dto.QuestionLookupResponse;
 import com.vip.interviewpartner.service.InterviewCreateService;
+import com.vip.interviewpartner.service.InterviewService;
 import com.vip.interviewpartner.service.QuestionLookupService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,6 +35,7 @@ import java.util.List;
 public class InterviewController {
     private final InterviewCreateService interviewCreateService;
     private final QuestionLookupService questionLookupService;
+    private final InterviewService interviewService;
 
     /**
      * 인터뷰 생성 매서드입니다.
@@ -63,7 +66,7 @@ public class InterviewController {
      * @param interviewId 질문을 조회하고자 하는 인터뷰의 아이디 입니다.
      * @return ApiCommonResponse<List<QuestionLookupResponse>> 조회된 질문 리스트 응답 객체
      */
-    @Operation(summary = "이력서 조회 API",
+    @Operation(summary = "이력서 질문 조회 API",
             description = "현재 인터뷰 방의 질문들을 조회합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "질문 조회 성공"),
@@ -71,12 +74,32 @@ public class InterviewController {
                     @ApiResponse(responseCode = "403", description = "요청자와 인터뷰의 소유자가 일치하지 않습니다", content = @Content),
             }
     )
-
     @GetMapping("/{interviewId}/questions")
     @ResponseStatus(HttpStatus.OK)
     public ApiCommonResponse<List<QuestionLookupResponse>> getQuestions(@AuthenticationPrincipal CustomUserDetails customUserDetails, @NotNull(message = "인터뷰 아이디는 필수입니다.") @PathVariable Long interviewId) {
         List<QuestionLookupResponse> questions = questionLookupService.getQuestionsByInterviewId(customUserDetails, interviewId);
         return ApiCommonResponse.successResponse(questions);
+    }
+
+    /**
+     * 인터뷰 조회 API 입니다.
+     *
+     * @param interviewId 조회하고자 하는 인터뷰의 아이디 입니다.
+     * @return ApiCommonResponse<InterviewLookupResponse> 조회된 인터뷰 응답 객체
+     */
+    @Operation(summary = "인터뷰 조회 API",
+            description = "현재 인터뷰 ID의 인터뷰를 조회하고 PromptRoom에 필요한 정보를 제공합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "인터뷰 조회 성공"),
+                    @ApiResponse(responseCode = "400", description = "인터뷰 요청 오류", content = @Content),
+                    @ApiResponse(responseCode = "403", description = "요청자와 인터뷰의 소유자가 일치하지 않습니다", content = @Content),
+            }
+    )
+    @GetMapping("/{interviewId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiCommonResponse<InterviewLookupResponse> getInterview(@AuthenticationPrincipal CustomUserDetails customUserDetails, @NotNull(message = "인터뷰 아이디는 필수입니다.") @PathVariable Long interviewId) {
+        InterviewLookupResponse interviewLookupResponse = interviewService.getInterviewById(customUserDetails.getMemberId(), interviewId);
+        return ApiCommonResponse.successResponse(interviewLookupResponse);
     }
 
 }
