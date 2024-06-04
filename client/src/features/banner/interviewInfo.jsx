@@ -45,6 +45,7 @@ const Info = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 5px;
 `;
 
 const Tooltip = styled.div`
