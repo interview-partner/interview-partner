@@ -21,10 +21,11 @@ const InnerContainer = styled.div`
   flex-direction: column;
   border-radius: 20px;
   height: 85%;
-  width: 15%;
+  width: 25%;
   padding: 24px;
   background-color: white;
 `;
+//원래는 15%
 
 const Title = styled.div`
   display: flex;
@@ -132,10 +133,10 @@ function InterviewInfo() {
   });
 
   const interviewType = interviewData.interviewType === 'text' ? '실시간 채팅 면접' : '음성 면접';
+  // <ApplyContainer>사진들어가면댐</ApplyContainer> 
 
   return (
     <BannerContainer>
-      <ApplyContainer>사진들어가면댐</ApplyContainer>
       <InnerContainer>
         <Title>{interviewData.title}</Title>
         <Info>면접 일자&nbsp;|&nbsp;{formattedDate}</Info>
