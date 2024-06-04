@@ -125,7 +125,8 @@ function InputInterviewInfo() {
       if (response && response.status === 'success' && response.data) {
         const interviewId = response.data;
         setInterviewId(interviewId); // Interview ID 설정
-        localStorage.setItem('interviewData', JSON.stringify(interviewData));
+        const currentTime = new Date().toISOString();
+        localStorage.setItem('interviewData', JSON.stringify({ ...interviewData, createdAt: currentTime }));
         navigate(`/promptroom/${interviewId}`);
       } else {
         throw new Error("Invalid response from server.");

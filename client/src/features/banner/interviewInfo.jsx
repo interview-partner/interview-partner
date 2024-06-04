@@ -66,14 +66,22 @@ function InterviewInfo() {
     return <div>Loading...</div>;
   }
 
+  const formattedDate = new Date(interviewData.createdAt).toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+
+  const interviewType = interviewData.interviewType === 'text' ? '실시간 채팅 면접' : '음성 면접';
+
   return (
     <BannerContainer>
       <ApplyContainer>사진들어가면댐</ApplyContainer>
       <InnerContainer>
         <Title>{interviewData.title}</Title>
-        <Info>면접 일자&nbsp;|&nbsp;2024.05.07</Info>
-        <Info>면접 방식&nbsp;|&nbsp;{interviewData.interviewType}</Info>
-        <Info>이력서&nbsp;|&nbsp;{interviewData.resumeId}</Info>
+        <Info>면접 일자&nbsp;|&nbsp;{formattedDate}</Info>
+        <Info>면접 방식&nbsp;|&nbsp;{interviewType}</Info>
+        <Info>이력서&nbsp;|&nbsp;{interviewData.original_file_name}</Info>
         <ButtonContainer>
           <ArrowButton to="back">수정 하기</ArrowButton>
         </ButtonContainer>
