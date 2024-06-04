@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
-import SmallsquareButton from '../../components/button/SmallsquareButton';
+import SmallsquareButton from '../../components/button/smallsquareButton';
 import CounterButton from '../../components/button/counterButton'; 
 import CounterOne from "../../assets/icons/counter_1.png";
 import CounterTwo from "../../assets/icons/counter_2.png";
