@@ -62,7 +62,7 @@ const FileName = styled.div`
   font-size: 16px;
 `;
 
-const ResumeUploadModal = ({ isOpen, onClose, children }) => {
+const ResumeUploadModal = ({ isOpen, onClose, children, onUploadComplete }) => {
   const [uploadedFile, setUploadedFile] = useState(null);
 
   const handleFileSelect = (file) => {
@@ -73,9 +73,10 @@ const ResumeUploadModal = ({ isOpen, onClose, children }) => {
     if (uploadedFile) {
       try {
         await uploadResume(uploadedFile);
-        onClose(); // 업로드 완료 후 모달 창 닫기
+        onUploadComplete(); // Call the function passed as a prop to refresh the resume list
+        onClose(); // Close the modal after upload
       } catch (error) {
-        alert(error.message); // 오류 메시지 표시
+        alert(error.message); // Display error message
       }
     }
   };
