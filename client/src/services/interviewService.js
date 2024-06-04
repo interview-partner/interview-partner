@@ -14,37 +14,22 @@ import api from './axiosConfig';
  */
 export const createInterviewRoom = async (interviewData) => {
     try {
-        /**
-         * 인터뷰 방 생성 API 요청
-         */
         const response = await api.post('/interviews', interviewData, {
             headers: {
                 'Content-Type': 'application/json;charset=UTF-8',
             }
         });
-
-        /**
-         * 생성된 인터뷰 방 데이터 반환
-         */
-        return response.data;
+        console.log('Server response:', response.data);  // 서버 응답 확인
+        return response.data;  // 응답 데이터 반환
     } catch (error) {
-        /**
-         * 오류 메시지 기본값 설정
-         */
         let errorMessage = "Unknown error occurred";
-
-        /**
-         * 오류 응답에 따라 오류 메시지 설정
-         */
         if (error.response && error.response.status === 400) {
             errorMessage = "유효하지 않은 형식입니다.";
         } else if (error.response && error.response.status === 401) {
             errorMessage = "인증 실패";
         }
-
-        /**
-         * 오류 메시지 포함된 에러 던지기
-         */
         throw new Error(errorMessage);
     }
 };
+
+export default createInterviewRoom;
