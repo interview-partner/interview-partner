@@ -42,7 +42,7 @@ const PageButton = styled.button`
   }
 `;
 
-const ResumeList = ({ data, itemsPerPage = 8, onSelect }) => {
+const ResumeList = ({ data, itemsPerPage = 8, onSelect, onUploadComplete }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeIndex, setActiveIndex] = useState(null); 
   const [modalOn, setModalOn] = useState(false);
@@ -101,7 +101,7 @@ const ResumeList = ({ data, itemsPerPage = 8, onSelect }) => {
       </PaginationContainer>
       {modalOn && (
         <ModalPortal>
-          <Modal isOpen={modalOn} onClose={handleModal}>
+          <Modal isOpen={modalOn} onClose={handleModal} onUploadComplete={onUploadComplete}>
             <h2>이력서 업로드</h2>
           </Modal>
         </ModalPortal>

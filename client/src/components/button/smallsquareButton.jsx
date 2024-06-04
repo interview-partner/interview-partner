@@ -12,6 +12,7 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
+
 const SmallsquareButton = ({ children, active, onClick }) => {
   return (
     <Button active={active} onClick={onClick}>

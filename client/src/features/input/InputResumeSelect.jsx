@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
@@ -27,16 +26,16 @@ function InputResumeSelect({ interviewData = {}, setInterviewData }) {
   const [resumeId, setResumeId] = useState(interviewData.resumeId || null);
   const [resumes, setResumes] = useState([]);
 
-  useEffect(() => {
-    const fetchResumes = async () => {
-      try {
-        const resumeData = await checkResume();
-        setResumes(resumeData.data);
-      } catch (error) {
-        console.error('이력서 조회 오류:', error.message);
-      }
-    };
+  const fetchResumes = async () => {
+    try {
+      const resumeData = await checkResume();
+      setResumes(resumeData.data);
+    } catch (error) {
+      console.error('이력서 조회 오류:', error.message);
+    }
+  };
 
+  useEffect(() => {
     fetchResumes();
   }, []);
 
@@ -53,6 +52,7 @@ function InputResumeSelect({ interviewData = {}, setInterviewData }) {
         data={resumes} 
         itemsPerPage={8} 
         onSelect={(id) => setResumeId(id)} 
+        onUploadComplete={fetchResumes} // Add this line to pass fetchResumes to ResumeList
       />
     </Container>
   );
