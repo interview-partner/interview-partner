@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import InterviewChat from "../../features/chat/interviewChat.jsx";
-import InterviewInfo from "../../features/banner/interviewInfo.jsx";
+import { useParams } from 'react-router-dom';
+import InterviewChat from "../../features/chat/interviewChat";
+import InterviewInfo from "../../features/banner/interviewInfo";
 
 const PromptroomContainer = styled.div`
   display: flex;
@@ -12,10 +13,13 @@ const PromptroomContainer = styled.div`
 `;
 
 function Promptroom() {
+  const { id } = useParams();
+  const interviewId = parseInt(id, 10);
+
   return (
     <PromptroomContainer>
       <InterviewInfo />
-      <InterviewChat />
+      {interviewId ? <InterviewChat interviewId={interviewId} /> : <div>Loading...</div>}
     </PromptroomContainer>
   );
 }
