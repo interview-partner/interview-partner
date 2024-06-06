@@ -80,12 +80,8 @@ public class InterviewService {
      * @param pageable 조회할 페이지의 내용
      * @return PageCustom<MemberInterviewLookupResponse> 객체
      */
-    @Transactional(readOnly = false)
     public PageCustom<MemberInterviewLookupResponse> getInterviewByMemberId(Long memberId, Pageable pageable) {
         Page<Interview> interviews = interviewRepository.findByMemberId(memberId, pageable);
-        if (interviews.isEmpty()) {
-            throw new CustomException(ErrorCode.INTERVIEW_NOT_FOUND);
-        }
         Page<MemberInterviewLookupResponse> page = interviews.map(MemberInterviewLookupResponse::of);
 
         return new PageCustom<>(page);
