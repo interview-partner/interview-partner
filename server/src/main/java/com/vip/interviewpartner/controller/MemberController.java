@@ -199,11 +199,10 @@ public class MemberController {
      * @param customUserDetails 사용자 인증 정보
      * @return ApiCommonResponse<Page<InterviewLookupResponse>> 조회된 인터뷰 조회 응답 리스트
      */
-    @Operation(summary = "로그인 된 사용자 인터뷰 조회 API",
-            description = "현재 로그인된 사용자의 인터뷰들을 조회합니다.",
+    @Operation(summary = "로그인 된 사용자 AI면접 이력 조회 API",
+            description = "현재 로그인된 사용자의 AI면접 이력을 조회합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "인터뷰 조회 성공"),
-                    @ApiResponse(responseCode = "400", description = "인터뷰 조회 실패", content = @Content),
                     @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content),
             }
     )
