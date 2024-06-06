@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
@@ -22,8 +23,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
-    private static final String BASE_ERROR_URL = "http://localhost:3000/login?status=failure&error=";
     private static final String DEFAULT_ERROR = "login-failed";
+
+    @Value("${oauth2.redirect.failure-url}")
+    private String oauth2RedirectFailureUrl;
 
     /**
      * 인증 실패 시 실행되는 메서드로, 실패한 인증 요청을 처리하고 클라이언트를 특정 URL로 리다이렉트합니다.
@@ -37,7 +40,7 @@ public class CustomFailureHandler extends SimpleUrlAuthenticationFailureHandler 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         String errorCode = determineErrorCode(exception);
-        String redirectUrl = BASE_ERROR_URL + errorCode;
+        String redirectUrl = oauth2RedirectFailureUrl + errorCode;
         response.sendRedirect(redirectUrl);
         log.info("social login failure");
     }

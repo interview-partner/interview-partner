@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -23,7 +24,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 @RequiredArgsConstructor
 @Configuration
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    private static final String SUCCESS_URL = "http://localhost:3000/login?status=success";
+    @Value("${oauth2.redirect.success-url}")
+    private String oauth2RedirectSuccessUrl;
 
     private final TokenService tokenService;
 
@@ -42,7 +44,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Member member = ((CustomUserDetails) authentication.getPrincipal()).getMember();
         String refresh = tokenService.createRefreshToken(member);
         response.addCookie(tokenService.createRefreshTokenCookie(REFRESH_TOKEN, refresh, COOKIE_REFRESH_EXPIRATION_SECONDS));
-        response.sendRedirect(SUCCESS_URL);
+        response.sendRedirect(oauth2RedirectSuccessUrl);
         log.info("social login success");
     }
 }
