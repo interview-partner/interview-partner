@@ -80,17 +80,4 @@ public class AuthController {
         response.addCookie(refreshTokenCookie);
         return ApiCommonResponse.successWithNoContent();
     }
-
-    @Operation(summary = "인증 테스트 API",
-            description = "테스트",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "요청 성공"),
-                    @ApiResponse(responseCode = "401", description = "인증 필요", content = @Content),
-            }
-    )
-    @GetMapping("/test")
-    @ResponseStatus(HttpStatus.OK)
-    public ApiCommonResponse<String> hello(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ApiCommonResponse.successResponse("안녕하세요 닉네임: " + customUserDetails.getNickname() + "은 인증된 사용자 입니다.");
-    }
 }
