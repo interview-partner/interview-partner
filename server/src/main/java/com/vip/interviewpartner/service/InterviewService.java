@@ -5,9 +5,13 @@ import com.vip.interviewpartner.common.exception.ErrorCode;
 import com.vip.interviewpartner.domain.Interview;
 import com.vip.interviewpartner.domain.Member;
 import com.vip.interviewpartner.dto.InterviewLookupResponse;
+import com.vip.interviewpartner.dto.MemberInterviewLookupResponse;
+import com.vip.interviewpartner.dto.PageCustom;
 import com.vip.interviewpartner.repository.InterviewRepository;
 import com.vip.interviewpartner.repository.ResumeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,6 +71,24 @@ public class InterviewService {
         if(!interviewMemberId.equals(memberId)) {
             throw new CustomException(ErrorCode.MEMBER_ID_MISMATCH);
         }
+    }
+
+    /**
+     * 사용자 ID로 사용자의 인터뷰들을 조회합니다.
+     *
+     * @param memberId 사용자 ID
+     * @param pageable 조회할 페이지의 내용
+     * @return PageCustom<MemberInterviewLookupResponse> 객체
+     */
+    @Transactional(readOnly = false)
+    public PageCustom<MemberInterviewLookupResponse> getInterviewByMemberId(Long memberId, Pageable pageable) {
+        Page<Interview> interviews = interviewRepository.findByMemberId(memberId, pageable);
+        if (interviews.isEmpty()) {
+            throw new CustomException(ErrorCode.INTERVIEW_NOT_FOUND);
+        }
+        Page<MemberInterviewLookupResponse> page = interviews.map(MemberInterviewLookupResponse::of);
+
+        return new PageCustom<>(page);
     }
 
 }
