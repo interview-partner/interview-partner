@@ -33,13 +33,4 @@ public interface InterviewRepository extends JpaRepository<Interview, Long> {
     @Query("SELECT i FROM Interview i WHERE i.member.id = :memberId")
     Page<Interview> findByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 
-    /**
-     * 질문 ID가 주어지면 해당하는 인터뷰들을 반환하는 메서드입니다.
-     *
-     * @param questionId 질문 ID
-     * @return 인터뷰 객체
-     */
-    @Query("SELECT i FROM Interview i JOIN i.questions q WHERE q.id = :questionId")
-    Interview findByQuestionId(Long questionId);
-
 }

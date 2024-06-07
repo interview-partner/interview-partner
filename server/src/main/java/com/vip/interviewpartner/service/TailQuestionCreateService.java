@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.vip.interviewpartner.common.exception.ErrorCode.FORBIDDEN;
+
 /**
  * 꼬리 질문을 생성하는 서비스 클래스 입니다.
  */
@@ -39,11 +41,14 @@ public class TailQuestionCreateService {
      * @return 꼬리 질문 내용 content
      */
     @Transactional
-    public TailQuestionResponse createTailQuestion(Long questionId){
+    public TailQuestionResponse createTailQuestion(Long memberId, Long questionId){
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
 
-        Interview interview = interviewRepository.findByQuestionId(questionId);
+        Interview interview = question.getInterview();
+
+        validateInterviewOwnership(interview, memberId);
+
         String answerContent = userAnswerRepository.findContentByQuestionId(questionId);
 
         String tailQuestionContent = sendRequest(question.getContent(), answerContent);
@@ -90,5 +95,12 @@ public class TailQuestionCreateService {
         }
         return content;
     }
+
+    public void validateInterviewOwnership(Interview interview, Long memberId){
+        if (!interview.getMember().getId().equals(memberId)) {
+            throw new CustomException(ErrorCode.MEMBER_ID_MISMATCH);
+        }
+    }
+
 
 }

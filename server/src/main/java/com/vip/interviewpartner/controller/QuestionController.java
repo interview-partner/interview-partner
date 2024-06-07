@@ -70,7 +70,7 @@ public class QuestionController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiCommonResponse<TailQuestionResponse> createTailQuestion(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long questionId) {
 
-        TailQuestionResponse tailQuestionResponse = tailQuestionCreateService.createTailQuestion(questionId);
+        TailQuestionResponse tailQuestionResponse = tailQuestionCreateService.createTailQuestion(customUserDetails.getMemberId(), questionId);
         return ApiCommonResponse.successResponse(tailQuestionResponse);
     }
 }
