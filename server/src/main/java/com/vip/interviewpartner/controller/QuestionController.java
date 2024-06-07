@@ -6,7 +6,7 @@ import com.vip.interviewpartner.dto.AnswerSaveRequest;
 import com.vip.interviewpartner.dto.CustomUserDetails;
 import com.vip.interviewpartner.dto.TailQuestionResponse;
 import com.vip.interviewpartner.service.AnswerSaveService;
-import com.vip.interviewpartner.service.TailQuestionCreate;
+import com.vip.interviewpartner.service.TailQuestionCreateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.*;
 public class QuestionController {
 
     private final AnswerSaveService answerSaveService;
-    private final TailQuestionCreate tailQuestionCreate;
+    private final TailQuestionCreateService tailQuestionCreateService;
 
     @Operation(summary = "질문에 대한 답변 저장 API",
             description = "질문에 대한 답변 저장",
@@ -70,7 +70,7 @@ public class QuestionController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiCommonResponse<TailQuestionResponse> createTailQuestion(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long questionId) {
 
-        TailQuestionResponse tailQuestionResponse = tailQuestionCreate.createTailQuestion(questionId);
+        TailQuestionResponse tailQuestionResponse = tailQuestionCreateService.createTailQuestion(questionId);
         return ApiCommonResponse.successResponse(tailQuestionResponse);
     }
 }
