@@ -99,8 +99,7 @@ const ButtonContainer = styled.div`
   `}
 `;
 
-function InputInterviewInfo() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
   const [interviewData, setInterviewData] = useState({
     title: '',
     interviewType: '',
