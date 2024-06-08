@@ -42,7 +42,7 @@ public class QuestionCreateService {
     }
 
     /**
-     * GPT API를 통해 요청을 보내는 매서드 입니다.
+     * GPT API에게 질문 내용 생성을 요청하는 메서드 입니다.
      *
      * @param resumeTxt 추출된 이력서 텍스트
      * @param questionNumber 질문 개수
@@ -79,7 +79,7 @@ public class QuestionCreateService {
     }
 
     /**
-     * GPT API를 요청하는 메서드입니다.
+     * GPT API에게 꼬리 질문 내용 생성을 요청을 보내는 메서드입니다.
      *
      * @param questionContent 전 질문 내용
      * @param answerContent 전 질문에 대한 답변 내용
