@@ -5,12 +5,9 @@ import com.vip.interviewpartner.common.exception.ErrorCode;
 import com.vip.interviewpartner.domain.Interview;
 import com.vip.interviewpartner.domain.Question;
 import com.vip.interviewpartner.dto.TailQuestionResponse;
-import com.vip.interviewpartner.repository.InterviewRepository;
 import com.vip.interviewpartner.repository.QuestionRepository;
 import com.vip.interviewpartner.repository.UserAnswerRepository;
 import lombok.RequiredArgsConstructor;
-import okhttp3.*;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,14 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class TailQuestionCreateService {
-    private final OkHttpClient httpClient = new OkHttpClient();
-
-    @Value("${gpt.credentials.secretKey}")
-    private String apiKey;
 
     private final QuestionRepository questionRepository;
     private final UserAnswerRepository userAnswerRepository;
-    private final InterviewRepository interviewRepository;
 
     private final QuestionCreateService questionCreateService;
 
