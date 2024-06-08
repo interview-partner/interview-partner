@@ -79,6 +79,43 @@ public class QuestionCreateService {
     }
 
     /**
+     * GPT API를 요청하는 메서드입니다.
+     *
+     * @param questionContent 전 질문 내용
+     * @param answerContent 전 질문에 대한 답변 내용
+     * @return 꼬리 질문 컨탠츠
+     */
+    public String tailQuestionRequest(String questionContent, String answerContent) {
+        String content = "";
+        questionContent += "\\n"+ answerContent + "\\n" + "다음 질문과 답변을 보고 추가적으로 질문을 하나만 더 해줘" + "\\n" + "답변형식은 질문으로만";
+        try {
+            MediaType JSON = MediaType.get("application/json; charset=utf-8");
+            String json = "{"
+                    + "\"model\": \"gpt-3.5-turbo\","
+                    + "\"messages\": [{\"role\": \"user\", \"content\": \"" + questionContent + "\"}]"
+                    + "}";
+            RequestBody body = RequestBody.create(json, JSON);
+            Request request = new Request.Builder()
+                    .url("https://api.openai.com/v1/chat/completions")
+                    .post(body)
+                    .addHeader("Authorization", "Bearer " + apiKey)
+                    .build();
+
+            try (Response response = httpClient.newCall(request).execute()) {
+                String responseBody = response.body().string();
+
+                // JSON 응답에서 content 필드만 추출하여 출력
+                JsonObject jsonResponse = JsonParser.parseString(responseBody).getAsJsonObject();
+                content = jsonResponse.getAsJsonArray("choices").get(0).getAsJsonObject().get("message").getAsJsonObject().get("content").getAsString();
+
+            }
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.GPT_REQUEST_FAILURE);
+        }
+        return content;
+    }
+
+    /**
      * json에서 contents 부분만 추출하는 매서드
      * 정규 표현식을 이용하여 파싱함.
      *
