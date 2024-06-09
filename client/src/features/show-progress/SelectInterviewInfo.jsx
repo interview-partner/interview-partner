@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { COLORS } from "../../styles/colors"
+import { COLORS } from "../../styles/colors";
 import ActivePoint from "../../components/shape/ActivePoint.jsx";
 import UnActivePoint from "../../components/shape/UnActivePoint.jsx";
 
@@ -70,4 +70,3 @@ function SelectInterviewInfo({ currentIndex }) {
 }
 
 export default SelectInterviewInfo;
-
