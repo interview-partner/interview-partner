@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors"
 import Account from "../../assets/icons/account.png"
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
     display: flex;
@@ -28,11 +28,11 @@ const Icon = styled.img`
     height: 24px;
 `;
 
-function AccountCircle() {
-    const history = useHistory();
+function AccountCircleButton() {
+    const navigate = useNavigate();
 
     const handleClick = () => {
-        history.push('/mypage');
+        navigate('/mypage');
     };
 
     return (
@@ -44,4 +44,4 @@ function AccountCircle() {
     );
 }
 
-export default AccountCircle;
+export default AccountCircleButton;
