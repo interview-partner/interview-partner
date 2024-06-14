@@ -4,7 +4,9 @@ package com.vip.interviewpartner.controller;
 import com.vip.interviewpartner.common.ApiCommonResponse;
 import com.vip.interviewpartner.dto.AnswerSaveRequest;
 import com.vip.interviewpartner.dto.CustomUserDetails;
+import com.vip.interviewpartner.dto.TailQuestionResponse;
 import com.vip.interviewpartner.service.AnswerSaveService;
+import com.vip.interviewpartner.service.TailQuestionCreateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 public class QuestionController {
 
     private final AnswerSaveService answerSaveService;
+    private final TailQuestionCreateService tailQuestionCreateService;
 
     @Operation(summary = "질문에 대한 답변 저장 API",
             description = "질문에 대한 답변 저장",
@@ -49,4 +52,25 @@ public class QuestionController {
         return ApiCommonResponse.successWithNoContent();
     }
 
+    /**
+     * 꼬리 질문을 생성하는 API 입니다.
+     *
+     * @param customUserDetails 유저 정보
+     * @param questionId 전 질문 ID
+     * @return 꼬리질문 내용
+     */
+    @Operation(summary = "꼬리 질문 생성 API",
+            description = "기존 질문과 답변을 보고 꼬리 질문을 생성합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "꼬리 질문 생성 성공"),
+                    @ApiResponse(responseCode = "400", description = "질문이 유효하지 않음", content = @Content),
+            }
+    )
+    @PostMapping("/{questionId}/tails")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiCommonResponse<TailQuestionResponse> createTailQuestion(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long questionId) {
+
+        TailQuestionResponse tailQuestionResponse = tailQuestionCreateService.createTailQuestion(customUserDetails.getMemberId(), questionId);
+        return ApiCommonResponse.successResponse(tailQuestionResponse);
+    }
 }

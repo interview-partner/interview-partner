@@ -1,19 +1,8 @@
 package com.vip.interviewpartner.controller;
 
 import com.vip.interviewpartner.common.ApiCommonResponse;
-import com.vip.interviewpartner.dto.CustomUserDetails;
-import com.vip.interviewpartner.dto.MemberInfoResponse;
-import com.vip.interviewpartner.dto.MemberJoinRequest;
-import com.vip.interviewpartner.dto.MemberUpdateRequest;
-import com.vip.interviewpartner.dto.NicknameCheckResponse;
-import com.vip.interviewpartner.dto.PageCustom;
-import com.vip.interviewpartner.dto.ParticipationResponse;
-import com.vip.interviewpartner.dto.ResumeLookupResponse;
-import com.vip.interviewpartner.service.MemberJoinService;
-import com.vip.interviewpartner.service.MemberService;
-import com.vip.interviewpartner.service.ParticipantLookupService;
-import com.vip.interviewpartner.service.ResumeService;
-import com.vip.interviewpartner.service.ResumeUploadService;
+import com.vip.interviewpartner.dto.*;
+import com.vip.interviewpartner.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -52,6 +41,7 @@ public class MemberController {
     private final ResumeUploadService resumeUploadService;
     private final ResumeService resumeService;
     private final ParticipantLookupService participantLookupService;
+    private final InterviewService interviewService;
 
     /**
      * 회원가입 API입니다.
@@ -202,6 +192,26 @@ public class MemberController {
                                                                            @Parameter(description = "페이지 기본값: page=0, size=10, sort=joinDate, direction=DESC") @PageableDefault(size = 10, sort = "joinDate", direction = Sort.Direction.DESC) Pageable pageable) {
         PageCustom<ParticipationResponse> participationResponses = participantLookupService.getParticipation(customUserDetails.getMemberId(), pageable);
         return ApiCommonResponse.successResponse(participationResponses);
+    }
+
+    /**
+     * 현재 로그인된 사용자의 인터뷰를 조회하는 API입니다.
+     * @param customUserDetails 사용자 인증 정보
+     * @return ApiCommonResponse<Page<InterviewLookupResponse>> 조회된 인터뷰 조회 응답 리스트
+     */
+    @Operation(summary = "로그인 된 사용자 AI면접 이력 조회 API",
+            description = "현재 로그인된 사용자의 AI면접 이력을 조회합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "인터뷰 조회 성공"),
+                    @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content),
+            }
+    )
+    @GetMapping("/me/interviews")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiCommonResponse<PageCustom<MemberInterviewLookupResponse>> getInterview(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                                                     @Parameter(description = "페이지 기본값: page=0, size=10, sort=createDate, direction=DESC") @PageableDefault(size = 10, sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        PageCustom<MemberInterviewLookupResponse> memberInterviewLookupResponses = interviewService.getInterviewByMemberId(customUserDetails.getMemberId(), pageable);
+        return ApiCommonResponse.successResponse(memberInterviewLookupResponses);
     }
 
 }

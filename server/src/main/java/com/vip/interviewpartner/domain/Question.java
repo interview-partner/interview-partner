@@ -41,4 +41,11 @@ public class Question extends BaseCreateDateEntity {
         this.content = content;
         this.modelAnswer = "tmp";
     }
+
+    public Question(Interview interview, String content, Question parent){
+        this.interview = interview;
+        this.parent = parent;
+        this.content = content;
+        this.modelAnswer = "tmp";
+    }
 }
