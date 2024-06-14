@@ -56,6 +56,14 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+processResources.dependsOn('copySecret')
+
+task copySecret(type: Copy) {
+	from 'src/main/resources/secret'
+	include 'application.yml', 'application-prod.yml', 'application-dev.yml', 'application-local.yml', 'serviceAccountKey.json'
+	into 'src/main/resources'
+}
+
 jar {
 	enabled = false
 }
