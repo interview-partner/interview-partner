@@ -1,18 +1,29 @@
-FROM openjdk:17-jdk-slim
+# Step 1: Build the application
+FROM gradle:7.5.1-jdk17 as builder
 
+# Set the working directory
 WORKDIR /app
 
-# COPY만 docker-compose 파일의 위치를 기반으로 작동함
-COPY . .
+# Copy build files
+COPY build.gradle settings.gradle /app/
 
-# 개행문자 오류 해결 [unix와 window 시스템 차이]
-RUN sed -i 's/\r$//' gradlew
+# Copy source code
+COPY src /app/src
 
-# RUN은 현재 파일을 위치를 기반으로 작동함
-RUN chmod +x ./gradlew
-RUN ./gradlew clean build
+# Build the application
+RUN gradle build --no-daemon
 
-ENV JAR_PATH=/app/build/libs
-RUN mv ${JAR_PATH}/*.jar /app/app.jar
+# Step 2: Create the runtime image
+FROM openjdk:17-jdk-slim
 
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=dev", "app.jar"]
+# Set the working directory
+WORKDIR /app
+
+# Copy the built jar file from the builder stage
+COPY --from=builder /app/build/libs/*.jar app.jar
+
+# Expose the port the application runs on
+EXPOSE 8080
+
+# Run the application with the specified profile, default to 'dev' if not provided
+ENTRYPOINT ["sh", "-c", "java -jar -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-dev} app.jar"]
