@@ -1,11 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
+import QuestionNumber from '../../components/shape/QuestionNumber';
 
 const MessageContainer = styled.div`
     display: flex;
+    flex-direction: column;
     justify-content: ${(props) => (props.isUser ? 'flex-end' : 'flex-start')};
     margin: 10px;
+    gap: 8px;
 `;
 
 const MessageBubble = styled.div`
@@ -25,6 +28,7 @@ const MessageBubble = styled.div`
 
 const AIDialogBox = ({ text, isUser }) => (
     <MessageContainer isUser={isUser}>
+        <QuestionNumber number={1} />
         <MessageBubble isUser={isUser}>{text}</MessageBubble>
     </MessageContainer>
 );
