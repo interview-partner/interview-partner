@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
 import QuestionNumber from '../../components/shape/QuestionNumber';
+import RoundButton from "../button/RoundButton";
 import ArrowBlue from '../../assets/icons/arrow_blue.png';
 
 const Container = styled.div`
@@ -16,7 +17,8 @@ const ButtonContainer = styled.div`
     display: flex;
     flex-direction: row;
     gap: 8px;
-`
+    margin-top: 8px; // 버튼 컨테이너를 메시지 아래로 밀기 위해 여백 추가
+`;
 
 const MessageBubble = styled.div`
     display: flex;
@@ -32,15 +34,37 @@ const MessageBubble = styled.div`
     word-wrap: break-word;
 `;
 
-const AIDialogBox = ({ text, isUser, number, index }) => (
-    <Container isUser={isUser}>
-        {!isUser && index > 0 && text !== "인터뷰가 종료되었습니다. 수고하셨습니다." && (
-            <QuestionNumber number={number} />
-        )}
-        <MessageBubble isUser={isUser}>
-            {text}
-        </MessageBubble>
-    </Container>
-);
+const AIDialogBox = ({ text, isUser, number, index }) => {
+    // 속성 값들을 확인하기 위한 로그 추가
+    console.log('AIDialogBox props:', { text, isUser, number, index });
+
+    return (
+        <Container isUser={isUser}>
+            {!isUser && index > 0 && text !== "인터뷰가 종료되었습니다. 수고하셨습니다." && (
+                <QuestionNumber number={number} />
+            )}
+            <MessageBubble isUser={isUser}>
+                {text}
+            </MessageBubble>
+            {isUser && (
+                <ButtonContainer>
+                    <RoundButton
+                        color={COLORS.white} 
+                        bgColor={COLORS.green}
+                    >
+                        꼬리 질문
+                    </RoundButton>
+                    <RoundButton
+                        iconSrc={ArrowBlue} 
+                        color={COLORS.white} 
+                        bgColor={COLORS.green}
+                    >
+                        다음 질문
+                    </RoundButton>
+                </ButtonContainer>
+            )}
+        </Container>
+    );
+};
 
 export default AIDialogBox;
