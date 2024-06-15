@@ -1,9 +1,20 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import styled from 'styled-components';
 import letterLogo from '../../assets/images/letterLogo.png';
 import './navBar.css';
 import AuthContext from '../../context/AuthContext';
 import { AccountContext } from '../../context/accountContext';
+import AccountCircleButton from '../../components/button/AccountCircleButton';
+
+const LoginContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+`
+
 
 /**
  * Navbar 컴포넌트
@@ -68,10 +79,14 @@ function Navbar() {
                     {/* 모의 면접 링크 */}
                     <Link to="/mockupcommunity">모의 면접</Link>
                 </div>
-                <div className='navcontent' style={{ fontSize: '14px' }}>
+                <div className='navcontent' style={{ fontSize: '14px', display: 'flex', alignItems: 'center' }}>
                     {isLoggedIn ? (
-                        // 로그아웃 링크
-                        <Link to="/" onClick={handleLogout}>로그아웃</Link>
+                        <LoginContainer>
+                            {/* 로그아웃 링크 */}
+                            <Link to="/" onClick={handleLogout}>로그아웃</Link>
+                            {/* AccountCircleButton 컴포넌트 추가 */}
+                            <AccountCircleButton />
+                        </LoginContainer>
                     ) : (
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             {/* 로그인 버튼 */}

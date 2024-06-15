@@ -1,7 +1,19 @@
-function Mypage() {
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import AccountBanner from "../../features/banner/accountInfo";
+
+const PageContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+`;
+
+function MyPage() {
     return (
-        <div>My Page</div>
+        <PageContainer>
+            <AccountBanner />
+        </PageContainer>
     );
 }
-  
-export default Mypage;
+
+export default MyPage;
