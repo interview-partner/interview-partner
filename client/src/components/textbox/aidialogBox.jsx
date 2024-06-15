@@ -2,15 +2,21 @@ import React from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
 import QuestionNumber from '../../components/shape/QuestionNumber';
+import ArrowBlue from '../../assets/icons/arrow_blue.png';
 
-// Container 스타일 정의
 const Container = styled.div`
     display: flex;
     flex-direction: column;
-    align-items: ${(props) => (props.isUser ? 'flex-end' : 'flex-start')}; // 수평 정렬 관리
+    align-items: ${(props) => (props.isUser ? 'flex-end' : 'flex-start')}; 
     margin: 10px;
     gap: 8px;
 `;
+
+const ButtonContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+`
 
 const MessageBubble = styled.div`
     display: flex;

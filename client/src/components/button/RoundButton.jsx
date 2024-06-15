@@ -4,7 +4,9 @@ import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
 
 const Button = styled.button`
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 8px 16px;
   font-size: 14px;
   border: none;
@@ -14,6 +16,7 @@ const Button = styled.button`
   cursor: pointer;
   text-align: center;
   text-decoration: none;
+  gap: 8px; // 아이콘과 텍스트 간격
 
   &:hover {
     opacity: 0.8; 
@@ -23,23 +26,27 @@ const Button = styled.button`
     background-color: ${COLORS.light_gray};
     cursor: not-allowed;
   }
+
+
+  img {
+    width: 16px;
+    height: 16px;
+  }
 `;
 
-const RoundButton = ({ to, children, color, bgColor, onClick, disabled }) => {
-  if (to) {
-    return (
-      <Link to={to}>
-        <Button color={color} bgColor={bgColor} disabled={disabled}>
-          {children}
-        </Button>
-      </Link>
-    );
-  }
-  return (
+const RoundButton = ({ to, children, iconSrc, color, bgColor, onClick, disabled }) => {
+  const content = (
     <Button color={color} bgColor={bgColor} onClick={onClick} disabled={disabled}>
+      {iconSrc && <img src={iconSrc} alt="icon" />} 
       {children}
     </Button>
   );
+
+  if (to) {
+    return <Link to={to}>{content}</Link>;
+  }
+  
+  return content;
 };
 
 export default RoundButton;

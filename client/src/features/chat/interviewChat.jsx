@@ -63,10 +63,10 @@ const InterviewChat = ({ interviewId }) => {
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
-  const [aiMessageCount, setAiMessageCount] = useState(1); // AI 메시지 번호를 1부터 시작
+  const [aiMessageCount, setAiMessageCount] = useState(1); 
 
   useEffect(() => {
-    console.log("Interview ID: ", interviewId); // 현재 Interview ID 확인
+    console.log("Interview ID: ", interviewId); 
     if (interviewId) {
       const fetchQuestions = async () => {
         try {
@@ -114,16 +114,16 @@ const InterviewChat = ({ interviewId }) => {
     if (currentQuestionIndex < questions.length) {
       setMessages(prevMessages => [
         ...prevMessages,
-        { text: questions[currentQuestionIndex].content, isUser: false, number: aiMessageCount } // AI 메시지에 번호 추가
+        { text: questions[currentQuestionIndex].content, isUser: false, number: aiMessageCount } 
       ]);
-      setAiMessageCount(aiMessageCount + 1); // AI 메시지 번호 증가
+      setAiMessageCount(aiMessageCount + 1); 
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else if (hasStarted) {
       setMessages(prevMessages => [
         ...prevMessages,
         { text: "인터뷰가 종료되었습니다. 수고하셨습니다.", isUser: false }
       ]);
-      setHasStarted(false);  // Reset interview state
+      setHasStarted(false); 
     }
   };
 
@@ -136,8 +136,8 @@ const InterviewChat = ({ interviewId }) => {
               key={index} 
               text={message.text} 
               isUser={message.isUser} 
-              number={message.isUser ? null : message.number} // AI 메시지에만 번호 지정
-              index={index} // index를 전달하여 조건부 렌더링을 관리
+              number={message.isUser ? null : message.number} 
+              index={index} 
             />
           ))}
         </MessagesContainer>
