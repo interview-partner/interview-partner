@@ -7,16 +7,16 @@ const Button = styled.button`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 16px;
-  font-size: 14px;
-  border: none;
+  padding: ${({ padding }) => padding || '8px 16px'}; 
+  font-size: ${({ fontSize }) => fontSize || '14px'}; 
+  border: ${({ borderColor }) => borderColor ? `1px solid ${borderColor}` : 'none'}; 
   border-radius: 20px;
   color: ${({ color }) => color || COLORS.font_black}; 
   background-color: ${({ bgColor }) => bgColor || COLORS.sky_blue}; 
   cursor: pointer;
   text-align: center;
   text-decoration: none;
-  gap: 8px; // 아이콘과 텍스트 간격
+  gap: 8px; 
 
   &:hover {
     opacity: 0.8; 
@@ -27,18 +27,25 @@ const Button = styled.button`
     cursor: not-allowed;
   }
 
-
   img {
     width: 16px;
     height: 16px;
   }
 `;
 
-const RoundButton = ({ to, children, iconSrc, color, bgColor, onClick, disabled }) => {
+const RoundButton = ({ to, children, iconSrc, color, bgColor, fontSize, borderColor, padding, onClick, disabled }) => {
   const content = (
-    <Button color={color} bgColor={bgColor} onClick={onClick} disabled={disabled}>
-      {iconSrc && <img src={iconSrc} alt="icon" />} 
+    <Button 
+      color={color} 
+      bgColor={bgColor} 
+      fontSize={fontSize} 
+      borderColor={borderColor} 
+      padding={padding}
+      onClick={onClick} 
+      disabled={disabled}
+    >
       {children}
+      {iconSrc && <img src={iconSrc} alt="icon" />} 
     </Button>
   );
 

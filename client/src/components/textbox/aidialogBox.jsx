@@ -17,7 +17,6 @@ const ButtonContainer = styled.div`
     display: flex;
     flex-direction: row;
     gap: 8px;
-    margin-top: 8px; // 버튼 컨테이너를 메시지 아래로 밀기 위해 여백 추가
 `;
 
 const MessageBubble = styled.div`
@@ -34,10 +33,7 @@ const MessageBubble = styled.div`
     word-wrap: break-word;
 `;
 
-const AIDialogBox = ({ text, isUser, number, index }) => {
-    // 속성 값들을 확인하기 위한 로그 추가
-    console.log('AIDialogBox props:', { text, isUser, number, index });
-
+const AIDialogBox = ({ text, isUser, number, index, started, renderButtons, onNextQuestionClick }) => {
     return (
         <Container isUser={isUser}>
             {!isUser && index > 0 && text !== "인터뷰가 종료되었습니다. 수고하셨습니다." && (
@@ -46,18 +42,24 @@ const AIDialogBox = ({ text, isUser, number, index }) => {
             <MessageBubble isUser={isUser}>
                 {text}
             </MessageBubble>
-            {isUser && (
+            {isUser && started && renderButtons && (
                 <ButtonContainer>
                     <RoundButton
-                        color={COLORS.white} 
-                        bgColor={COLORS.green}
+                        color={COLORS.font_black} 
+                        bgColor="white"
+                        borderColor={COLORS.light_gray}
+                        padding="6px 12px"
+                        onClick={onNextQuestionClick} // '다음 질문' 버튼에 클릭 핸들러 연결
                     >
                         꼬리 질문
                     </RoundButton>
                     <RoundButton
                         iconSrc={ArrowBlue} 
-                        color={COLORS.white} 
-                        bgColor={COLORS.green}
+                        color={COLORS.font_black} 
+                        bgColor="white"
+                        borderColor={COLORS.light_gray}
+                        padding="6px 12px"
+                        onClick={onNextQuestionClick} // '다음 질문' 버튼에 클릭 핸들러 연결
                     >
                         다음 질문
                     </RoundButton>

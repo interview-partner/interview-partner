@@ -63,7 +63,8 @@ const InterviewChat = ({ interviewId }) => {
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
-  const [aiMessageCount, setAiMessageCount] = useState(1); 
+  const [startMessageIndex, setStartMessageIndex] = useState(-1); // '시작' 메시지의 인덱스 추적
+  const [messagesWithButtons, setMessagesWithButtons] = useState(new Set()); // 버튼이 있는 메시지 추적
 
   useEffect(() => {
     console.log("Interview ID: ", interviewId); 
@@ -102,9 +103,11 @@ const InterviewChat = ({ interviewId }) => {
       setTimeout(() => {
         if (input.trim() === "시작" && !hasStarted) {
           setHasStarted(true);
+          setStartMessageIndex(newMessages.length - 1); // '시작' 메시지의 인덱스를 설정
+          // '시작' 메시지가 입력된 후에는 첫 질문을 자동으로 보냅니다.
           sendNextQuestion();
         } else if (hasStarted) {
-          sendNextQuestion();
+          setMessagesWithButtons(prevState => new Set([...prevState, newMessages.length - 1])); // '시작' 이후의 사용자 메시지에 버튼 표시
         }
       }, 1000);
     }
@@ -112,19 +115,26 @@ const InterviewChat = ({ interviewId }) => {
 
   const sendNextQuestion = () => {
     if (currentQuestionIndex < questions.length) {
-      setMessages(prevMessages => [
-        ...prevMessages,
-        { text: questions[currentQuestionIndex].content, isUser: false, number: aiMessageCount } 
-      ]);
-      setAiMessageCount(aiMessageCount + 1); 
+      const newMessage = { text: questions[currentQuestionIndex].content, isUser: false, number: currentQuestionIndex + 1 };
+      setMessages(prevMessages => [...prevMessages, newMessage]);
+      setMessagesWithButtons(prevState => new Set([...prevState, messages.length])); // 새로운 메시지의 인덱스를 버튼 표시 상태에 추가
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else if (hasStarted) {
       setMessages(prevMessages => [
         ...prevMessages,
         { text: "인터뷰가 종료되었습니다. 수고하셨습니다.", isUser: false }
       ]);
-      setHasStarted(false); 
+      setHasStarted(false);
     }
+  };
+
+  const handleNextQuestionClick = (index) => {
+    setMessagesWithButtons(prevState => {
+      const newSet = new Set(prevState);
+      newSet.delete(index); // 클릭된 메시지의 인덱스를 버튼 표시 상태에서 제거
+      return newSet;
+    });
+    sendNextQuestion();
   };
 
   return (
@@ -138,6 +148,9 @@ const InterviewChat = ({ interviewId }) => {
               isUser={message.isUser} 
               number={message.isUser ? null : message.number} 
               index={index} 
+              started={hasStarted} 
+              renderButtons={hasStarted && messagesWithButtons.has(index) && index > startMessageIndex} // '시작' 메시지 이후의 사용자 메시지에만 버튼 표시
+              onNextQuestionClick={() => handleNextQuestionClick(index)} // 버튼 클릭 시 처리기
             />
           ))}
         </MessagesContainer>
