@@ -20,14 +20,14 @@ const Content = styled.div`
 const Icon = styled.img`
   width: 21px;
   height: 21px;
-  opacity: 0.25;
+  opacity: 0.5;
 `;
 
 function FollowUpQuestion() {
 
     return (
         <Container>
-            <Icon src={QuestionLine} alt="QuestionLine" />
+            <Icon src={QuestionFill} alt="QuestionFill" />
             <Content>
                 꼬리 질문
             </Content>
