@@ -87,7 +87,7 @@ public class QuestionCreateService {
      */
     public String tailQuestionRequest(String questionContent, String answerContent) {
         String content = "";
-        questionContent += "\\n"+ answerContent + "\\n" + "다음 질문과 답변을 보고 추가적으로 질문을 하나만 더 해줘" + "\\n" + "답변형식은 질문으로만";
+        questionContent += "\\n"+ answerContent + "\\n" + "다음 질문과 답변을 보고 추가적으로 질문을 하나만 더 해줘" + "\\n" + "답변형식은 질문으로만 해주고 70자가 안넘게 해줘";
         try {
             MediaType JSON = MediaType.get("application/json; charset=utf-8");
             String json = "{"
