@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
 import IDcard from "../../assets/icons/IDcard.png";
 import Mail from "../../assets/icons/mail.png";
+import AccountCreationDateIcon from "../../assets/icons/event_available_Icon_white.png";
 import Phone from "../../assets/icons/phone.png";
 import RoundButton from "../../components/button/RoundButton";
+import getMemberInfo from '../../services/memberInfoService';
 
 const Container = styled.div`
     width: 100%;
@@ -98,32 +100,69 @@ const Icon = styled.img`
 `;
 
 function AccountInfo() {
+    const [memberInfo, setMemberInfo] = useState(null);
+
+    useEffect(() => {
+        const fetchMemberInfo = async () => {
+            try {
+                const data = await getMemberInfo();
+                setMemberInfo(data.data);
+            } catch (error) {
+                console.error('회원 정보를 불러오는 데 실패했습니다.', error);
+                alert('회원 정보를 불러오는 데 실패했습니다.');
+            }
+        };
+
+        fetchMemberInfo();
+    }, []);
+
+    if (!memberInfo) {
+        return <div>Loading...</div>;
+    }
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(date);
+    };
+
     return (
         <Container>
             <InnerContainer>
                 <ProfileImage />
                 <ProfileName>
-                    <NameInfo>너구리</NameInfo>
-                    <JobInfo>Front-end Developer</JobInfo>
+                    <NameInfo>{memberInfo.nickname}</NameInfo>
+                    <JobInfo>No job selected</JobInfo>
                 </ProfileName>
                 <PersonalInfo>
-                    <DetailInfo>
+                    {/* <DetailInfo>
                         <OutCircle>
                             <Icon src={IDcard} alt="IDcard" />
                         </OutCircle>
-                        abc123
-                    </DetailInfo>
+                        {memberInfo.id}
+                    </DetailInfo> */}
                     <DetailInfo>
                         <OutCircle>
                             <Icon src={Mail} alt="Mail" />
                         </OutCircle>
-                        abc123@jbnu.ac.kr
+                        {memberInfo.email}
                     </DetailInfo>
-                    <DetailInfo>
+                    {/* <DetailInfo>
                         <OutCircle>
                             <Icon src={Phone} alt="Phone" />
                         </OutCircle>
                         010-1234-5678
+                    </DetailInfo> */}
+                    <DetailInfo>
+                        <OutCircle>
+                            <Icon src={AccountCreationDateIcon} alt="AccountCreationDate" />
+                        </OutCircle>
+                        {formatDate(memberInfo.createdDate)}
                     </DetailInfo>
                 </PersonalInfo>
                 <ButtonContainer>
@@ -135,6 +174,7 @@ function AccountInfo() {
         </Container>
     );
 }
+
 
 export default AccountInfo;
 
