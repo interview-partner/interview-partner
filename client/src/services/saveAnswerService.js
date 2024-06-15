@@ -12,14 +12,16 @@ import api from './axiosConfig';
  */
 export const saveAnswer = async (questionId, answerData) => {
     try {
-        const response = await api.post(`/api/v1/questions/${questionId}/answers`, answerData, {
+        console.log('Requesting URL:', `/questions/${questionId}/answers`); // 호출 URL 확인
+        const response = await api.post(`/questions/${questionId}/answers`, answerData, {
             headers: {
                 'Content-Type': 'application/json',
             }
         });
 
         // 반환된 데이터가 status, data, message 형식인지 확인
-        if (response.data && response.data.status && response.data.data !== undefined && response.data.message) {
+        // data나 message가 null일 수 있음을 고려하여 검증 로직 수정
+        if (response.data && response.data.status) {
             return response.data;
         } else {
             throw new Error('응답 형식이 올바르지 않습니다.');
