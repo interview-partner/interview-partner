@@ -23,9 +23,8 @@ const InnerContainer = styled.div`
 
 const MessagesContainer = styled.div`
   flex: 1;
-  justify-content: center; 
-  align-items: center; 
-  justify-content: flex-end;
+  display: flex;
+  flex-direction: column;
   padding: 10px;
   overflow-y: auto;
 `;
@@ -64,6 +63,7 @@ const InterviewChat = ({ interviewId }) => {
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
+  const [aiMessageCount, setAiMessageCount] = useState(1); // AI 메시지 번호를 1부터 시작
 
   useEffect(() => {
     console.log("Interview ID: ", interviewId); // 현재 Interview ID 확인
@@ -114,8 +114,9 @@ const InterviewChat = ({ interviewId }) => {
     if (currentQuestionIndex < questions.length) {
       setMessages(prevMessages => [
         ...prevMessages,
-        { text: questions[currentQuestionIndex].content, isUser: false }
+        { text: questions[currentQuestionIndex].content, isUser: false, number: aiMessageCount } // AI 메시지에 번호 추가
       ]);
+      setAiMessageCount(aiMessageCount + 1); // AI 메시지 번호 증가
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else if (hasStarted) {
       setMessages(prevMessages => [
@@ -131,7 +132,13 @@ const InterviewChat = ({ interviewId }) => {
       <InnerContainer>
         <MessagesContainer>
           {messages.map((message, index) => (
-            <AIDialogBox key={index} text={message.text} isUser={message.isUser} />
+            <AIDialogBox 
+              key={index} 
+              text={message.text} 
+              isUser={message.isUser} 
+              number={message.isUser ? null : message.number} // AI 메시지에만 번호 지정
+              index={index} // index를 전달하여 조건부 렌더링을 관리
+            />
           ))}
         </MessagesContainer>
         <InputContainer>

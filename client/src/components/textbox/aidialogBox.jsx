@@ -3,17 +3,17 @@ import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
 import QuestionNumber from '../../components/shape/QuestionNumber';
 
-const MessageContainer = styled.div`
+// Container 스타일 정의
+const Container = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: ${(props) => (props.isUser ? 'flex-end' : 'flex-start')};
+    align-items: ${(props) => (props.isUser ? 'flex-end' : 'flex-start')}; // 수평 정렬 관리
     margin: 10px;
     gap: 8px;
 `;
 
 const MessageBubble = styled.div`
     display: flex;
-    flex-direction: column;
     max-width: 60%;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -26,12 +26,15 @@ const MessageBubble = styled.div`
     word-wrap: break-word;
 `;
 
-const AIDialogBox = ({ text, isUser }) => (
-    <MessageContainer isUser={isUser}>
-        <QuestionNumber number={1} />
-        <MessageBubble isUser={isUser}>{text}</MessageBubble>
-    </MessageContainer>
+const AIDialogBox = ({ text, isUser, number, index }) => (
+    <Container isUser={isUser}>
+        {!isUser && index > 0 && text !== "인터뷰가 종료되었습니다. 수고하셨습니다." && (
+            <QuestionNumber number={number} />
+        )}
+        <MessageBubble isUser={isUser}>
+            {text}
+        </MessageBubble>
+    </Container>
 );
 
 export default AIDialogBox;
-
