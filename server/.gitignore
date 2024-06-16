@@ -29,6 +29,7 @@ out/
 **/application.yml
 **/application-*.yml
 **/serviceAccountKey.json
+**/interview-partner-google-cloud.json
 
 ### NetBeans ###
 /nbproject/private/

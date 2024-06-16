@@ -1,0 +1,3 @@
+[submodule "server/src/main/resources/secret"]
+	path = server/src/main/resources/secret
+	url = https://github.com/interview-partner/backend-config.git

@@ -9,7 +9,7 @@ export const convertToISO = (dateString) => {
 export const formatTimeAgoInSeconds = (dateString) => {
     const isoDate = convertToISO(dateString);
     const initialDate = parseISO(isoDate);
-    const dateWithTimeAdded = addHours(initialDate, 9); // 서울 시간대에 맞게 9시간 추가
+    const dateWithTimeAdded = addHours(initialDate, 0); // 서울 시간대에 맞게 9시간 추가
 
     const now = new Date();
     const secondsDiff = Math.floor((now - dateWithTimeAdded) / 1000);  // 1000ms = 1s

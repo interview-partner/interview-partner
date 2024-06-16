@@ -43,6 +43,8 @@ dependencies {
 	implementation 'com.squareup.okhttp3:okhttp:4.9.0'
 	implementation 'com.google.code.gson:gson:2.8.6'
 	implementation 'io.openvidu:openvidu-java-client:2.29.0'
+	implementation 'com.google.cloud:google-cloud-speech:4.38.0'
+	implementation 'javazoom:jlayer:1.0.1'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	runtimeOnly 'com.h2database:h2'
@@ -54,6 +56,14 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+processResources.dependsOn('copySecret')
+
+task copySecret(type: Copy) {
+	from 'src/main/resources/secret'
+	include 'application.yml', 'application-prod.yml', 'application-dev.yml', 'application-local.yml', 'serviceAccountKey.json'
+	into 'src/main/resources'
 }
 
 jar {

@@ -175,14 +175,14 @@ public class MemberController {
     }
 
     /**
-     * 현재 로그인된 사용자의 방 참가 이력을 조회하는 API입니다.
+     * 현재 로그인된 사용자의 모의면접 방 참가 이력을 조회하는 API입니다.
      * @param customUserDetails 사용자 인증 정보
-     * @return ApiCommonResponse<PageCustom<ParticipationResponse>> 조회된 방 참가 이력 조회 응답 객체
+     * @return ApiCommonResponse<PageCustom<ParticipationResponse>> 조회된 모의면접 방 참가 이력 조회 응답 객체
      */
-    @Operation(summary = "방 참가 이력 조회 API",
-            description = "현재 로그인된 사용자의 방 참가 이력을 조회합니다.",
+    @Operation(summary = "모의면접 방 참가 이력 조회 API",
+            description = "현재 로그인된 사용자의 모의면접 방 참가 이력을 조회합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "이력서 조회 성공"),
+                    @ApiResponse(responseCode = "200", description = "모의 면접 방 참가 이력 조회 성공"),
                     @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content),
             }
     )
