@@ -1,0 +1,76 @@
+services:
+  db:
+    container_name: db-container
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      TZ: "Asia/Seoul"
+    volumes:
+      - db:/var/lib/mysql
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --log-error-verbosity=1
+    networks:
+      - network
+  redis:
+    container_name: redis-container
+    image: redis
+    restart: always
+    ports:
+      - 6379:6379
+    networks:
+      - network
+    command: redis-server --requirepass root1234
+    volumes:
+        - redis:/data
+
+  server:
+    container_name: server-container
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/interviewpartner?useSSL=false&serverTimezone=Asia/Seoul&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_DRIVER: com.mysql.cj.jdbc.Driver
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root1234
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_REDIS_PASSWORD: root1234
+      OPENVIDU_URL: http://openvidu:4443
+    networks:
+      - network
+
+  openvidu:
+    image: openvidu/openvidu-dev:2.29.0
+    restart: always
+    container_name: openvidu-container
+    ports:
+      - 4443:4443
+    environment:
+      OPENVIDU_SECRET: 5OAgTGJ8TCtilux7lL8x9C5JFyNpUMpPShP5j4zCkQ
+      DOMAIN_OR_PUBLIC_IP: localhost
+      OPENVIDU_WEBHOOK: true
+      OPENVIDU_WEBHOOK_ENDPOINT: http://server-container:8080/webhook
+      OPENVIDU_WEBHOOK_HEADERS: '["Authorization: Basic cm9vdDpyb290MTIzNA=="]'
+      OPENVIDU_WEBHOOK_EVENTS: '["sessionDestroyed","participantJoined", "participantLeft", "signalSent"]'
+    networks:
+      - network
+
+volumes:
+  db:
+  redis:
+
+networks:
+  network:

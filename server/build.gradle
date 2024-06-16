@@ -1,0 +1,71 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.2.5'
+	id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com.vip'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+configurations.all {
+	exclude group: 'commons-logging', module: 'commons-logging'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.12.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.5'
+	implementation 'org.apache.pdfbox:pdfbox:2.0.24'
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+	implementation 'com.google.firebase:firebase-admin:9.2.0'
+	implementation 'io.openvidu:openvidu-java-client:2.29.0'
+	implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+	implementation 'com.google.code.gson:gson:2.8.6'
+	implementation 'io.openvidu:openvidu-java-client:2.29.0'
+	implementation 'com.google.cloud:google-cloud-speech:4.38.0'
+	implementation 'javazoom:jlayer:1.0.1'
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly 'com.h2database:h2'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+processResources.dependsOn('copySecret')
+
+task copySecret(type: Copy) {
+	from 'src/main/resources/secret'
+	include 'application.yml', 'application-prod.yml', 'application-dev.yml', 'application-local.yml', 'serviceAccountKey.json', 'interview-partner-google-cloud.json'
+	into 'src/main/resources'
+}
+
+jar {
+	enabled = false
+}
