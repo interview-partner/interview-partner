@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
+import { transcribeAudio } from '../../services/transcribeAudioService';
 
 const VoiceInputContainer = styled.div`
   display: flex;
@@ -30,9 +31,16 @@ const VoiceInput = ({ handleSend }) => {
 
       recognitionInstance.onstart = () => setIsRecording(true);
       recognitionInstance.onend = () => setIsRecording(false);
-      recognitionInstance.onresult = (event) => {
+      recognitionInstance.onresult = async (event) => {
         const transcript = event.results[0][0].transcript;
-        handleSend(transcript);
+        console.log("Transcription result:", transcript);
+
+        try {
+          // `transcribeAudio` 호출 없이 바로 텍스트를 전달
+          handleSend(transcript); // 인식된 텍스트를 직접 전달
+        } catch (error) {
+          console.error('Error during STT:', error.message);
+        }
       };
 
       setRecognition(recognitionInstance);
