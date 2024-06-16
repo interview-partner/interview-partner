@@ -8,6 +8,7 @@ import java.nio.file.Path;
 
 import com.vip.interviewpartner.common.exception.CustomException;
 import com.vip.interviewpartner.common.exception.ErrorCode;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,22 @@ public class S3UploadService {
         amazonS3Client.putObject(bucketName, originalFileKey, fileToUpload);
 
 
+    }
+
+    public String uploadAnswerAudioFile(MultipartFile audioFile) throws IOException {
+        if (!getFileExtension(audioFile.getOriginalFilename()).equalsIgnoreCase("mp3")) {
+            throw new CustomException(ErrorCode.INVALID_FILE_TYPE);
+        }
+
+        String fileKey = "audio/answers/" + UUID.randomUUID() + "-" + audioFile.getOriginalFilename();
+
+        File tempFile = convertMultipartFileToFile(audioFile);
+
+        amazonS3Client.putObject(bucketName, fileKey, tempFile);
+
+        tempFile.delete();
+
+        return fileKey;
     }
 
     private String getFileExtension(String fileName) {
