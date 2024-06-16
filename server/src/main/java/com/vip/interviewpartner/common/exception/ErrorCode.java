@@ -22,6 +22,7 @@ public enum ErrorCode {
     INVALID_FIREBASE_ID_TOKEN(400, "유효하지 않는 Firebase 토큰입니다."),
     QUESTION_NOT_FOUND(400, "유효하지 않는 질문입니다."),
     INTERVIEW_NOT_FOUND(400, "유효하지 않는 인터뷰 입니다."),
+    AUDIO_FILE_TOO_LONG(400, "1분 이상의 파일은 업로드할 수 없습니다."),
     AUTHENTICATION_REQUIRED(401, "인증이 필요합니다."),
     LOGIN_FAILURE(401, "로그인에 실패했습니다."),
     ACCESS_TOKEN_EXPIRED(401, "엑세스 토큰이 만료되었습니다."),
