@@ -43,6 +43,8 @@ dependencies {
 	implementation 'com.squareup.okhttp3:okhttp:4.9.0'
 	implementation 'com.google.code.gson:gson:2.8.6'
 	implementation 'io.openvidu:openvidu-java-client:2.29.0'
+	implementation 'com.google.cloud:google-cloud-speech:4.38.0'
+	implementation 'javazoom:jlayer:1.0.1'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	runtimeOnly 'com.h2database:h2'
