@@ -9,12 +9,16 @@ import com.google.cloud.speech.v1.SpeechRecognitionAlternative;
 import com.google.cloud.speech.v1.SpeechRecognitionResult;
 import com.vip.interviewpartner.common.exception.CustomException;
 import com.vip.interviewpartner.common.exception.ErrorCode;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
+import javazoom.jl.decoder.Bitstream;
+import javazoom.jl.decoder.Header;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +28,7 @@ public class GoogleSttService {
 
     public String transcribe(MultipartFile file) {
         try {
+            validateAudioDuration(file);
             byte[] data = file.getBytes();
 
             // RecognitionConfig 설정
@@ -53,5 +58,42 @@ public class GoogleSttService {
         } catch (IOException e) {
             throw new CustomException(ErrorCode.STT_PROCESSING_ERROR);
         }
+    }
+
+    private void validateAudioDuration(MultipartFile file) {
+        try {
+            File tempFile = convertMultipartFileToFile(file);
+            float durationInSeconds = getAudioDuration(tempFile);
+            if (durationInSeconds > 60) {
+                throw new CustomException(ErrorCode.AUDIO_FILE_TOO_LONG);
+            }
+        } catch (Exception e) {
+            System.out.println("e = " + e);
+            throw new CustomException(ErrorCode.UPLOAD_FAILURE);
+        }
+    }
+
+    private float getAudioDuration(File file) throws Exception {
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            Bitstream bitstream = new Bitstream(fileInputStream);
+            Header header = bitstream.readFrame();
+            int totalFrames = 0;
+            float totalDuration = 0;
+            while (header != null) {
+                totalDuration += header.ms_per_frame();
+                totalFrames++;
+                bitstream.closeFrame();
+                header = bitstream.readFrame();
+            }
+            return totalDuration / 1000;
+        }
+    }
+
+    private File convertMultipartFileToFile(MultipartFile file) throws IOException {
+        File tempFile = File.createTempFile("temp", null);
+        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+            fos.write(file.getBytes());
+        }
+        return tempFile;
     }
 }
