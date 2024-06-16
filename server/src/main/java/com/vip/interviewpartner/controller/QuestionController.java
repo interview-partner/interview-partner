@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 질문 컨트롤러 입니다. 이 컨트롤러는 질문 관련 API를 처리합니다.
@@ -49,6 +50,23 @@ public class QuestionController {
                                            @Valid @RequestBody AnswerSaveRequest answerSaveRequest) {
 
         answerSaveService.saveAnswer(customUserDetails.getMemberId(), questionId, answerSaveRequest);
+        return ApiCommonResponse.successWithNoContent();
+    }
+
+    @Operation(summary = "질문에 대한 음성 답변 저장 API",
+            description = "질문에 대한 음성 답변을 텍스트로 변환하여 저장",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "질문에 대한 음성 답변 저장 성공"),
+                    @ApiResponse(responseCode = "400", description = "질문에 대한 음성 답변 저장 오류", content = @Content),
+                    @ApiResponse(responseCode = "403", description = "요청자 소유자 불일치 오류", content = @Content),
+            }
+    )
+    @PostMapping("/{questionId}/audio-answers")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiCommonResponse<?> saveAudioAnswer(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                @NotNull(message = "질문 아이디는 필수입니다.") @PathVariable Long questionId,
+                                                @RequestParam("file") MultipartFile audioFile) {
+        answerSaveService.saveAudioAnswer(customUserDetails.getMemberId(), questionId, audioFile);
         return ApiCommonResponse.successWithNoContent();
     }
 
