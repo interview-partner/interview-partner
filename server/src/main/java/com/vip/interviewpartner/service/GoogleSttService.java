@@ -20,12 +20,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * GoogleSttService는 Google Cloud Speech-to-Text API를 사용하여 음성 파일을 텍스트로 변환하는 서비스입니다.
+ */
 @Service
 @RequiredArgsConstructor
 public class GoogleSttService {
 
     private final SpeechClient speechClient;
 
+    /**
+     * 음성 파일을 텍스트로 변환합니다.
+     *
+     * @param file 변환할 음성 파일
+     * @return 변환된 텍스트
+     */
     public String transcribe(MultipartFile file) {
         try {
             validateAudioDuration(file);
@@ -60,6 +69,11 @@ public class GoogleSttService {
         }
     }
 
+    /**
+     * 음성 파일의 길이를 검증합니다.
+     *
+     * @param file 검증할 음성 파일
+     */
     private void validateAudioDuration(MultipartFile file) {
         try {
             File tempFile = convertMultipartFileToFile(file);
@@ -73,6 +87,13 @@ public class GoogleSttService {
         }
     }
 
+    /**
+     * 음성 파일의 길이를 반환합니다.
+     *
+     * @param file 길이를 계산할 음성 파일
+     * @return 음성 파일의 길이 (초 단위)
+     * @throws Exception 음성 파일 길이 계산 실패 시 예외 발생
+     */
     private float getAudioDuration(File file) throws Exception {
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             Bitstream bitstream = new Bitstream(fileInputStream);
@@ -89,6 +110,13 @@ public class GoogleSttService {
         }
     }
 
+    /**
+     * MultipartFile을 File로 변환합니다.
+     *
+     * @param file 변환할 MultipartFile
+     * @return 변환된 File 객체
+     * @throws IOException 파일 변환 실패 시 예외 발생
+     */
     private File convertMultipartFileToFile(MultipartFile file) throws IOException {
         File tempFile = File.createTempFile("temp", null);
         try (FileOutputStream fos = new FileOutputStream(tempFile)) {

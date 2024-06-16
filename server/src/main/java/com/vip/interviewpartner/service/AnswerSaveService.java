@@ -6,6 +6,7 @@ import com.vip.interviewpartner.domain.Interview;
 import com.vip.interviewpartner.domain.Question;
 import com.vip.interviewpartner.domain.UserAnswer;
 import com.vip.interviewpartner.dto.AnswerSaveRequest;
+import com.vip.interviewpartner.dto.AudioAnswerResponse;
 import com.vip.interviewpartner.repository.QuestionRepository;
 import com.vip.interviewpartner.repository.UserAnswerRepository;
 import java.io.IOException;
@@ -15,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * SaveAnswerService는 질문에 대한 답변을 저장하는 서비스입니다.
+ * AnswerSaveService는 질문에 대한 답변을 저장하는 서비스입니다.
  */
 @Service
 @RequiredArgsConstructor
@@ -51,8 +52,16 @@ public class AnswerSaveService {
         userAnswerRepository.save(userAnswer);
     }
 
+    /**
+     * 사용자의 음성 답변 저장 요청을 처리합니다.
+     *
+     * @param memberId 사용자의 ID
+     * @param questionId 질문 ID
+     * @param audioFile 음성 파일
+     * @return AudioAnswerResponse 음성 파일 경로와 변환된 텍스트를 담은 응답 객체
+     */
     @Transactional
-    public void saveAudioAnswer(Long memberId, Long questionId, MultipartFile audioFile) {
+    public AudioAnswerResponse saveAudioAnswer(Long memberId, Long questionId, MultipartFile audioFile) {
         Interview interview = questionRepository.findInterviewByQuestionId(questionId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
 
@@ -72,5 +81,6 @@ public class AnswerSaveService {
         AnswerSaveRequest answerSaveRequest = new AnswerSaveRequest(transcript, audioPath);
         UserAnswer userAnswer = answerSaveRequest.toEntity(question);
         userAnswerRepository.save(userAnswer);
+        return new AudioAnswerResponse(transcript, audioPath);
     }
 }
