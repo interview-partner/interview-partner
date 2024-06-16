@@ -1,14 +1,15 @@
 package com.vip.interviewpartner.service;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.vip.interviewpartner.common.exception.CustomException;
 import com.vip.interviewpartner.common.exception.ErrorCode;
+import com.vip.interviewpartner.common.util.JsonStringEscapeConverter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class QuestionCreateService {
     private final OkHttpClient httpClient = new OkHttpClient();
 
@@ -40,6 +42,7 @@ public class QuestionCreateService {
     public List<String> make(String resumeTxt, int questionNumber) {
         String content = sendRequest(resumeTxt, questionNumber);
         List<String> contents = splitcontents(content);
+        log.info("contents = {}", contents.toString());
 
         return contents;
     }
@@ -53,14 +56,25 @@ public class QuestionCreateService {
      */
     public String sendRequest(String resumeTxt, int questionNumber) {
         String content = "";
-        resumeTxt += "\\n 질문" + questionNumber + "개 생성";
+        String prompt = "Here is the text from my resume:\n" + resumeTxt + "\n\nPlease provide " + questionNumber + " questions in JSON format (without code blocks). Each question should be in Korean and be a key-value pair, where the key is a string number and the value is the question string. The questions should cover a variety of topics including technical background, project experience, and reasons for technology stack choices. For example: { \"1\": \"Question 1\" }.";
         try {
             MediaType JSON = MediaType.get("application/json; charset=utf-8");
-            String json = "{"
-                    + "\"model\": \"gpt-3.5-turbo\","
-                    + "\"messages\": [{\"role\": \"user\", \"content\": \"" + resumeTxt + "\"}]"
-                    + "}";
-            RequestBody body = RequestBody.create(json, JSON);
+
+            // JSON 객체 구성
+            JsonObject json = new JsonObject();
+            json.addProperty("model", "gpt-3.5-turbo");
+
+            JsonArray messages = new JsonArray();
+            JsonObject message = new JsonObject();
+            message.addProperty("role", "user");
+            message.addProperty("content", prompt);
+            messages.add(message);
+
+            json.add("messages", messages);
+
+            // JSON 문자열 생성
+            String jsonString = json.toString();
+            RequestBody body = RequestBody.create(jsonString, JSON);
             Request request = new Request.Builder()
                     .url("https://api.openai.com/v1/chat/completions")
                     .post(body)
@@ -90,20 +104,20 @@ public class QuestionCreateService {
      */
     public String tailQuestionRequest(String questionContent, String answerContent) {
         String content = "";
-        questionContent += "\\n" + answerContent + "\\n" +
-                "주어진 질문과 답변을 보고 추가적인 꼬리 질문을 하나만 더 해줘." + "\\n" +
-                "당신은 지금부터 면접관의 역할을 맡게 됩니다." + "\\n" +
-                "모든 질문은 면접관이 하는 것처럼 해야 합니다." + "\\n" +
-                "질문은 지원자의 이해도를 평가하고, 추가 정보를 이끌어낼 수 있도록 구성되어야 합니다." + "\\n" +
-                "질문은 1~2문장으로 간결하게 해야 합니다." + "\\n" +
-                "질문은 한국어로 해야 하며, 70자를 넘지 않도록 해주세요." + "\\n" +
-                "지원자의 배경 지식과 논리적 사고를 테스트하는 질문이어야 합니다." + "\\n" +
-                "#예시: GET과 POST 간의 차이점에 대해 말해 보세요., 해당 프로젝트에서 어떤 역할을 맡으셨나요?, 해당 기술을 선택한 이유는 무엇인가요?, 프로젝트에서 직면한 주요 문제는 무엇이었나요?";
+        StringBuilder questionAndAnswer = new StringBuilder();
+        questionAndAnswer.append("Interviewer Question (Korean): ")
+                .append(JsonStringEscapeConverter.convertToJsonString(questionContent))
+                .append(" ");
+        questionAndAnswer.append("Interviewee Answer (Korean): ")
+                .append(JsonStringEscapeConverter.convertToJsonString(answerContent))
+                .append(" ");
+        questionAndAnswer.append(
+                "This is a history of the previous conversation. You are the interviewer. Based on the previous conversation, please provide a concise follow-up question in Korean. The question must be concise and within 70 characters, and it should reference the answers provided by the interviewee. Here is an example: 'You mentioned you worked on a project using Java. What was the most challenging part of that project?");
         try {
             MediaType JSON = MediaType.get("application/json; charset=utf-8");
             String json = "{"
                     + "\"model\": \"gpt-3.5-turbo\","
-                    + "\"messages\": [{\"role\": \"user\", \"content\": \"" + questionContent + "\"}]"
+                    + "\"messages\": [{\"role\": \"user\", \"content\": \"" + questionAndAnswer.toString() + "\"}]"
                     + "}";
             RequestBody body = RequestBody.create(json, JSON);
             Request request = new Request.Builder()
@@ -128,21 +142,17 @@ public class QuestionCreateService {
     }
 
     /**
-     * json에서 contents 부분만 추출하는 매서드 정규 표현식을 이용하여 파싱함.
+     * JSON 응답에서 질문들을 추출하여 리스트로 반환하는 메서드입니다.
      *
-     * @param text 문자열 형태의 json
-     * @return 파싱된 질문 목록들
+     * @param text JSON 응답 문자열
+     * @return 질문 목록
      */
-    public ArrayList<String> splitcontents(String text) {
-        ArrayList<String> contents = new ArrayList<>();
-        String[] items = text.split("\\n");
-        Pattern pattern = Pattern.compile("\\d+\\.\\s");
+    public List<String> splitcontents(String text) {
+        List<String> contents = new ArrayList<>();
+        JsonObject jsonResponse = JsonParser.parseString(text).getAsJsonObject();
 
-        for (String item : items) {
-            Matcher matcher = pattern.matcher(item);
-            if (matcher.find()) {
-                contents.add(item.substring(matcher.end()).trim());
-            }
+        for (String key : jsonResponse.keySet()) {
+            contents.add(jsonResponse.get(key).getAsString());
         }
         return contents;
     }
