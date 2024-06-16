@@ -58,7 +58,7 @@ public class QuestionController {
             description = "질문에 대한 음성 답변을 텍스트로 변환하여 저장. 음성 파일은 MP3 and 1분 미만",
             responses = {
                     @ApiResponse(responseCode = "201", description = "질문에 대한 음성 답변 저장 성공"),
-                    @ApiResponse(responseCode = "400", description = "질문에 대한 음성 답변 저장 오류", content = @Content),
+                    @ApiResponse(responseCode = "400", description = "질문에 대한 음성 답변 저장 오류(1분 초과 및 mp3 확장자 불일치)", content = @Content),
                     @ApiResponse(responseCode = "403", description = "요청자 소유자 불일치 오류", content = @Content),
                     @ApiResponse(responseCode = "500", description = "STT 중 오류", content = @Content),
             }
