@@ -1,20 +1,21 @@
 import api from './axiosConfig';
 
 /**
- * Google STT 서비스를 호출하여 음성 파일을 텍스트로 변환하는 함수
+ * 질문에 대한 음성 답변을 텍스트로 변환하고 저장하는 함수
  * 
+ * @param {string} questionId - 질문의 ID
  * @param {File} audioFile - 변환할 음성 파일
  * @returns {Promise<string>} - 변환된 텍스트 반환
  * @throws {Error} - 오류 발생 시 오류 메시지 반환
  */
-export const transcribeAudio = async (audioFile) => {
+export const transcribeAudio = async (questionId, audioFile) => {
     try {
         // FormData를 사용하여 파일 데이터를 준비
         const formData = new FormData();
         formData.append('file', audioFile);
 
         // STT 서비스 호출
-        const response = await api.post('/speech/transcribe', formData, {
+        const response = await api.post(`/questions/${questionId}/audio-answers`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }

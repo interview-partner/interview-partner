@@ -42,12 +42,18 @@ const AIDialogBox = ({
     followUpCreated, 
     isFollowUp, 
     isFollowUpResponse, 
-    isFollowUpNext 
+    isFollowUpNext,
+    interviewType // interviewType을 받음
 }) => {
     return (
         <Container isUser={isUser}>
-            {!isUser && index > 0 && text !== "인터뷰가 종료되었습니다. 수고하셨습니다." && (
-                isFollowUp ? <FollowUpQuestion /> : <QuestionNumber number={number} />
+            {!isUser && text !== "인터뷰가 종료되었습니다. 수고하셨습니다." && (
+                // interviewType에 따라 조건 적용
+                interviewType === 'text' ? (
+                    index > 0 && (isFollowUp ? <FollowUpQuestion /> : <QuestionNumber number={number} />)
+                ) : (
+                    index >= 0 && (isFollowUp ? <FollowUpQuestion /> : <QuestionNumber number={number} />)
+                )
             )}
             <MessageBubble isUser={isUser}>
                 {text}

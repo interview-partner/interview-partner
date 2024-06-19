@@ -6,8 +6,8 @@ import generateFollowUpQuestion from '../../services/followUpQuestionService';
 import { getInterviewInfo } from '../../services/getInterviewInfoService';
 import TextInput from '../chat/TextInput';
 import VoiceInput from '../chat/VoiceInput';  // VoiceInput 컴포넌트를 import
-
 import AIDialogBox from '../../components/textbox/aidialogBox.jsx';
+import { useQuestionID } from '../../context/questionIDContext.js'; // QuestionIDContext를 import
 
 const ChatContainer = styled.div`
   display: flex;
@@ -35,9 +35,7 @@ const MessagesContainer = styled.div`
 `;
 
 const InterviewChat = ({ interviewId }) => {
-  const [messages, setMessages] = useState([
-    { text: "안녕하세요, AI 면접을 시작합니다.\n준비가 되셨다면 채팅창에 '시작' 을 보내주세요 :)", isUser: false, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -46,6 +44,7 @@ const InterviewChat = ({ interviewId }) => {
   const [messagesWithButtons, setMessagesWithButtons] = useState(new Set());
   const [followUpCreated, setFollowUpCreated] = useState({});
   const [interviewType, setInterviewType] = useState('');
+  const { questionID, setQuestionID } = useQuestionID(); // useQuestionID 훅을 사용하여 questionID와 setQuestionID를 가져옴
 
   useEffect(() => {
     console.log("Interview ID: ", interviewId);
@@ -62,6 +61,18 @@ const InterviewChat = ({ interviewId }) => {
           console.log("Fetched questions:", response.data);
           if (response && response.data) {
             setQuestions(response.data);
+
+            // interviewType이 'text'가 아닌 경우 바로 질문을 시작
+            if (interviewInfo.data.interviewType !== 'text') {
+              setHasStarted(true);
+              setStartMessageIndex(0);
+              sendNextQuestion(response.data, 0); // 바로 첫 번째 질문을 보냄
+            } else {
+              // 'text'인 경우 초기 메시지 추가
+              setMessages([
+                { text: "안녕하세요, AI 면접을 시작합니다.\n준비가 되셨다면 채팅창에 '시작'을 보내주세요 :)", isUser: false, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false }
+              ]);
+            }
           } else {
             throw new Error("No data received");
           }
@@ -82,9 +93,10 @@ const InterviewChat = ({ interviewId }) => {
     }
   }, [interviewId]);
 
-  const handleSend = async () => {
-    if (input.trim()) {
-      const userMessage = { text: input, isUser: true, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false };
+  const handleSend = async (transcript = null) => { // handleSend에 transcript 매개변수 추가
+    const userInput = transcript || input.trim(); // transcript가 있으면 사용하고, 없으면 기존의 input 사용
+    if (userInput) {
+      const userMessage = { text: userInput, isUser: true, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false };
 
       const lastMessage = messages[messages.length - 1];
       if (lastMessage && lastMessage.isFollowUp) {
@@ -98,11 +110,11 @@ const InterviewChat = ({ interviewId }) => {
       if (hasStarted) {
         const currentQuestion = questions[currentQuestionIndex - 1];
         console.log('Current question ID:', currentQuestion.id);
-        
-        const audioPath = `audio/${input.replace(/\s+/g, '_').toLowerCase()}.mp3`;
+
+        const audioPath = `audio/${userInput.replace(/\s+/g, '_').toLowerCase()}.mp3`;
 
         try {
-          const response = await saveAnswer(currentQuestion.id, { content: input, audioPath: audioPath });
+          const response = await saveAnswer(currentQuestion.id, { content: userInput, audioPath: audioPath });
           console.log('Response from saveAnswer:', response);
 
           setMessagesWithButtons(prevState => new Set([...prevState, newMessages.length - 1]));
@@ -113,20 +125,23 @@ const InterviewChat = ({ interviewId }) => {
             { text: "답변을 저장하는 중 오류가 발생했습니다. 다시 시도해 주세요.", isUser: false, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false }
           ]);
         }
-      } else if (input.trim() === "시작" && !hasStarted) {
+      } else if (userInput === "시작" && !hasStarted) {
         setHasStarted(true);
         setStartMessageIndex(newMessages.length - 1);
-        sendNextQuestion();
+        sendNextQuestion(questions, currentQuestionIndex);
       }
     }
   };
 
-  const sendNextQuestion = () => {
-    if (currentQuestionIndex < questions.length) {
-      const newMessage = { text: questions[currentQuestionIndex].content, isUser: false, number: currentQuestionIndex + 1, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false };
+  const sendNextQuestion = (questionsList = questions, index = currentQuestionIndex) => {
+    if (index < questionsList.length) {
+      const newMessage = { text: questionsList[index].content, isUser: false, number: index + 1, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false };
       setMessages(prevMessages => [...prevMessages, newMessage]);
       setMessagesWithButtons(prevState => new Set([...prevState, messages.length]));
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setCurrentQuestionIndex(index + 1);
+
+      // 현재 질문의 ID를 전역 상태에 저장
+      setQuestionID(questionsList[index].id);
     } else if (hasStarted) {
       setMessages(prevMessages => [
         ...prevMessages,
@@ -198,6 +213,7 @@ const InterviewChat = ({ interviewId }) => {
               isFollowUp={message.isFollowUp}
               isFollowUpResponse={message.isFollowUpResponse}
               isFollowUpNext={message.isFollowUpNext}
+              interviewType={interviewType} // interviewType을 전달
             />
           ))}
         </MessagesContainer>
@@ -211,6 +227,7 @@ const InterviewChat = ({ interviewId }) => {
         ) : (
           <VoiceInput
             handleSend={handleSend}
+            questionID={questionID} // questionID를 VoiceInput에 전달
           />
         )}
       </InnerContainer>
@@ -219,3 +236,4 @@ const InterviewChat = ({ interviewId }) => {
 };
 
 export default InterviewChat;
+
