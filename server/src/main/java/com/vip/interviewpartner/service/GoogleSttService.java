@@ -83,7 +83,6 @@ public class GoogleSttService {
                 throw new CustomException(ErrorCode.AUDIO_FILE_TOO_LONG);
             }
         } catch (Exception e) {
-            System.out.println("e = " + e);
             throw new CustomException(ErrorCode.UPLOAD_FAILURE);
         }
     }
