@@ -27,9 +27,9 @@ export const initializeSession = (config) => {
     mySession.on('signal:chat', (event) => {
         const messageData = JSON.parse(event.data);
         config.addMessage({
-            user: messageData.user,
-            text: messageData.text,
-            id: messageData.id,
+            nickname: messageData.nickname,
+            content: messageData.content,
+            //id: messageData.id,
             roomParticipantId: messageData.roomParticipantId, // roomParticipantId 추가
         });
     });
