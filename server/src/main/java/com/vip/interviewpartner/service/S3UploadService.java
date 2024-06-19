@@ -66,8 +66,8 @@ public class S3UploadService {
      * @throws IOException 파일 업로드 실패 시 예외 발생
      */
     public String uploadAnswerAudioFile(MultipartFile audioFile) throws IOException {
-        if (!getFileExtension(audioFile.getOriginalFilename()).equalsIgnoreCase("mp3")) {
-            throw new CustomException(ErrorCode.INVALID_FILE_TYPE);
+        if (!getFileExtension(audioFile.getOriginalFilename()).equalsIgnoreCase("wav")) {
+            throw new CustomException(ErrorCode.INVALID_AUDIO_FILE_TYPE);
         }
 
         String fileKey = "audio/answers/" + UUID.randomUUID() + "-" + audioFile.getOriginalFilename();
