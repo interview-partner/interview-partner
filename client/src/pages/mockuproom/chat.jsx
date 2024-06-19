@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import send_Icon from '../../assets/icons/send_Icon.png';
 import article_Icon from '../../assets/icons/article_Icon.png';
-import userImageTest1 from '../../assets/images/userImage/userImage2.png';
+import userImageTest1 from '../../assets/images/userImage/userImage.png';
 import chevron_right_Icon from '../../assets/icons/chevron_right_Icon.png';
 import rate_review_Icon from '../../assets/icons/rate_review_Icon.png';
 import ResumeViewer from './ResumeViewer';
@@ -11,9 +11,18 @@ import {
   MessageList, MessageContent, UserButtonContainer, Nickname, MessageWrapper
 } from './chatstyle';
 import { handleSendFeedback } from '../../services/feedbackService';
-import { v4 as uuidv4 } from 'uuid';
 import FeedbackForm from './FeedbackForm';
 
+/**
+ * 채팅 컴포넌트
+ * 
+ * @param {Object} props - 컴포넌트 속성
+ * @param {boolean} props.isOpen - 채팅창 열림 여부
+ * @param {Function} props.handleClose - 채팅창 닫기 함수
+ * @param {Object} props.session - 세션 객체
+ * @param {Array} props.messages - 메시지 배열
+ * @param {Function} props.setMessages - 메시지 설정 함수
+ */
 const Chat = ({ isOpen, handleClose, session, messages, setMessages }) => {
   const [inputValue, setInputValue] = useState('');
   const [currentView, setCurrentView] = useState('chat'); // State to manage current view
@@ -22,15 +31,15 @@ const Chat = ({ isOpen, handleClose, session, messages, setMessages }) => {
   const messageListRef = useRef(null);
   const messageIds = useRef(new Set()); // 이미 처리된 메시지 ID를 저장하는 Set
   const [isAutoScroll, setIsAutoScroll] = useState(true);
-  const [activeUserId, setActiveUserId] = useState(null); // 사용자(참여자)ID 관리용, roomParticipantId 예: 버튼클릭시 해당 사용의 이력서 제공
+  const [activeUserId, setActiveUserId] = useState(null); // 사용자(참여자)ID 관리용, roomParticipantId 예: 버튼 클릭시 활성화된 사용자 이력서 제공
   const [feedbackContent, setFeedbackContent] = useState(''); // 피드백 내용 상태
   const [users, setUsers] = useState([]);
 
   const [isFeedbackVisible, setIsFeedbackVisible] = useState(false);
 
-  //session.connection.data -> 본인의 세션정보
-  //session.remoteConnections -> 다른 사용자들의 세션 정보
-
+  /**
+   * 사용자 목록 업데이트 함수
+   */
   const updateUsers = useCallback(() => {
     if (session) {
       const userList = [
@@ -59,6 +68,11 @@ const Chat = ({ isOpen, handleClose, session, messages, setMessages }) => {
 
   useEffect(() => {
     if (session) {
+      /**
+       * 채팅 신호를 처리하는 함수
+       * 
+       * @param {Object} event - 신호 이벤트 객체
+       */
       const handleSignalChat = (event) => {
         const messageData = JSON.parse(event.data);
         if (!messageIds.current.has(messageData.id)) {
@@ -73,17 +87,19 @@ const Chat = ({ isOpen, handleClose, session, messages, setMessages }) => {
     }
   }, [session, setMessages]);
 
+  /**
+   * 메시지를 전송하는 함수
+   */
   const handleSendMessage = useCallback(() => {
     if (inputValue.trim() !== '') {
       const sessionData = JSON.parse(session.connection.data); // 세션 데이터 파싱
-      const myUserName = `${sessionData.nickname} (${session.connection.connectionId})`; // 닉네임과 고유 ID 설정
+      // const myUserName = `${sessionData.nickname} (${session.connection.connectionId})`; // 채팅창에서 사용자 이름을 닉네임 + 고유 ID로 설정
+      const myUserName = `${sessionData.nickname}`; //채팅창에서 사용자 이름을 닉네임으로 설정
       const roomParticipantId = sessionData.roomParticipantId; // roomParticipantId 추가
-      const messageId = uuidv4() // 고유 ID 설정
 
       const messageData = {
-        user: myUserName,
-        text: inputValue,
-        id: messageId, // 메시지에 ID 추가
+        nickname: myUserName,
+        content: inputValue,
         roomParticipantId: roomParticipantId, // roomParticipantId 추가
       };
 
@@ -94,12 +110,16 @@ const Chat = ({ isOpen, handleClose, session, messages, setMessages }) => {
         type: 'chat',
       });
 
-      messageIds.current.add(messageId); // 전송된 메시지 ID 저장
       setInputValue('');
     }
 
   }, [inputValue, messages, session]);
 
+  /**
+   * 사용자의 이력서 버튼 클릭 처리 함수
+   * 
+   * @param {Object} selectedUserInfo - 선택된 사용자 정보
+   */
   const handleUserResumeClick = (selectedUserInfo) => {
     const { roomParticipantId, resumeUrl } = selectedUserInfo;
     if (currentView === 'resume' && activeUserId === roomParticipantId) {
@@ -113,6 +133,11 @@ const Chat = ({ isOpen, handleClose, session, messages, setMessages }) => {
     }
   };
 
+  /**
+   * 사용자의 피드백 버튼 클릭 처리 함수
+   * 
+   * @param {Object} selectedUserInfo - 선택된 사용자 정보
+   */
   const handleUserFeedbackClick = (selectedUserInfo) => {
     const { roomParticipantId } = selectedUserInfo;
     if (currentView === 'feedback' && activeUserId === roomParticipantId) {
@@ -127,6 +152,9 @@ const Chat = ({ isOpen, handleClose, session, messages, setMessages }) => {
     }
   };
 
+  /**
+   * 피드백을 전송하는 함수
+   */
   const onSendFeedback = async () => {
     try {
       // session.connection.data를 '%/%'로 분할
@@ -169,6 +197,9 @@ const Chat = ({ isOpen, handleClose, session, messages, setMessages }) => {
     }
   }, [messages, isAutoScroll]);
 
+  /**
+   * 스크롤 이벤트 처리 함수
+   */
   const handleScroll = () => {
     const messageList = messageListRef.current;
     if (messageList) {
@@ -229,15 +260,15 @@ const Chat = ({ isOpen, handleClose, session, messages, setMessages }) => {
                 return (
                   <MessageList ref={messageListRef} onScroll={handleScroll}>
                     {messages.map((message, index) => {
-                      const userPattern = /^(.+?) \((.+?)\)$/;
-                      const match = message.user.match(userPattern);
-                      const messageConnectionId = match ? match[2] : null;
-                      const isCurrentUser = session && messageConnectionId === session.connection.connectionId;
+                      // 세션과 연결 객체가 유효한지 확인
+                      const isCurrentUser = session && session.connection &&
+                        session.connection.data &&
+                        JSON.parse(session.connection.data).roomParticipantId === message.roomParticipantId;
 
                       return (
                         <MessageWrapper key={index} isUser={isCurrentUser}>
-                          {!isCurrentUser && <Nickname>{message.user}</Nickname>}
-                          <MessageContent isUser={isCurrentUser}>{message.text}</MessageContent>
+                          {!isCurrentUser && <Nickname>{message.nickname}</Nickname>}
+                          <MessageContent isUser={isCurrentUser}>{message.content}</MessageContent>
                         </MessageWrapper>
                       );
                     })}
