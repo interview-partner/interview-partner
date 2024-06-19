@@ -39,6 +39,7 @@ public enum ErrorCode {
     DUPLICATE_FEEDBACK(409, "동일한 참가자에게 중복된 피드백을 작성할 수 없습니다."),
     ROOM_CLOSED(410, "방이 종료되었습니다."),
     INVALID_FILE_TYPE(415, "PDF 파일만 업로드 가능합니다."),
+    INVALID_AUDIO_FILE_TYPE(415, "WAV 파일만 업로드 가능합니다."),
     SERVER_ERROR(500, "서버에 에러가 발생하였습니다."),
     STT_PROCESSING_ERROR(500, "STT 처리 중 오류가 발생했습니다."),
     OPENVIDU_SERVER_ERROR(500, "OpenVidu 서버에 에러가 발생하였습니다.");
