@@ -1,19 +1,23 @@
 package com.vip.interviewpartner.service;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.vip.interviewpartner.common.exception.CustomException;
 import com.vip.interviewpartner.common.exception.ErrorCode;
+import com.vip.interviewpartner.common.util.JsonStringEscapeConverter;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import okhttp3.*;
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * 질문을 만들어주는 서비스입니다.
@@ -21,6 +25,7 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class QuestionCreateService {
     private final OkHttpClient httpClient = new OkHttpClient();
 
@@ -30,13 +35,14 @@ public class QuestionCreateService {
     /**
      * 추출된 이력서 텍스트 및 질문개수를 통해 질문을 만들어주는 매서드입니다.
      *
-     * @param resumeTxt S3에서 다운로드 받은 이력서 텍스트
+     * @param resumeTxt      S3에서 다운로드 받은 이력서 텍스트
      * @param questionNumber 사용자가 선택한 질문 개수
      * @return 각 질문을 String으로 받은 List
      */
-    public List<String> make(String resumeTxt, int questionNumber){
+    public List<String> make(String resumeTxt, int questionNumber) {
         String content = sendRequest(resumeTxt, questionNumber);
         List<String> contents = splitcontents(content);
+        log.info("contents = {}", contents.toString());
 
         return contents;
     }
@@ -44,20 +50,31 @@ public class QuestionCreateService {
     /**
      * GPT API에게 질문 내용 생성을 요청하는 메서드 입니다.
      *
-     * @param resumeTxt 추출된 이력서 텍스트
+     * @param resumeTxt      추출된 이력서 텍스트
      * @param questionNumber 질문 개수
      * @return json 형태의 문자열 응답
      */
     public String sendRequest(String resumeTxt, int questionNumber) {
         String content = "";
-        resumeTxt += "\\n 질문" + questionNumber + "개 생성" ;
+        String prompt = "Here is the text from my resume:\n" + resumeTxt + "\n\nPlease provide " + questionNumber + " questions in JSON format (without code blocks). Each question should be in Korean and be a key-value pair, where the key is a string number and the value is the question string. The questions should cover a variety of topics including technical background, project experience, and reasons for technology stack choices. For example: { \"1\": \"Question 1\" }.";
         try {
             MediaType JSON = MediaType.get("application/json; charset=utf-8");
-            String json = "{"
-                    + "\"model\": \"gpt-3.5-turbo\","
-                    + "\"messages\": [{\"role\": \"user\", \"content\": \"" + resumeTxt + "\"}]"
-                    + "}";
-            RequestBody body = RequestBody.create(json, JSON);
+
+            // JSON 객체 구성
+            JsonObject json = new JsonObject();
+            json.addProperty("model", "gpt-3.5-turbo");
+
+            JsonArray messages = new JsonArray();
+            JsonObject message = new JsonObject();
+            message.addProperty("role", "user");
+            message.addProperty("content", prompt);
+            messages.add(message);
+
+            json.add("messages", messages);
+
+            // JSON 문자열 생성
+            String jsonString = json.toString();
+            RequestBody body = RequestBody.create(jsonString, JSON);
             Request request = new Request.Builder()
                     .url("https://api.openai.com/v1/chat/completions")
                     .post(body)
@@ -82,17 +99,25 @@ public class QuestionCreateService {
      * GPT API에게 꼬리 질문 내용 생성을 요청을 보내는 메서드입니다.
      *
      * @param questionContent 전 질문 내용
-     * @param answerContent 전 질문에 대한 답변 내용
+     * @param answerContent   전 질문에 대한 답변 내용
      * @return 꼬리 질문 컨탠츠
      */
     public String tailQuestionRequest(String questionContent, String answerContent) {
         String content = "";
-        questionContent += "\\n"+ answerContent + "\\n" + "다음 질문과 답변을 보고 추가적으로 질문을 하나만 더 해줘" + "\\n" + "답변형식은 질문으로만 해주고 70자가 안넘게 해줘";
+        StringBuilder questionAndAnswer = new StringBuilder();
+        questionAndAnswer.append("Interviewer Question (Korean): ")
+                .append(JsonStringEscapeConverter.convertToJsonString(questionContent))
+                .append(" ");
+        questionAndAnswer.append("Interviewee Answer (Korean): ")
+                .append(JsonStringEscapeConverter.convertToJsonString(answerContent))
+                .append(" ");
+        questionAndAnswer.append(
+                "This is a history of the previous conversation. You are the interviewer. Based on the previous conversation, please provide a concise follow-up question in Korean. The question must be concise and within 70 characters, and it should reference the answers provided by the interviewee. Here is an example: 'You mentioned you worked on a project using Java. What was the most challenging part of that project?");
         try {
             MediaType JSON = MediaType.get("application/json; charset=utf-8");
             String json = "{"
                     + "\"model\": \"gpt-3.5-turbo\","
-                    + "\"messages\": [{\"role\": \"user\", \"content\": \"" + questionContent + "\"}]"
+                    + "\"messages\": [{\"role\": \"user\", \"content\": \"" + questionAndAnswer.toString() + "\"}]"
                     + "}";
             RequestBody body = RequestBody.create(json, JSON);
             Request request = new Request.Builder()
@@ -110,28 +135,24 @@ public class QuestionCreateService {
 
             }
         } catch (Exception e) {
+            System.out.println("e = " + e);
             throw new CustomException(ErrorCode.GPT_REQUEST_FAILURE);
         }
         return content;
     }
 
     /**
-     * json에서 contents 부분만 추출하는 매서드
-     * 정규 표현식을 이용하여 파싱함.
+     * JSON 응답에서 질문들을 추출하여 리스트로 반환하는 메서드입니다.
      *
-     * @param text 문자열 형태의 json
-     * @return 파싱된 질문 목록들
+     * @param text JSON 응답 문자열
+     * @return 질문 목록
      */
-    public ArrayList<String> splitcontents(String text) {
-        ArrayList<String> contents = new ArrayList<>();
-        String[] items = text.split("\\n");
-        Pattern pattern = Pattern.compile("\\d+\\.\\s");
+    public List<String> splitcontents(String text) {
+        List<String> contents = new ArrayList<>();
+        JsonObject jsonResponse = JsonParser.parseString(text).getAsJsonObject();
 
-        for (String item : items) {
-            Matcher matcher = pattern.matcher(item);
-            if (matcher.find()) {
-                contents.add(item.substring(matcher.end()).trim());
-            }
+        for (String key : jsonResponse.keySet()) {
+            contents.add(jsonResponse.get(key).getAsString());
         }
         return contents;
     }

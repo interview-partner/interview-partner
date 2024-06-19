@@ -1,0 +1,20 @@
+# Development environment setup for React app
+FROM node:16
+
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package.json package-lock.json /app/
+RUN npm install
+
+# Copy the rest of the application
+COPY . /app
+
+# Set the default port to 3000 if not provided
+ENV PORT 3000
+
+# Expose the port for the application
+EXPOSE 3000
+
+# Command to run the application in development mode
+CMD ["npm", "start"]
