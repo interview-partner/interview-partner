@@ -19,6 +19,8 @@ const Input = styled.input`
 
 const Button = styled.button`
   display: flex;
+  align-items: center;
+  justify-content: center;
   margin-left: 10px;
   padding: 10px;
   border: none;
@@ -39,10 +41,11 @@ const TextInput = ({ input, setInput, handleSend }) => {
           if (e.key === 'Enter') handleSend();
         }}
       />
-      <Button onClick={handleSend}>
-        <span className="material-symbols-outlined">
-          send
-        </span>
+      <Button onClick={() => {
+        console.log('Button clicked');
+        handleSend();
+      }}>
+        Send
       </Button>
     </InputContainer>
   );
