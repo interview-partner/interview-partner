@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { transcribeAudio } from '../../services/transcribeAudioService';
+import SendBlueIcon from '../../assets/icons/send_blue.png'; // send_blue 아이콘 경로
+import VoiceBlueIcon from '../../assets/icons/voice_blue.png'; // voice_blue 아이콘 경로
 
 const VoiceInputContainer = styled.div`
   display: flex;
@@ -11,14 +13,30 @@ const VoiceInputContainer = styled.div`
 `;
 
 const Button = styled.button`
-  padding: 10px;
+  width: 60px;
+  height: 60px;
   border: none;
   border-radius: 50%;
-  background-color: #62AED5;
-  color: white;
+  background-color: white;
   cursor: pointer;
   z-index: 2;
   position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  background-image: url(${props => props.isRecording ? SendBlueIcon : VoiceBlueIcon});
+  background-size: 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  &:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+  }
+
+  &:active {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transform: scale(0.95);
+  }
 `;
 
 const Canvas = styled.canvas`
@@ -45,14 +63,14 @@ const VoiceInput = ({ handleSend, questionID }) => {
       console.error('This browser does not support audio recording');
       setErrorMessage('This browser does not support audio recording');
     }
-    drawStaticLine(); // 초기 일직선을 그림
+    drawStaticLine();
   }, []);
 
   useEffect(() => {
     if (isRecording) {
       startWaveAnimation();
     } else {
-      drawStaticLine();
+      stopWaveAnimation(); // 녹음이 멈추면 애니메이션도 멈추고 일직선으로 돌아가도록 함
     }
   }, [isRecording]);
 
@@ -65,7 +83,6 @@ const VoiceInput = ({ handleSend, questionID }) => {
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
-      // Set up audio context and analyser for visualisation
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       const analyser = audioContext.createAnalyser();
       const source = audioContext.createMediaStreamSource(stream);
@@ -88,21 +105,19 @@ const VoiceInput = ({ handleSend, questionID }) => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const audioFile = await convertToWav(audioBlob, 16000);
         console.log('Audio file created:', audioFile);
-        
+
         try {
           const transcript = await transcribeAudio(questionID, audioFile);
           console.log('Transcription response:', transcript);
-
-          // 변환된 텍스트를 handleSend로 전달
           handleSend(transcript);
         } catch (error) {
           console.error('Error during STT:', error.message);
           setErrorMessage('Error during STT: ' + error.message);
         }
 
-        // Clean up audio context
         audioContext.close();
-        drawStaticLine(); // 녹음 중이 끝난 후에도 기본 일직선을 그립니다.
+        stopWaveAnimation(); // 녹음 중지 후 애니메이션 멈춤
+        setIsRecording(false); // 녹음 중지 후 아이콘 변경을 위해 상태 업데이트
       };
 
       mediaRecorder.start();
@@ -118,7 +133,6 @@ const VoiceInput = ({ handleSend, questionID }) => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
       console.log('MediaRecorder stopped.');
-      setIsRecording(false);
     }
   };
 
@@ -210,7 +224,6 @@ const VoiceInput = ({ handleSend, questionID }) => {
 
     ctx.clearRect(0, 0, width, height);
 
-    // 그라디언트 효과 적용
     const gradient = ctx.createLinearGradient(0, height / 2, width, height / 2);
     gradient.addColorStop(0, 'rgba(98, 174, 213, 0)');
     gradient.addColorStop(0.5, 'rgba(98, 174, 213, 1)');
@@ -229,9 +242,9 @@ const VoiceInput = ({ handleSend, questionID }) => {
     const ctx = canvas.getContext('2d');
     const width = canvas.width;
     const height = canvas.height;
-    const numberOfWaves = 3; // 파도의 개수
+    const numberOfWaves = 3;
     let phase = 0;
-    const speed = 0.005; // 파도 속도, 더 느리게 설정
+    const speed = 0.005;
 
     const drawWave = () => {
       ctx.clearRect(0, 0, width, height);
@@ -243,7 +256,6 @@ const VoiceInput = ({ handleSend, questionID }) => {
       for (let i = 0; i < numberOfWaves; i++) {
         ctx.beginPath();
 
-        // 선의 하늘색에서 보라색 그라디언트 적용
         const lineGradient = ctx.createLinearGradient(0, height / 2, width, height / 2);
         lineGradient.addColorStop(0, 'rgba(98, 174, 213, 0)');
         lineGradient.addColorStop(0.5, `rgba(98, 174, 213, ${0.8 - i * 0.3})`);
@@ -252,8 +264,8 @@ const VoiceInput = ({ handleSend, questionID }) => {
         ctx.strokeStyle = lineGradient;
         ctx.lineWidth = 1;
         let x = 0;
-        const amplitude = 20 + i * 10; // 파도 높이 증가
-        const frequency = 0.005; // 파도 주기 조절, 더 부드럽게
+        const amplitude = 20 + i * 10;
+        const frequency = 0.005;
 
         while (x < width) {
           let y = height / 2;
@@ -262,7 +274,7 @@ const VoiceInput = ({ handleSend, questionID }) => {
             const sampleAmplitude = (dataArrayRef.current[x % dataArrayRef.current.length] - 128) / 128;
             y += sampleAmplitude * amplitude;
           } else {
-            y += Math.sin(x * frequency + phase) * amplitude; // 파도 모양 변화
+            y += Math.sin(x * frequency + phase) * amplitude;
           }
 
           if (x === 0) {
@@ -296,8 +308,8 @@ const VoiceInput = ({ handleSend, questionID }) => {
 
   return (
     <VoiceInputContainer>
-      <Button onClick={isRecording ? stopRecording : startRecording}>
-        {isRecording ? 'Recording...' : 'Start Recording'}
+      <Button onClick={isRecording ? stopRecording : startRecording} isRecording={isRecording}>
+        {/* 텍스트 제거, 아이콘으로 대체 */}
       </Button>
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       <Canvas ref={canvasRef} width={500} height={100} />
