@@ -1,8 +1,9 @@
 package com.vip.interviewpartner.service;
 
+import static com.google.cloud.speech.v1.RecognitionConfig.AudioEncoding.LINEAR16;
+
 import com.google.cloud.speech.v1.RecognitionAudio;
 import com.google.cloud.speech.v1.RecognitionConfig;
-import com.google.cloud.speech.v1.RecognitionConfig.AudioEncoding;
 import com.google.cloud.speech.v1.RecognizeResponse;
 import com.google.cloud.speech.v1.SpeechClient;
 import com.google.cloud.speech.v1.SpeechRecognitionAlternative;
@@ -42,8 +43,8 @@ public class GoogleSttService {
 
             // RecognitionConfig 설정
             RecognitionConfig config = RecognitionConfig.newBuilder()
-                    .setEncoding(AudioEncoding.MP3)
-                    .setSampleRateHertz(44100)
+                    .setEncoding(LINEAR16)
+                    .setSampleRateHertz(16000)
                     .setLanguageCode("ko-KR")
                     .build();
 
@@ -82,7 +83,6 @@ public class GoogleSttService {
                 throw new CustomException(ErrorCode.AUDIO_FILE_TOO_LONG);
             }
         } catch (Exception e) {
-            System.out.println("e = " + e);
             throw new CustomException(ErrorCode.UPLOAD_FAILURE);
         }
     }
