@@ -1,12 +1,26 @@
-# Interview Partner
+<p align="center">
+    <img width="244" alt="원형로고 색" src="https://github.com/interview-partner/interview-partner/assets/121853214/b1d9e340-5972-4596-a437-5502eea494cb">
+</p>
 
+
+# Interview Partner
+> 이력서 기반 AI 면접 및 화상 모의 면접 서비스
 ## ✍🏻 프로젝트 소개
+<p align="center">
+  <img src="https://img.shields.io/badge/react-v18.3.1-9cf?logo=react" alt="react" />
+  <img src="https://img.shields.io/badge/spring_boot-v3.2.5-green?logo=springboot"  alt="spring-boot" />
+  <img src="https://img.shields.io/badge/mysql-v8.0.35-blue?logo=mysql" alt="mysql"/>
+  <a href="https://hits.seeyoufarm.com">
+    <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Finterview-partner%2Finterview-partner&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false" alt="hits"/>
+  </a>
+</p>
+
 <img width="1679" alt="메인페이지" src="https://github.com/junest66/interview-partner/assets/121853214/3d97b541-64c7-440a-9d13-a2d407fb7476">
 
 - **Interview Partner**는 자신의 이력서를 기반으로 AI 면접 및 화상 모의 면접을 할 수 있는 플랫폼입니다.
 - **AI 면접**에서는 자신의 이력서를 바탕으로 질문을 생성하고, 답변을 분석하여 꼬리 질문을 생성할 수 있습니다. 또한 음성 및 텍스트 중 하나를 선택하여 면접을 진행할 수 있습니다.
 - **화상 모의 면접**에서는 참가자들이 서로의 이력서를 열람하면서 화상 모의면접을 진행하며, 채팅 및 피드백 기능을 통해 소통할 수 있습니다.
-- **마이페이지**에서 면접 기록과 이력을 열람할 수 있습니다.
+- **마이페이지**에서 AI 면접 기록과 화상 모의 면접 참가 이력 및 피드백을 열람할 수 있습니다.
 
 배포 사이트: [Interview Partner](https://interviewpartner.site)
 
