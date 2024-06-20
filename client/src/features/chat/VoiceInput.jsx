@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { COLORS } from '../../styles/colors';
 import { transcribeAudio } from '../../services/transcribeAudioService';
+import { saveAnswer } from '../../services/saveAnswerService'; // 추가된 부분
 
 const VoiceInputContainer = styled.div`
   display: flex;
@@ -18,18 +19,22 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-const VoiceInput = ({ handleSend, questionID }) => { // questionID를 props로 받음
+const VoiceInput = ({ handleSend, questionID }) => {
   const [isRecording, setIsRecording] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
 
   useEffect(() => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       console.error('This browser does not support audio recording');
+      setErrorMessage('This browser does not support audio recording');
     }
   }, []);
 
   const startRecording = async () => {
+    console.log('Starting recording...');
+    setErrorMessage('');
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
@@ -38,64 +43,90 @@ const VoiceInput = ({ handleSend, questionID }) => { // questionID를 props로 �
 
       mediaRecorder.ondataavailable = (event) => {
         audioChunksRef.current.push(event.data);
+        console.log('Audio chunk received:', event.data);
       };
 
       mediaRecorder.onstop = async () => {
+        console.log('Recording stopped.');
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const audioFile = await convertToWav(audioBlob, 16000);
+        console.log('Audio file created:', audioFile);
         
         try {
-          const transcript = await transcribeAudio(questionID, audioFile); 
+          const transcript = await transcribeAudio(questionID, audioFile);
+          console.log('Transcription response:', transcript);
+
+          const audioPath = `audio/${transcript.replace(/\s+/g, '_').toLowerCase()}.mp3`;
+
+          // 변환된 텍스트와 오디오 파일 경로를 saveAnswer를 통해 저장
+          await saveAnswer(questionID, {
+            content: transcript,
+            audioPath: audioPath,
+          });
+
+          // 변환된 텍스트를 handleSend로 전달
           handleSend(transcript);
         } catch (error) {
-          console.error('Error during STT:', error.message);
+          console.error('Error during STT or saving answer:', error.message);
+          setErrorMessage('Error during STT or saving answer: ' + error.message);
         }
       };
 
       mediaRecorder.start();
+      console.log('MediaRecorder started.');
       setIsRecording(true);
     } catch (error) {
       console.error('Error accessing media devices.', error);
+      setErrorMessage('Error accessing media devices: ' + error.message);
     }
   };
 
   const stopRecording = () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
+      console.log('MediaRecorder stopped.');
       setIsRecording(false);
     }
   };
 
   const convertToWav = async (blob, sampleRate) => {
-    const arrayBuffer = await blob.arrayBuffer();
-    const audioContext = new AudioContext();
-    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    console.log('Converting to WAV...');
+    try {
+      const arrayBuffer = await blob.arrayBuffer();
+      const audioContext = new AudioContext();
+      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+      console.log('Decoded audio data:', audioBuffer);
 
-    const offlineContext = new OfflineAudioContext(
-      audioBuffer.numberOfChannels,
-      audioBuffer.duration * sampleRate,
-      sampleRate
-    );
+      const offlineContext = new OfflineAudioContext(
+        audioBuffer.numberOfChannels,
+        audioBuffer.duration * sampleRate,
+        sampleRate
+      );
 
-    const cloneBuffer = offlineContext.createBuffer(
-      audioBuffer.numberOfChannels,
-      audioBuffer.length,
-      audioBuffer.sampleRate
-    );
+      const cloneBuffer = offlineContext.createBuffer(
+        audioBuffer.numberOfChannels,
+        audioBuffer.length,
+        audioBuffer.sampleRate
+      );
 
-    for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
-      cloneBuffer.copyToChannel(audioBuffer.getChannelData(channel), channel);
+      for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+        cloneBuffer.copyToChannel(audioBuffer.getChannelData(channel), channel);
+      }
+
+      const source = offlineContext.createBufferSource();
+      source.buffer = cloneBuffer;
+      source.connect(offlineContext.destination);
+      source.start(0);
+
+      const renderedBuffer = await offlineContext.startRendering();
+      console.log('Rendered buffer:', renderedBuffer);
+      const wavBuffer = encodeWav(renderedBuffer, sampleRate);
+
+      return new File([wavBuffer], 'recording.wav', { type: 'audio/wav' });
+    } catch (error) {
+      console.error('Error converting to WAV:', error);
+      setErrorMessage('Error converting to WAV: ' + error.message);
     }
-
-    const source = offlineContext.createBufferSource();
-    source.buffer = cloneBuffer;
-    source.connect(offlineContext.destination);
-    source.start(0);
-
-    const renderedBuffer = await offlineContext.startRendering();
-    const wavBuffer = encodeWav(renderedBuffer, sampleRate);
-
-    return new File([wavBuffer], 'recording.wav', { type: 'audio/wav' });
   };
 
   const encodeWav = (audioBuffer, sampleRate) => {
@@ -134,6 +165,7 @@ const VoiceInput = ({ handleSend, questionID }) => { // questionID를 props로 �
       }
     }
 
+    console.log('Encoded WAV buffer:', buffer);
     return buffer;
   };
 
@@ -142,6 +174,7 @@ const VoiceInput = ({ handleSend, questionID }) => { // questionID를 props로 �
       <Button onClick={isRecording ? stopRecording : startRecording}>
         {isRecording ? 'Recording...' : 'Start Recording'}
       </Button>
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
     </VoiceInputContainer>
   );
 };

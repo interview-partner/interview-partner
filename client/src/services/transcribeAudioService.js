@@ -22,7 +22,7 @@ export const transcribeAudio = async (questionId, audioFile) => {
         });
 
         // 응답에서 변환된 텍스트를 반환
-        return response.data.transcript;
+        return response.data.data.transcript; // data 객체의 transcript만 반환
     } catch (error) {
         let errorMessage = '음성 파일 변환 중 오류가 발생했습니다.';
         if (error.response) {
