@@ -74,7 +74,7 @@ export const RoundButton = styled.button`
   width: 55px;
   height: 55px;
   border-radius: 50%;
-  background-color: ${props => props.isMicrophoneOn || props.isMuted || props.isEndCall ? 'skyblue' : 'red'};
+  background-color: ${props => props.isMicrophoneOn || props.isMuted ? 'skyblue' : 'red'};
   color: #fff;
   font-size: 16px;
   font-weight: bold;
@@ -84,9 +84,22 @@ export const RoundButton = styled.button`
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   border: none;
   outline: none;
+  position: relative;
 
   &:hover {
-    background-color: ${props => props.isMicrophoneOn || props.isMuted || props.isEndCall ? 'rgba(118, 194, 233, 1)' : 'darkred'};
+    background-color: ${props => props.isMicrophoneOn || props.isMuted ? 'rgba(118, 194, 233, 1)' : 'darkred'};
+  }
+
+  &:after {
+    content: '';
+    display: ${props => (!props.isMicrophoneOn && !props.isMuted && !props.isEndCall ? 'block' : 'none')};
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30px;
+    height: 3px;
+    background-color: white;
+    transform: translate(-50%, -50%) rotate(45deg);
   }
 `;
 
