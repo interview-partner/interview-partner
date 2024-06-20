@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
+import SendIcon from '../../assets/icons/send_Icon.png'; 
 
 const InputContainer = styled.div`
   display: flex;
@@ -30,6 +31,11 @@ const Button = styled.button`
   cursor: pointer;
   opacity: ${props => (props.disabled ? 0.5 : 1)}; // 비활성화 시 투명도 조정
   pointer-events: ${props => (props.disabled ? 'none' : 'auto')}; // 비활성화 시 클릭 이벤트 차단
+
+  img {
+    width: 20px; // 아이콘 크기 설정
+    height: 20px;
+  }
 `;
 
 const TextInput = ({ input, setInput, handleSend, disabled }) => {
@@ -42,18 +48,18 @@ const TextInput = ({ input, setInput, handleSend, disabled }) => {
         onKeyPress={(e) => {
           if (e.key === 'Enter' && !disabled) handleSend();
         }}
-        disabled={disabled} // 인터뷰 종료 시 입력 비활성화
+        disabled={disabled} 
       />
       <Button
         onClick={() => {
-          if (!disabled) { // 비활성화 상태 확인
+          if (!disabled) { 
             console.log('Button clicked');
             handleSend();
           }
         }}
-        disabled={disabled} // 인터뷰 종료 시 버튼 비활성화
+        disabled={disabled} 
       >
-        Send
+        <img src={SendIcon} alt="Send" /> 
       </Button>
     </InputContainer>
   );
