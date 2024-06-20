@@ -10,35 +10,32 @@ const BannerContainer = styled.div`
   flex-direction: row;
   gap: 16px;
   width: 100%;
-  height: 28%;
+  height: auto; /* 높이를 자동으로 조정하여 컨텐츠에 맞춤 */
   background-color: ${COLORS.background_gray};
   justify-content: center;
   align-items: center;
+  padding: 20px 0; /* 상하 패딩을 추가하여 컨텐츠의 여백을 조정 */
 `;
 
 const InnerContainer = styled.div`
   display: flex;
   flex-direction: column;
   border-radius: 20px;
-  height: 85%;
-  width: 25%;
   padding: 24px;
   background-color: white;
+  width: 100%;
+  max-width: 350px; /* 최대 너비를 설정하여 컨테이너의 크기를 제한 */
+  /* box-shadow 제거 */
 `;
-//원래는 15%
 
 const Title = styled.div`
-  display: flex;
   color: ${COLORS.font_black};
-  border: none;
-  border-radius: 15px;
   margin-bottom: 12px;
   font-size: 20px;
-  font-weight: Medium;
+  font-weight: 500; /* Medium 대신 숫자 값으로 설정 */
 `;
 
 const Info = styled.div`
-  display: flex;
   margin-bottom: 8px;
   color: ${COLORS.gray};
   font-size: 14px;
@@ -58,9 +55,9 @@ const Tooltip = styled.div`
   padding: 5px;
   position: absolute;
   z-index: 1;
-  bottom: 125%; /* Position the tooltip above the text */
+  bottom: 125%;
   left: 50%;
-  margin-left: -60px;
+  transform: translateX(-50%); /* Tooltip을 중앙으로 정렬 */
   opacity: 0;
   transition: opacity 0.3s;
 
@@ -69,7 +66,7 @@ const Tooltip = styled.div`
     position: absolute;
     top: 100%;
     left: 50%;
-    margin-left: -5px;
+    transform: translateX(-50%); /* 화살표를 중앙으로 정렬 */
     border-width: 5px;
     border-style: solid;
     border-color: black transparent transparent transparent;
@@ -96,7 +93,8 @@ const ApplyContainer = styled.div`
 
 const ButtonContainer = styled.div`
   display: flex;
-  justify-content: flex-end; 
+  justify-content: flex-end;
+  margin-top: 16px; /* 버튼과 이전 요소 사이의 여백을 추가 */
 `;
 
 function InterviewInfo() {
@@ -134,7 +132,6 @@ function InterviewInfo() {
   });
 
   const interviewType = interviewData.interviewType === 'text' ? '실시간 채팅 면접' : '음성 면접';
-  // <ApplyContainer>사진들어가면댐</ApplyContainer> 
 
   return (
     <BannerContainer>

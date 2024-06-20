@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { getResumeInfo } from '../../services/getResumeInfoService';
 import { saveAnswer } from '../../services/saveAnswerService';
 import generateFollowUpQuestion from '../../services/followUpQuestionService';
 import { getInterviewInfo } from '../../services/getInterviewInfoService';
 import TextInput from '../chat/TextInput';
-import VoiceInput from '../chat/VoiceInput'; // VoiceInput 컴포넌트를 import
+import VoiceInput from '../chat/VoiceInput';
 import AIDialogBox from '../../components/textbox/aidialogBox.jsx';
 import { useQuestionID } from '../../context/questionIDContext.js';
 
@@ -13,8 +13,15 @@ const ChatContainer = styled.div`
   display: flex;
   justify-content: center;
   height: 100%;
-  width: 62.5%;
+  width: 100%;
   background-color: white;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const InnerContainer = styled.div`
@@ -22,6 +29,7 @@ const InnerContainer = styled.div`
   flex-direction: column;
   height: 100%;
   width: 80%;
+  max-width: 900px;
   overflow: hidden;
   background-color: white;
 `;
@@ -32,6 +40,12 @@ const MessagesContainer = styled.div`
   flex-direction: column;
   padding: 10px;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const InterviewChat = ({ interviewId }) => {
@@ -44,31 +58,31 @@ const InterviewChat = ({ interviewId }) => {
   const [messagesWithButtons, setMessagesWithButtons] = useState(new Set());
   const [followUpCreated, setFollowUpCreated] = useState({});
   const [interviewType, setInterviewType] = useState('');
-  const { questionID, setQuestionID } = useQuestionID(); // useQuestionID 훅을 사용하여 questionID와 setQuestionID를 가져옴
+  const { questionID, setQuestionID } = useQuestionID();
+  const messagesEndRef = useRef(null);
+
+  // Refs for each message
+  const messageRefs = useRef([]);
 
   useEffect(() => {
     console.log("Interview ID: ", interviewId);
     if (interviewId) {
       const fetchInterviewData = async () => {
         try {
-          // 인터뷰 정보를 가져옴
           const interviewInfo = await getInterviewInfo(interviewId);
           setInterviewType(interviewInfo.data.interviewType);
-          console.log("Interview Type:", interviewInfo.data.interviewType); // interviewType 콘솔에 출력
+          console.log("Interview Type:", interviewInfo.data.interviewType);
 
-          // 이력서 기반의 질문을 가져옴
           const response = await getResumeInfo(interviewId);
           console.log("Fetched questions:", response.data);
           if (response && response.data) {
             setQuestions(response.data);
 
-            // interviewType이 'text'가 아닌 경우 바로 질문을 시작
             if (interviewInfo.data.interviewType !== 'text') {
               setHasStarted(true);
               setStartMessageIndex(0);
-              sendNextQuestion(response.data, 0); // 바로 첫 번째 질문을 보냄
+              sendNextQuestion(response.data, 0);
             } else {
-              // 'text'인 경우 초기 메시지 추가
               setMessages([
                 { text: "안녕하세요, AI 면접을 시작합니다.\n준비가 되셨다면 채팅창에 '시작'을 보내주세요 :)", isUser: false, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false }
               ]);
@@ -93,10 +107,23 @@ const InterviewChat = ({ interviewId }) => {
     }
   }, [interviewId]);
 
+  useEffect(() => {
+    // Scroll to the bottom of the messages container when a new message is added
+    const scrollToBottom = () => {
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+
+    // Delay the scroll to ensure height calculations are complete
+    const timeoutId = setTimeout(scrollToBottom, 100); // 100ms delay
+
+    return () => clearTimeout(timeoutId);
+  }, [messages]);
+
   const handleSend = async (transcript = null) => {
     const userInput = transcript || input.trim();
 
-    // userInput이 문자열이 아닌 경우 처리하지 않음
     if (typeof userInput !== 'string') {
       console.error('Invalid input: Expected a string but got', userInput);
       return;
@@ -115,7 +142,6 @@ const InterviewChat = ({ interviewId }) => {
       setInput('');
 
       if (hasStarted) {
-        // 텍스트 기반의 입력만 saveAnswer를 호출
         if (!transcript) {
           const currentQuestion = questions[currentQuestionIndex - 1];
           console.log('Current question ID:', currentQuestion.id);
@@ -152,7 +178,6 @@ const InterviewChat = ({ interviewId }) => {
       setMessagesWithButtons(prevState => new Set([...prevState, messages.length]));
       setCurrentQuestionIndex(index + 1);
 
-      // 현재 질문의 ID를 전역 상태에 저장
       setQuestionID(questionsList[index].id);
     } else if (hasStarted) {
       setMessages(prevMessages => [
@@ -204,32 +229,33 @@ const InterviewChat = ({ interviewId }) => {
       <InnerContainer>
         <MessagesContainer>
           {messages.map((message, index) => (
-            <AIDialogBox
-              key={index}
-              text={typeof message.text === 'string' ? message.text : "Invalid content"}
-              isUser={message.isUser}
-              number={message.isUser ? null : message.number}
-              index={index}
-              started={hasStarted}
-              renderButtons={hasStarted && messagesWithButtons.has(index) && index > startMessageIndex && !followUpCreated[index]}
-              onFollowUpQuestionClick={() => handleFollowUpQuestionClick(index)}
-              onNextQuestionClick={() => {
-                if (messages[index].isFollowUp) {
-                  handleFollowUpResponse(index);
-                } else {
-                  sendNextQuestion();
-                  handleButtonClick(index);
-                }
-              }}
-              followUpCreated={followUpCreated[index]}
-              isFollowUp={message.isFollowUp}
-              isFollowUpResponse={message.isFollowUpResponse}
-              isFollowUpNext={message.isFollowUpNext}
-              interviewType={interviewType} // interviewType을 전달
-            />
+            <div ref={(el) => (messageRefs.current[index] = el)} key={index}>
+              <AIDialogBox
+                text={typeof message.text === 'string' ? message.text : "Invalid content"}
+                isUser={message.isUser}
+                number={message.isUser ? null : message.number}
+                index={index}
+                started={hasStarted}
+                renderButtons={hasStarted && messagesWithButtons.has(index) && index > startMessageIndex && !followUpCreated[index]}
+                onFollowUpQuestionClick={() => handleFollowUpQuestionClick(index)}
+                onNextQuestionClick={() => {
+                  if (messages[index].isFollowUp) {
+                    handleFollowUpResponse(index);
+                  } else {
+                    sendNextQuestion();
+                    handleButtonClick(index);
+                  }
+                }}
+                followUpCreated={followUpCreated[index]}
+                isFollowUp={message.isFollowUp}
+                isFollowUpResponse={message.isFollowUpResponse}
+                isFollowUpNext={message.isFollowUpNext}
+                interviewType={interviewType}
+              />
+            </div>
           ))}
+          <div ref={messagesEndRef} style={{ height: '100px' }} /> {/* 스크롤을 참조하고 여유 높이를 추가 */}
         </MessagesContainer>
-        {/* interviewType에 따라 조건부로 컴포넌트 렌더링 */}
         {interviewType === 'text' ? (
           <TextInput
             input={input}
@@ -238,8 +264,8 @@ const InterviewChat = ({ interviewId }) => {
           />
         ) : (
           <VoiceInput
-            handleSend={handleSend} // handleSend 함수 전달
-            questionID={questionID} // questionID를 VoiceInput에 전달
+            handleSend={handleSend}
+            questionID={questionID}
           />
         )}
       </InnerContainer>
@@ -248,4 +274,3 @@ const InterviewChat = ({ interviewId }) => {
 };
 
 export default InterviewChat;
-
