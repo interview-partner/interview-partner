@@ -3,7 +3,7 @@ import {
   ModalBackdrop, ModalContainer, ModalContent, ModalCloseButton, FormContainer,
   FormText, DropdownWrapper, DropdownInput, DropdownMenu, DropdownItem, TagList,
   Tag, RemoveTagButton, CounterContainer, CounterButton, CounterInput,
-  CreateRoomButton, Input, ErrorMessage, IconImage
+  CreateRoomButton, ErrorMessage, IconImage, FormField
 } from './CreateRoomModalStyles.jsx';
 import { Marginer } from '../../components/common/marginer/marginer.jsx';
 import { fetchTags, createTag } from '../../services/tagService.js';
@@ -12,14 +12,13 @@ import { validateTagLength, validateTitle, validateDescription, validateMaxParti
 import { addTag, removeTag } from '../../utils/tagUtils.jsx';
 import closeIcon from '../../assets/icons/close_Icon.png'
 
-const FormField = ({ type, placeholder, value, onChange, error }) => (
-  <>
-    <Input type={type} placeholder={placeholder} value={value} onChange={onChange} />
-    {!error && <Marginer direction="vertical" margin={20} />}
-    {error && <ErrorMessage>{error}</ErrorMessage>}
-  </>
-);
-
+/**
+ * 모달 컴포넌트
+ * 
+ * @param {object} props - 모달 컴포넌트에 대한 속성
+ * @param {boolean} isModalOpen - 모달 열림 상태
+ * @param {function} closeModal - 모달 닫기 함수
+ */
 const ModalComponent = ({
   isModalOpen,
   closeModal,
@@ -37,6 +36,12 @@ const ModalComponent = ({
   const [description, setDescription] = useState('');
   const [descriptionError, setDescriptionError] = useState('');
 
+  /**
+   * 인원 수 변경 핸들러
+   * 
+   * @param {object} e - 이벤트 객체
+   * @param {number} amount - 변경할 수량
+   */
   const handleCounterChange = (e, amount) => {
     e.preventDefault();
     e.stopPropagation();
@@ -50,10 +55,18 @@ const ModalComponent = ({
     }
   };
 
+  /**
+   * 태그 제거 핸들러
+   * 
+   * @param {object} tag - 제거할 태그 객체
+   */
   const handleRemoveTag = (tag) => {
     removeTag(tags, setTags, tag);
   };
 
+  /**
+   * 모달이 열릴 때 초기화
+   */
   useEffect(() => {
     if (isModalOpen) {
       setTags([]);
@@ -69,6 +82,9 @@ const ModalComponent = ({
     }
   }, [isModalOpen]);
 
+  /**
+   * 태그 입력 변경 시 태그 제안 목록 가져오기
+   */
   useEffect(() => {
     if (tagInput.trim()) {
       const fetchTagSuggestions = async () => {
@@ -90,6 +106,11 @@ const ModalComponent = ({
     }
   }, [tagInput]);
 
+  /**
+   * 태그 입력 변경 핸들러
+   * 
+   * @param {object} e - 이벤트 객체
+   */
   const handleTagInputChange = (e) => {
     const value = e.target.value;
     const errorMessage = validateTagLength(value);
@@ -106,6 +127,11 @@ const ModalComponent = ({
     }
   };
 
+  /**
+   * 태그 선택 핸들러
+   * 
+   * @param {object|string} tag - 선택한 태그 객체 또는 태그 이름 문자열
+   */
   const handleTagSelect = async (tag) => {
 
     if (typeof tag === 'string') {
@@ -125,18 +151,31 @@ const ModalComponent = ({
     setTagError('');
   };
 
+  /**
+   * 방 이름 변경 핸들러
+   * 
+   * @param {object} e - 이벤트 객체
+   */
   const handleTitleChange = (e) => {
     const value = e.target.value;
     setTitle(value);
     setTitleError(validateTitle(value));
   };
 
+  /**
+   * 방 설명 변경 핸들러
+   * 
+   * @param {object} e - 이벤트 객체
+   */
   const handleDescriptionChange = (e) => {
     const value = e.target.value;
     setDescription(value);
     setDescriptionError(validateDescription(value));
   };
 
+  /**
+   * 폼 제출 핸들러
+   */
   const handleSubmit = async () => {
     const titleValidationError = validateTitle(title);
     const descriptionValidationError = validateDescription(description);
