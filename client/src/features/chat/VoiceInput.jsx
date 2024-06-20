@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { transcribeAudio } from '../../services/transcribeAudioService';
-import SendBlueIcon from '../../assets/icons/send_blue.png'; // send_blue 아이콘 경로
-import VoiceBlueIcon from '../../assets/icons/voice_blue.png'; // voice_blue 아이콘 경로
+import SendBlueIcon from '../../assets/icons/send_blue.png';
+import VoiceBlueIcon from '../../assets/icons/voice_blue.png';
+import VoiceGreyIcon from '../../assets/icons/voice_grey.png'; // 비활성화 아이콘 추가
 
 const VoiceInputContainer = styled.div`
   display: flex;
@@ -23,7 +24,9 @@ const Button = styled.button`
   position: relative;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
-  background-image: url(${props => props.isRecording ? SendBlueIcon : VoiceBlueIcon});
+  background-image: url(${props => 
+    props.disabled ? VoiceGreyIcon : 
+    (props.isRecording ? SendBlueIcon : VoiceBlueIcon)}); // disabled일 때 VoiceGreyIcon 사용
   background-size: 50%;
   background-repeat: no-repeat;
   background-position: center;
@@ -37,6 +40,8 @@ const Button = styled.button`
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     transform: scale(0.95);
   }
+
+  pointer-events: ${props => (props.disabled ? 'none' : 'auto')}; // 비활성화 시 클릭 이벤트 차단
 `;
 
 const Canvas = styled.canvas`
@@ -47,7 +52,7 @@ const Canvas = styled.canvas`
   z-index: 1;
 `;
 
-const VoiceInput = ({ handleSend, questionID }) => {
+const VoiceInput = ({ handleSend, questionID, disabled }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const mediaRecorderRef = useRef(null);
@@ -64,17 +69,19 @@ const VoiceInput = ({ handleSend, questionID }) => {
       setErrorMessage('This browser does not support audio recording');
     }
     drawStaticLine();
-  }, []);
+  }, [disabled]); // disabled 상태가 바뀔 때마다 drawStaticLine 호출
 
   useEffect(() => {
     if (isRecording) {
       startWaveAnimation();
     } else {
-      stopWaveAnimation(); // 녹음이 멈추면 애니메이션도 멈추고 일직선으로 돌아가도록 함
+      stopWaveAnimation();
     }
   }, [isRecording]);
 
   const startRecording = async () => {
+    if (disabled) return; // 비활성화 상태라면 녹음 시작하지 않음
+
     console.log('Starting recording...');
     setErrorMessage('');
     try {
@@ -116,8 +123,8 @@ const VoiceInput = ({ handleSend, questionID }) => {
         }
 
         audioContext.close();
-        stopWaveAnimation(); // 녹음 중지 후 애니메이션 멈춤
-        setIsRecording(false); // 녹음 중지 후 아이콘 변경을 위해 상태 업데이트
+        stopWaveAnimation();
+        setIsRecording(false);
       };
 
       mediaRecorder.start();
@@ -226,7 +233,7 @@ const VoiceInput = ({ handleSend, questionID }) => {
 
     const gradient = ctx.createLinearGradient(0, height / 2, width, height / 2);
     gradient.addColorStop(0, 'rgba(98, 174, 213, 0)');
-    gradient.addColorStop(0.5, 'rgba(98, 174, 213, 1)');
+    gradient.addColorStop(0.5, disabled ? 'rgba(200, 200, 200, 1)' : 'rgba(98, 174, 213, 1)'); // 파란색 또는 회색
     gradient.addColorStop(1, 'rgba(98, 174, 213, 0)');
 
     ctx.strokeStyle = gradient;
@@ -258,7 +265,7 @@ const VoiceInput = ({ handleSend, questionID }) => {
 
         const lineGradient = ctx.createLinearGradient(0, height / 2, width, height / 2);
         lineGradient.addColorStop(0, 'rgba(98, 174, 213, 0)');
-        lineGradient.addColorStop(0.5, `rgba(98, 174, 213, ${0.8 - i * 0.3})`);
+        lineGradient.addColorStop(0.5, disabled ? `rgba(200, 200, 200, ${0.8 - i * 0.3})` : `rgba(98, 174, 213, ${0.8 - i * 0.3})`);
         lineGradient.addColorStop(1, 'rgba(98, 174, 213, 0)');
 
         ctx.strokeStyle = lineGradient;
@@ -308,8 +315,12 @@ const VoiceInput = ({ handleSend, questionID }) => {
 
   return (
     <VoiceInputContainer>
-      <Button onClick={isRecording ? stopRecording : startRecording} isRecording={isRecording}>
-        {/* 텍스트 제거, 아이콘으로 대체 */}
+      <Button 
+        onClick={isRecording ? stopRecording : startRecording} 
+        isRecording={isRecording} 
+        disabled={disabled}
+      >
+        {/* 아이콘이 버튼 배경으로 사용됨 */}
       </Button>
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       <Canvas ref={canvasRef} width={500} height={100} />

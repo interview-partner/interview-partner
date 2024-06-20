@@ -60,6 +60,7 @@ const InterviewChat = ({ interviewId }) => {
   const [interviewType, setInterviewType] = useState('');
   const { questionID, setQuestionID } = useQuestionID();
   const messagesEndRef = useRef(null);
+  const [interviewEnded, setInterviewEnded] = useState(false); // 인터뷰 종료 상태 추가
 
   // Refs for each message
   const messageRefs = useRef([]);
@@ -185,6 +186,7 @@ const InterviewChat = ({ interviewId }) => {
         { text: "인터뷰가 종료되었습니다. 수고하셨습니다.", isUser: false, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false }
       ]);
       setHasStarted(false);
+      setInterviewEnded(true); // 인터뷰 종료 상태 업데이트
     }
   };
 
@@ -261,11 +263,13 @@ const InterviewChat = ({ interviewId }) => {
             input={input}
             setInput={setInput}
             handleSend={handleSend}
+            disabled={interviewEnded} // 인터뷰 종료 상태를 전달
           />
         ) : (
           <VoiceInput
             handleSend={handleSend}
             questionID={questionID}
+            disabled={interviewEnded} // 인터뷰 종료 상태를 전달
           />
         )}
       </InnerContainer>
