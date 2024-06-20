@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { COLORS } from '../../styles/colors';
 import { transcribeAudio } from '../../services/transcribeAudioService';
-import { saveAnswer } from '../../services/saveAnswerService'; // 추가된 부분
 
 const VoiceInputContainer = styled.div`
   display: flex;
@@ -56,19 +55,11 @@ const VoiceInput = ({ handleSend, questionID }) => {
           const transcript = await transcribeAudio(questionID, audioFile);
           console.log('Transcription response:', transcript);
 
-          const audioPath = `audio/${transcript.replace(/\s+/g, '_').toLowerCase()}.mp3`;
-
-          // 변환된 텍스트와 오디오 파일 경로를 saveAnswer를 통해 저장
-          await saveAnswer(questionID, {
-            content: transcript,
-            audioPath: audioPath,
-          });
-
           // 변환된 텍스트를 handleSend로 전달
           handleSend(transcript);
         } catch (error) {
-          console.error('Error during STT or saving answer:', error.message);
-          setErrorMessage('Error during STT or saving answer: ' + error.message);
+          console.error('Error during STT:', error.message);
+          setErrorMessage('Error during STT: ' + error.message);
         }
       };
 
@@ -180,3 +171,4 @@ const VoiceInput = ({ handleSend, questionID }) => {
 };
 
 export default VoiceInput;
+
