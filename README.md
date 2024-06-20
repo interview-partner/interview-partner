@@ -17,22 +17,20 @@
 - 면접 방식은 음성 또는 텍스트 중에서 선택할 수 있습니다.
 - 질문에 대한 답변을 한 후, 다음 질문이나 꼬리 질문을 선택할 수 있습니다.
 
-<img width="1679" alt="AI면접 텍스트" src="https://github.com/junest66/interview-partner/assets/121853214/20fa5530-52df-4d35-8887-77a7f0844d20">
-
+![AI텍스트면접](https://github.com/interview-partner/interview-partner/assets/121853214/42882055-2aaf-4823-9db7-229e201b3a42)
 
 ### ⭐️ 화상 모의면접
 - 사용자들끼리 화상 모의면접을 진행할 수 있습니다.
-- 방에 입장할 때 면접에 사용할 이력서를 선택합니다.
-- 참가자들은 서로의 이력서를 열람할 수 있습니다.
-- 참가자들끼리 피드백을 주고받을 수 있습니다.
+- 참가자들은 방에 참가할때 선택한 서로의 이력서를 열람할 수 있습니다.
+- 참가자들끼리 면접 피드백을 주고받을 수 있습니다.
 - 참가자들끼리 채팅을 통해 소통할 수 있습니다.
 
 <img width="1000" alt="화상모의면접" src="https://github.com/junest66/interview-partner/assets/121853214/45d643e0-0587-46ec-b76a-f4580cf6a015">
 
 ## 🧡 팀원소개
-
-|                                                               **Backend**<br>**최준**                                                                |                                                             **Backend**<br>**김지성**                                                              |                                                             **Frontend**<br>**정다은**                                                              |                                                              **Frontend**<br>**편지승**                                                              |
-|:--------------------------------------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------:|
+| **Backend** | **Backend** | **Frontend** | **Frontend** |
+|:-----------:|:-----------:|:------------:|:------------:|
+| **최준**    | **김지성**   | **정다은**   | **편지승**   |
 |                               <img src="https://avatars.githubusercontent.com/junest66" height=130 width=130></img>                                |                               <img src="https://avatars.githubusercontent.com/zs0057" height=130 width=130></img>                               |                              <img src="https://avatars.githubusercontent.com/Daeuning" height=130 width=130></img>                               |                               <img src="https://avatars.githubusercontent.com/vuswltmd" height=130 width=130></img>                               |
 |   <a href="https://github.com/junest66" target="_blank"><img src="https://img.shields.io/badge/GitHub-black.svg?&style=round&logo=github"/></a>    |   <a href="https://github.com/zs0057" target="_blank"><img src="https://img.shields.io/badge/GitHub-black.svg?&style=round&logo=github"/></a>   |  <a href="https://github.com/Daeuning" target="_blank"><img src="https://img.shields.io/badge/GitHub-black.svg?&style=round&logo=github"/></a>   |   <a href="https://github.com/vuswltmd" target="_blank"><img src="https://img.shields.io/badge/GitHub-black.svg?&style=round&logo=github"/></a>   |
 | <a href="mailto:chlwndks333@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a> | <a href="mailto:soss4823@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a> | <a href="mailto:happyjde3@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a> | <a href="mailto:sseung7367@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-EA4335?style&logo=Gmail&logoColor=white"/></a> |
@@ -116,7 +114,7 @@
 
 ## 🏛️ 시스템 아키텍쳐
 
-<img width="600" alt="시스템 아키텍쳐" src="https://github.com/junest66/interview-partner/assets/121853214/9d6b139b-46ed-44b0-b724-37e624a37ee4">
+<img width="1000" alt="시스템 아키텍쳐" src="https://github.com/junest66/interview-partner/assets/121853214/9d6b139b-46ed-44b0-b724-37e624a37ee4">
 
 ## 🚗 배포 전략
 
