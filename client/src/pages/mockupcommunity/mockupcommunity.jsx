@@ -31,7 +31,7 @@ function Mockupcommunity() {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  //이력서 모달
+  //이력서 모달 여닫기 함수
   const openResumeModal = (room) => {
     setSelectedRoom(room);
     setIsResumeModalOpen(true);
@@ -41,7 +41,7 @@ function Mockupcommunity() {
     setSelectedRoom(null);
   };
 
-  // 페이지네이션
+  // 열린 방 또는 닫힌 방 보기 전환 함수
   const handleChangePage = (page) => {
     if (status === 'open') {
       setOpenPage(page);

@@ -9,6 +9,15 @@ import {
 import closeIcon from '../../assets/icons/close_Icon.png';
 import { Marginer } from '../../components/common/marginer/marginer';
 
+/**
+ * 이력서 선택 모달 컴포넌트
+ * 
+ * @param {object} props - 모달 컴포넌트에 대한 속성
+ * @param {boolean} isModalOpen - 모달 열림 상태
+ * @param {function} closeModal - 모달 닫기 함수
+ * @param {function} onSelectResume - 이력서 선택 시 호출되는 함수
+ * @param {number} roomId - 방 ID
+ */
 const ResumeSelectModal = ({ isModalOpen, closeModal, onSelectResume, roomId }) => {
     const [resumes, setResumes] = useState([]);
     const [error, setError] = useState('');
@@ -17,6 +26,9 @@ const ResumeSelectModal = ({ isModalOpen, closeModal, onSelectResume, roomId }) 
     const [selectedResume, setSelectedResume] = useState(null);
     const navigate = useNavigate();
 
+    /**
+     * 이력서 목록을 불러오는 함수
+     */
     useEffect(() => {
         const loadResumes = async () => {
             try {
@@ -39,12 +51,22 @@ const ResumeSelectModal = ({ isModalOpen, closeModal, onSelectResume, roomId }) 
         }
     }, [isModalOpen]);
 
+    /**
+     * 이력서 선택 핸들러
+     * 
+     * @param {object} resume - 선택한 이력서 객체
+     */
     const handleResumeSelect = (resume) => {
         setSelectedResume(resume);
         onSelectResume(resume.filePath);
         setDropdownOpen(false);
     };
 
+    /**
+     * 업로드 버튼 클릭 핸들러
+     * 
+     * @param {object} e - 이벤트 객체
+     */
     const handleUploadButtonClick = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -89,12 +111,20 @@ const ResumeSelectModal = ({ isModalOpen, closeModal, onSelectResume, roomId }) 
     //     }
     // };
 
+    /**
+     * 모달 외부 클릭 시 모달 닫기 핸들러
+     * 
+     * @param {object} e - 이벤트 객체
+     */
     const handleBackdropClick = (e) => {
         if (e.target === e.currentTarget) {
             closeModal();
         }
     };
 
+    /**
+     * 폼 제출 핸들러
+     */
     const handleSubmit = async () => {
         if (!selectedResume) {
             setError('이력서를 선택하세요.');

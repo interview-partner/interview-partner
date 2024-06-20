@@ -64,18 +64,26 @@ const InterviewDate = styled.div`
     font-size: 0.9rem;
 `;
 
+/**
+ * MyPage 컴포넌트
+ */
 function MyPage() {
+    // 모달 열림 상태 관리
     const [isAIModalOpen, setAIModalOpen] = useState(false);
     const [isMockModalOpen, setMockModalOpen] = useState(false);
+    // 면접 데이터 상태 관리
     const [aiInterviews, setAiInterviews] = useState([]);
     const [participationHistory, setParticipationHistory] = useState([]);
 
+    // AI 면접 이력 모달 열기/닫기 함수
     const openAIModal = () => setAIModalOpen(true);
     const closeAIModal = () => setAIModalOpen(false);
 
+    // 모의 면접 이력 모달 열기/닫기 함수
     const openMockModal = () => setMockModalOpen(true);
     const closeMockModal = () => setMockModalOpen(false);
 
+    // 컴포넌트가 마운트될 때 면접 이력 데이터 불러오기
     useEffect(() => {
         const fetchAIInterviews = async () => {
             try {
@@ -101,6 +109,7 @@ function MyPage() {
         fetchParticipationHistory();
     }, []);
 
+    // 날짜 형식 변환 함수
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
         return new Date(dateString).toLocaleDateString(undefined, options);
