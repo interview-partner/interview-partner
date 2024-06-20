@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 const config = {
     apiUrl: process.env.REACT_APP_API_URL,

@@ -155,12 +155,16 @@ const Indicator = styled.div`
     cursor: pointer;
 `;
 
+/**
+ * 내 이력서 관리 섹션 컴포넌트
+ */
 const ResumeManageSection = () => {
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [currentSlide, setCurrentSlide] = useState(0);
     const [resumes, setResumes] = useState([]);
 
+    // 컴포넌트가 마운트될 때 이력서 목록을 불러오는 함수
     useEffect(() => {
         const fetchResumes = async () => {
             try {
@@ -175,10 +179,12 @@ const ResumeManageSection = () => {
         fetchResumes();
     }, []);
 
+    // 업로드 버튼 클릭 시 파일 선택창을 여는 함수
     const handleButtonClick = () => {
         fileInputRef.current.click();
     };
 
+    // 파일 선택 시 호출되는 함수
     const handleFileChange = async (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -202,14 +208,17 @@ const ResumeManageSection = () => {
     const cardWidth = 220; // 한 장의 카드 너비 (200px + 좌우 margin 20px)
     const totalSlides = resumes.length - cardsPerSlide >= 0 ? resumes.length - 2 : 1; // 전체 슬라이드 수 계산
 
+    // 이전 슬라이드로 이동하는 함수
     const handlePrevClick = () => {
         setCurrentSlide((prev) => (prev > 0 ? prev - 1 : prev));
     };
 
+    // 다음 슬라이드로 이동하는 함수
     const handleNextClick = () => {
         setCurrentSlide((prev) => (prev < totalSlides - 1 ? prev + 1 : prev));
     };
 
+    // 인디케이터 클릭 시 해당 슬라이드로 이동하는 함수
     const handleIndicatorClick = (index) => {
         setCurrentSlide(index);
     };
