@@ -1,21 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { COLORS } from '../../styles/colors';
 import { transcribeAudio } from '../../services/transcribeAudioService';
 
 const VoiceInputContainer = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
+  position: relative;
   padding: 20px;
 `;
 
 const Button = styled.button`
   padding: 10px;
   border: none;
-  border-radius: 5px;
-  background-color: ${COLORS.blue_black};
+  border-radius: 50%;
+  background-color: #62AED5;
   color: white;
   cursor: pointer;
+  z-index: 2;
+  position: relative;
+`;
+
+const Canvas = styled.canvas`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
 `;
 
 const VoiceInput = ({ handleSend, questionID }) => {
@@ -23,13 +34,27 @@ const VoiceInput = ({ handleSend, questionID }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
+  const canvasRef = useRef(null);
+  const animationFrameIdRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const analyserRef = useRef(null);
+  const dataArrayRef = useRef(null);
 
   useEffect(() => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       console.error('This browser does not support audio recording');
       setErrorMessage('This browser does not support audio recording');
     }
+    drawStaticLine(); // 초기 일직선을 그림
   }, []);
+
+  useEffect(() => {
+    if (isRecording) {
+      startWaveAnimation();
+    } else {
+      drawStaticLine();
+    }
+  }, [isRecording]);
 
   const startRecording = async () => {
     console.log('Starting recording...');
@@ -39,6 +64,19 @@ const VoiceInput = ({ handleSend, questionID }) => {
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
+
+      // Set up audio context and analyser for visualisation
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const analyser = audioContext.createAnalyser();
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+      analyser.fftSize = 2048;
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      audioContextRef.current = audioContext;
+      analyserRef.current = analyser;
+      dataArrayRef.current = dataArray;
 
       mediaRecorder.ondataavailable = (event) => {
         audioChunksRef.current.push(event.data);
@@ -61,6 +99,10 @@ const VoiceInput = ({ handleSend, questionID }) => {
           console.error('Error during STT:', error.message);
           setErrorMessage('Error during STT: ' + error.message);
         }
+
+        // Clean up audio context
+        audioContext.close();
+        drawStaticLine(); // 녹음 중이 끝난 후에도 기본 일직선을 그립니다.
       };
 
       mediaRecorder.start();
@@ -160,15 +202,107 @@ const VoiceInput = ({ handleSend, questionID }) => {
     return buffer;
   };
 
+  const drawStaticLine = () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+
+    ctx.clearRect(0, 0, width, height);
+
+    // 그라디언트 효과 적용
+    const gradient = ctx.createLinearGradient(0, height / 2, width, height / 2);
+    gradient.addColorStop(0, 'rgba(98, 174, 213, 0)');
+    gradient.addColorStop(0.5, 'rgba(98, 174, 213, 1)');
+    gradient.addColorStop(1, 'rgba(98, 174, 213, 0)');
+
+    ctx.strokeStyle = gradient;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, height / 2);
+    ctx.lineTo(width, height / 2);
+    ctx.stroke();
+  };
+
+  const startWaveAnimation = () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+    const numberOfWaves = 3; // 파도의 개수
+    let phase = 0;
+    const speed = 0.005; // 파도 속도, 더 느리게 설정
+
+    const drawWave = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      if (analyserRef.current && dataArrayRef.current) {
+        analyserRef.current.getByteTimeDomainData(dataArrayRef.current);
+      }
+
+      for (let i = 0; i < numberOfWaves; i++) {
+        ctx.beginPath();
+
+        // 선의 하늘색에서 보라색 그라디언트 적용
+        const lineGradient = ctx.createLinearGradient(0, height / 2, width, height / 2);
+        lineGradient.addColorStop(0, 'rgba(98, 174, 213, 0)');
+        lineGradient.addColorStop(0.5, `rgba(98, 174, 213, ${0.8 - i * 0.3})`);
+        lineGradient.addColorStop(1, 'rgba(98, 174, 213, 0)');
+
+        ctx.strokeStyle = lineGradient;
+        ctx.lineWidth = 1;
+        let x = 0;
+        const amplitude = 20 + i * 10; // 파도 높이 증가
+        const frequency = 0.005; // 파도 주기 조절, 더 부드럽게
+
+        while (x < width) {
+          let y = height / 2;
+
+          if (isRecording && dataArrayRef.current) {
+            const sampleAmplitude = (dataArrayRef.current[x % dataArrayRef.current.length] - 128) / 128;
+            y += sampleAmplitude * amplitude;
+          } else {
+            y += Math.sin(x * frequency + phase) * amplitude; // 파도 모양 변화
+          }
+
+          if (x === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+
+          x++;
+        }
+
+        ctx.stroke();
+      }
+
+      phase += speed;
+
+      animationFrameIdRef.current = requestAnimationFrame(drawWave);
+    };
+
+    drawWave();
+  };
+
+  const stopWaveAnimation = () => {
+    if (animationFrameIdRef.current) {
+      cancelAnimationFrame(animationFrameIdRef.current);
+      animationFrameIdRef.current = null;
+    }
+
+    drawStaticLine();
+  };
+
   return (
     <VoiceInputContainer>
       <Button onClick={isRecording ? stopRecording : startRecording}>
         {isRecording ? 'Recording...' : 'Start Recording'}
       </Button>
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      <Canvas ref={canvasRef} width={500} height={100} />
     </VoiceInputContainer>
   );
 };
 
 export default VoiceInput;
-
