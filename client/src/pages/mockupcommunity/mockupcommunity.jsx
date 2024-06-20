@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Marginer } from '../../components/common/marginer/marginer.jsx';
 import CreateRoomModal from './CreateRoomModal.jsx';
 import ResumeSelectModal from './ResumeSelectModal.jsx';
-import { Link } from 'react-router-dom';
 import {
   PageContainer, Header, HeaderContainer, HeaderTitle, MainTitle, SubTitle, RoomOptionButton, RoomOptionButtonContainer,
   CardContainer, Card, CardHeader, CardTitle, TagContainer, Tag, CardBody, CardFooter, HeaderIconImage,

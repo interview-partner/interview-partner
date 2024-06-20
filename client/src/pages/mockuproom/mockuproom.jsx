@@ -26,7 +26,12 @@ function Mockuproom() {
   const hasJoined = useRef(false);
   const [isOpen, setIsOpen] = useState(false);  // 채팅창 열고 닫기
   const [shouldRender, setShouldRender] = useState(isOpen);
+  const [isMicrophoneOn, setIsMicrophoneOn] = useState(true); //마이크 on/off 상태관리
+  const [isMuted, setIsMuted] = useState(true); // 음소거 on/off 상태관리
 
+  /**
+   * 채팅창을 토글하는 함수
+   */
   const toggleChat = () => {
     if (!isOpen) {
       setShouldRender(true);
@@ -34,6 +39,11 @@ function Mockuproom() {
     setIsOpen(!isOpen);
   };
 
+  /**
+   * 메인 비디오 스트림을 설정하는 함수
+   * 
+   * @param {Object} stream - 스트림 객체
+   */
   const handleMainVideoStream = useCallback((stream) => {
     if (mainStreamManager !== stream) {
       setMainStreamManager(stream);
@@ -42,13 +52,15 @@ function Mockuproom() {
 
   useEffect(() => {
     if (!isOpen) {
-      const timer = setTimeout(() => setShouldRender(false), 300); // 애니메이션 지속 시간과 동일하게 설정
+      const timer = setTimeout(() => setShouldRender(false), 300); // 채팅창 열기 애니메이션, 지속 시간과 동일하게 설정
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
 
+  /**
+   * 세션에 참여하는 함수
+   */
   const joinSession = useCallback(async () => {
-    console.log("----조인 세션 호출하기---------");
 
     if (hasJoined.current) {
       console.log('Already joined the session.');
@@ -69,8 +81,6 @@ function Mockuproom() {
       }),
       addMessage: (message) => setMessages((prevMessages) => [...prevMessages, message]),
     });
-
-    console.log("------------마이세션 출력하기---------", mySession);
 
     OV.current = newOV;
 
@@ -113,12 +123,46 @@ function Mockuproom() {
       console.log('There was an error connecting to the session:', error.code, error.message);
       if (error) {
         alert('Authentication error');
-        leaveSession()
+        await leaveSession(false);
+        setTimeout(() => window.location.href = '/mockupcommunity', 500);
       }
     }
   }, [navigate]);
 
-  const leaveSession = useCallback(async () => {
+  /**
+    * 마이크 상태 관리 함수
+    * 
+    */
+  const toggleMicrophone = () => {
+    if (publisher) {
+      publisher.publishAudio(!isMicrophoneOn);
+      setIsMicrophoneOn(!isMicrophoneOn);
+    }
+  };
+
+  /**
+    * 음소거 상태 관리 함수
+    * 
+    */
+  const toggleMute = () => {
+    if (session) {
+      session.remoteConnections.forEach(connection => {
+        connection.stream.audioActive = !isMuted;
+      });
+      setIsMuted(!isMuted);
+    }
+  };
+
+  /**
+   * 세션을 떠나는 함수
+   * 
+   * @param {boolean} isTrue - navigate 여부
+   */
+  const leaveSession = useCallback(async (isNavigate) => {
+
+    window.removeEventListener('beforeunload', handleBeforeUnload);
+    window.removeEventListener('popstate', handlePopState);
+
     if (session) {
       if (publisher && publisher.stream && publisher.stream.getMediaStream) {
         const mediaStream = publisher.stream.getMediaStream();
@@ -140,18 +184,31 @@ function Mockuproom() {
     setPublisher(undefined);
     hasJoined.current = false;
 
-    // 상태 업데이트가 반영된 후 navigate 실행
-    setTimeout(() => navigate('/mockupcommunity'), 1000);
+    if (isNavigate === true) {
+      // 상태 업데이트가 반영된 후 navigate 실행
+      setTimeout(() => navigate('/mockupcommunity'), 1000);
+    }
   }, [session, publisher]);
 
+  /**
+   * 새로고침 이벤트를 처리하는 함수
+   * 
+   * @param {Event} event - 브라우저 이벤트 객체
+   */
   const handleBeforeUnload = async (event) => {
-    await leaveSession();
-    navigate('/mockupcommunity');
+    window.location.href = '/mockupcommunity';
+    await leaveSession(false);
   };
 
+  /**
+   * 브라우저의 뒤로가기 이벤트를 처리하는 함수
+   * 
+   * @param {Event} event - 브라우저 이벤트 객체
+   */
   const handlePopState = async (event) => {
-    await leaveSession();
-    navigate('/mockupcommunity');
+    navigate('/mockupcommunity')
+    await leaveSession(false);
+    window.location.href = '/mockupcommunity';
   };
 
   window.addEventListener('beforeunload', handleBeforeUnload);
@@ -159,6 +216,7 @@ function Mockuproom() {
 
   useEffect(() => {
     joinSession();
+
     return () => {
       if (session) {
         session.disconnect();
@@ -184,13 +242,13 @@ function Mockuproom() {
         ))}
       </VideoContainer>
       <ButtonContainer>
-        <IconButton>
+        <IconButton onClick={toggleMicrophone} isMicrophoneOn={isMicrophoneOn}>
           <IconImage src={voiceIcon} alt="Voice Icon" />
         </IconButton>
-        <IconButton>
+        <IconButton onClick={toggleMute} isMuted={isMuted}>
           <IconImage src={headphoneIcon} alt="Headphone Icon" />
         </IconButton>
-        <IconButton onClick={leaveSession}>
+        <IconButton onClick={() => leaveSession(true)} isEndCall={true}>
           <IconImage src={callEndIcon} alt="Call End Icon" />
         </IconButton>
       </ButtonContainer>
