@@ -117,6 +117,7 @@ const VoiceInput = ({ handleSend, questionID, disabled }) => {
           const transcript = await transcribeAudio(questionID, audioFile);
           console.log('Transcription response:', transcript);
           handleSend(transcript);
+          setIsRecording(false);
         } catch (error) {
           console.error('Error during STT:', error.message);
           setErrorMessage('Error during STT: ' + error.message);
@@ -124,7 +125,6 @@ const VoiceInput = ({ handleSend, questionID, disabled }) => {
 
         audioContext.close();
         stopWaveAnimation();
-        setIsRecording(false);
       };
 
       mediaRecorder.start();
