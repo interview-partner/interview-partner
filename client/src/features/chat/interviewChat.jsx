@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { COLORS } from "../../styles/colors";
-import AIDialogBox from '../../components/textbox/aidialogBox.jsx';
 import styled from 'styled-components';
 import { getResumeInfo } from '../../services/getResumeInfoService';
 import { saveAnswer } from '../../services/saveAnswerService';
 import generateFollowUpQuestion from '../../services/followUpQuestionService';
+import { getInterviewInfo } from '../../services/getInterviewInfoService';
+import TextInput from '../chat/TextInput';
+import VoiceInput from '../chat/VoiceInput'; // VoiceInput 컴포넌트를 import
+import AIDialogBox from '../../components/textbox/aidialogBox.jsx';
+import { useQuestionID } from '../../context/questionIDContext.js';
 
 const ChatContainer = styled.div`
   display: flex;
@@ -31,53 +34,45 @@ const MessagesContainer = styled.div`
   overflow-y: auto;
 `;
 
-const InputContainer = styled.div`
-  display: flex;
-  margin-right: 80px;
-  margin-left: 80px;
-  gap: 4px;
-  padding: 10px;
-`;
-
-const Input = styled.input`
-  flex: 1;
-  padding: 10px;
-  border: 2px solid #D9D9D9;
-  border-radius: 10px;
-`;
-
-const Button = styled.button`
-  display: flex;
-  margin-left: 10px;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  background-color: ${COLORS.blue_black};
-  color: white;
-  cursor: pointer;
-`;
-
 const InterviewChat = ({ interviewId }) => {
-  const [messages, setMessages] = useState([
-    { text: "안녕하세요, AI 면접을 시작합니다.\n준비가 되셨다면 채팅창에 '시작' 을 보내주세요 :)", isUser: false, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
   const [startMessageIndex, setStartMessageIndex] = useState(-1);
   const [messagesWithButtons, setMessagesWithButtons] = useState(new Set());
-  const [followUpCreated, setFollowUpCreated] = useState({}); 
+  const [followUpCreated, setFollowUpCreated] = useState({});
+  const [interviewType, setInterviewType] = useState('');
+  const { questionID, setQuestionID } = useQuestionID(); // useQuestionID 훅을 사용하여 questionID와 setQuestionID를 가져옴
 
   useEffect(() => {
     console.log("Interview ID: ", interviewId);
     if (interviewId) {
-      const fetchQuestions = async () => {
+      const fetchInterviewData = async () => {
         try {
+          // 인터뷰 정보를 가져옴
+          const interviewInfo = await getInterviewInfo(interviewId);
+          setInterviewType(interviewInfo.data.interviewType);
+          console.log("Interview Type:", interviewInfo.data.interviewType); // interviewType 콘솔에 출력
+
+          // 이력서 기반의 질문을 가져옴
           const response = await getResumeInfo(interviewId);
           console.log("Fetched questions:", response.data);
           if (response && response.data) {
             setQuestions(response.data);
+
+            // interviewType이 'text'가 아닌 경우 바로 질문을 시작
+            if (interviewInfo.data.interviewType !== 'text') {
+              setHasStarted(true);
+              setStartMessageIndex(0);
+              sendNextQuestion(response.data, 0); // 바로 첫 번째 질문을 보냄
+            } else {
+              // 'text'인 경우 초기 메시지 추가
+              setMessages([
+                { text: "안녕하세요, AI 면접을 시작합니다.\n준비가 되셨다면 채팅창에 '시작'을 보내주세요 :)", isUser: false, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false }
+              ]);
+            }
           } else {
             throw new Error("No data received");
           }
@@ -89,7 +84,7 @@ const InterviewChat = ({ interviewId }) => {
           ]);
         }
       };
-      fetchQuestions();
+      fetchInterviewData();
     } else {
       setMessages(prevMessages => [
         ...prevMessages,
@@ -98,11 +93,18 @@ const InterviewChat = ({ interviewId }) => {
     }
   }, [interviewId]);
 
-  const handleSend = async () => {
-    if (input.trim()) {
-      const userMessage = { text: input, isUser: true, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false };
-      
-      // 체크 후 꼬리질문 이후의 메시지인지 설정
+  const handleSend = async (transcript = null) => {
+    const userInput = transcript || input.trim();
+
+    // userInput이 문자열이 아닌 경우 처리하지 않음
+    if (typeof userInput !== 'string') {
+      console.error('Invalid input: Expected a string but got', userInput);
+      return;
+    }
+
+    if (userInput) {
+      const userMessage = { text: userInput, isUser: true, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false };
+
       const lastMessage = messages[messages.length - 1];
       if (lastMessage && lastMessage.isFollowUp) {
         userMessage.isFollowUpNext = true;
@@ -113,37 +115,45 @@ const InterviewChat = ({ interviewId }) => {
       setInput('');
 
       if (hasStarted) {
-        const currentQuestion = questions[currentQuestionIndex - 1];
-        console.log('Current question ID:', currentQuestion.id);
-        
-        const audioPath = `audio/${input.replace(/\s+/g, '_').toLowerCase()}.mp3`;
+        // 텍스트 기반의 입력만 saveAnswer를 호출
+        if (!transcript) {
+          const currentQuestion = questions[currentQuestionIndex - 1];
+          console.log('Current question ID:', currentQuestion.id);
 
-        try {
-          const response = await saveAnswer(currentQuestion.id, { content: input, audioPath: audioPath });
-          console.log('Response from saveAnswer:', response);
+          const audioPath = `audio/${userInput.replace(/\s+/g, '_').toLowerCase()}.mp3`;
 
+          try {
+            const response = await saveAnswer(currentQuestion.id, { content: userInput, audioPath: audioPath });
+            console.log('Response from saveAnswer:', response);
+
+            setMessagesWithButtons(prevState => new Set([...prevState, newMessages.length - 1]));
+          } catch (error) {
+            console.error('답변 저장 중 오류 발생:', error.message);
+            setMessages(prevMessages => [
+              ...prevMessages,
+              { text: "답변을 저장하는 중 오류가 발생했습니다. 다시 시도해 주세요.", isUser: false, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false }
+            ]);
+          }
+        } else {
           setMessagesWithButtons(prevState => new Set([...prevState, newMessages.length - 1]));
-        } catch (error) {
-          console.error('답변 저장 중 오류 발생:', error.message);
-          setMessages(prevMessages => [
-            ...prevMessages,
-            { text: "답변을 저장하는 중 오류가 발생했습니다. 다시 시도해 주세요.", isUser: false, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false }
-          ]);
         }
-      } else if (input.trim() === "시작" && !hasStarted) {
+      } else if (userInput === "시작" && !hasStarted) {
         setHasStarted(true);
         setStartMessageIndex(newMessages.length - 1);
-        sendNextQuestion();
+        sendNextQuestion(questions, currentQuestionIndex);
       }
     }
   };
 
-  const sendNextQuestion = () => {
-    if (currentQuestionIndex < questions.length) {
-      const newMessage = { text: questions[currentQuestionIndex].content, isUser: false, number: currentQuestionIndex + 1, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false };
+  const sendNextQuestion = (questionsList = questions, index = currentQuestionIndex) => {
+    if (index < questionsList.length) {
+      const newMessage = { text: questionsList[index].content, isUser: false, number: index + 1, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false };
       setMessages(prevMessages => [...prevMessages, newMessage]);
       setMessagesWithButtons(prevState => new Set([...prevState, messages.length]));
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setCurrentQuestionIndex(index + 1);
+
+      // 현재 질문의 ID를 전역 상태에 저장
+      setQuestionID(questionsList[index].id);
     } else if (hasStarted) {
       setMessages(prevMessages => [
         ...prevMessages,
@@ -154,7 +164,7 @@ const InterviewChat = ({ interviewId }) => {
   };
 
   const handleButtonClick = (index) => {
-    setFollowUpCreated(prevState => ({ ...prevState, [index]: true })); 
+    setFollowUpCreated(prevState => ({ ...prevState, [index]: true }));
   };
 
   const handleFollowUpQuestionClick = async (index) => {
@@ -186,7 +196,6 @@ const InterviewChat = ({ interviewId }) => {
         i === index ? { ...msg, isFollowUpResponse: true } : msg
       )
     );
-
     sendNextQuestion();
   };
 
@@ -195,48 +204,48 @@ const InterviewChat = ({ interviewId }) => {
       <InnerContainer>
         <MessagesContainer>
           {messages.map((message, index) => (
-            <AIDialogBox 
-              key={index} 
-              text={message.text} 
-              isUser={message.isUser} 
-              number={message.isUser ? null : message.number} 
-              index={index} 
-              started={hasStarted} 
+            <AIDialogBox
+              key={index}
+              text={typeof message.text === 'string' ? message.text : "Invalid content"}
+              isUser={message.isUser}
+              number={message.isUser ? null : message.number}
+              index={index}
+              started={hasStarted}
               renderButtons={hasStarted && messagesWithButtons.has(index) && index > startMessageIndex && !followUpCreated[index]}
-              onFollowUpQuestionClick={() => handleFollowUpQuestionClick(index)} 
+              onFollowUpQuestionClick={() => handleFollowUpQuestionClick(index)}
               onNextQuestionClick={() => {
                 if (messages[index].isFollowUp) {
-                  handleFollowUpResponse(index); 
+                  handleFollowUpResponse(index);
                 } else {
                   sendNextQuestion();
-                  handleButtonClick(index); 
+                  handleButtonClick(index);
                 }
-              }} 
-              followUpCreated={followUpCreated[index]} // 여기서 followUpCreated 확인
-              isFollowUp={message.isFollowUp} 
-              isFollowUpResponse={message.isFollowUpResponse} 
-              isFollowUpNext={message.isFollowUpNext} // 새 속성 추가
+              }}
+              followUpCreated={followUpCreated[index]}
+              isFollowUp={message.isFollowUp}
+              isFollowUpResponse={message.isFollowUpResponse}
+              isFollowUpNext={message.isFollowUpNext}
+              interviewType={interviewType} // interviewType을 전달
             />
           ))}
         </MessagesContainer>
-        <InputContainer>
-          <Input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') handleSend();
-            }}
+        {/* interviewType에 따라 조건부로 컴포넌트 렌더링 */}
+        {interviewType === 'text' ? (
+          <TextInput
+            input={input}
+            setInput={setInput}
+            handleSend={handleSend}
           />
-          <Button onClick={handleSend}>
-            <span className="material-symbols-outlined">
-              send
-            </span>
-          </Button>
-        </InputContainer>
+        ) : (
+          <VoiceInput
+            handleSend={handleSend} // handleSend 함수 전달
+            questionID={questionID} // questionID를 VoiceInput에 전달
+          />
+        )}
       </InnerContainer>
     </ChatContainer>
   );
 };
 
 export default InterviewChat;
+
