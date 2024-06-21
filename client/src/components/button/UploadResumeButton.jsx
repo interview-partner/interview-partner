@@ -48,8 +48,15 @@ const HiddenInput = styled.input`
   display: none;
 `;
 
+const ErrorMessage = styled.div`
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+`;
+
 const UploadResumeButton = ({ onFileSelect }) => {
   const [isFileUploaded, setIsFileUploaded] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const fileInputRef = useRef(null);
 
   const handleButtonClick = () => {
@@ -59,8 +66,14 @@ const UploadResumeButton = ({ onFileSelect }) => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setIsFileUploaded(true);
-      onFileSelect(file); 
+      if (file.type === 'application/pdf') {
+        setIsFileUploaded(true);
+        setErrorMessage(''); // Reset error message
+        onFileSelect(file); // Pass the file to the parent component
+      } else {
+        setIsFileUploaded(false);
+        setErrorMessage('PDF 파일만 업로드 가능합니다.'); // Display error message
+      }
     }
   };
 
@@ -70,13 +83,15 @@ const UploadResumeButton = ({ onFileSelect }) => {
         <Icon src={isFileUploaded ? RefreshIcon : UploadIcon} alt="Upload Icon" />
       </CircleButton>
       <Content>
-        이력서 파일을 업로드 해주세요
+        이력서 파일을 업로드 해주세요 (PDF만 가능)
       </Content>
       <HiddenInput
         type="file"
         ref={fileInputRef}
         onChange={handleFileChange}
+        accept="application/pdf" // Only accept PDF files
       />
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>} {/* 에러 메시지를 표시 */}
     </Container>
   );
 };
