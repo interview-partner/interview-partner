@@ -61,9 +61,9 @@ const InterviewChat = ({ interviewId }) => {
   const { questionID, setQuestionID } = useQuestionID();
   const messagesEndRef = useRef(null);
   const [interviewEnded, setInterviewEnded] = useState(false);
-  const [inputDisabled, setInputDisabled] = useState(false); // 입력 비활성화 상태 추가
+  const [inputDisabled, setInputDisabled] = useState(false); 
 
-  // Refs for each message
+
   const messageRefs = useRef([]);
 
   useEffect(() => {
@@ -110,15 +110,15 @@ const InterviewChat = ({ interviewId }) => {
   }, [interviewId]);
 
   useEffect(() => {
-    // Scroll to the bottom of the messages container when a new message is added
+    
     const scrollToBottom = () => {
       if (messagesEndRef.current) {
         messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
       }
     };
 
-    // Delay the scroll to ensure height calculations are complete
-    const timeoutId = setTimeout(scrollToBottom, 100); // 100ms delay
+   
+    const timeoutId = setTimeout(scrollToBottom, 100); 
 
     return () => clearTimeout(timeoutId);
   }, [messages]);
@@ -144,10 +144,10 @@ const InterviewChat = ({ interviewId }) => {
       setInput('');
 
       if (interviewType !== 'text' || hasStarted) {
-        // 면접이 시작된 후에는 한 번만 메시지를 보낼 수 있도록 비활성화
+       
         setInputDisabled(true);
       } else if (userInput.toLowerCase() === '시작') {
-        // '시작'을 보낸 후 면접 시작
+        
         setInputDisabled(true);
         setHasStarted(true);
         setStartMessageIndex(newMessages.length - 1);
@@ -188,15 +188,15 @@ const InterviewChat = ({ interviewId }) => {
       setCurrentQuestionIndex(index + 1);
 
       setQuestionID(questionsList[index].id);
-      setInputDisabled(false); // AI 질문이 보내지면 입력 활성화
+      setInputDisabled(false); 
     } else if (hasStarted) {
       setMessages(prevMessages => [
         ...prevMessages,
         { text: "인터뷰가 종료되었습니다. 수고하셨습니다.", isUser: false, isFollowUp: false, isFollowUpResponse: false, isFollowUpNext: false }
       ]);
       setHasStarted(false);
-      setInterviewEnded(true); // 인터뷰 종료 상태 업데이트
-      setInputDisabled(true); // 인터뷰 종료 후 입력 비활성화
+      setInterviewEnded(true); 
+      setInputDisabled(true); 
     }
   };
 
@@ -215,7 +215,7 @@ const InterviewChat = ({ interviewId }) => {
           ...prevMessages,
           { text: followUpResponse.data.content, isUser: false, number: currentQuestionIndex + 1, isFollowUp: true, isFollowUpResponse: false, isFollowUpNext: false }
         ]);
-        setInputDisabled(false); // 꼬리질문이 들어오면 입력창 활성화
+        setInputDisabled(false); 
       }
       handleButtonClick(index);
 

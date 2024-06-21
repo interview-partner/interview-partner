@@ -106,7 +106,7 @@ function InterviewInfo() {
     const fetchInterviewInfo = async () => {
       try {
         const data = await getInterviewInfo(interviewId);
-        setInterviewData(data.data); // Assuming the response structure is { status, data, message }
+        setInterviewData(data.data); 
       } catch (err) {
         setError(err.message);
       }
