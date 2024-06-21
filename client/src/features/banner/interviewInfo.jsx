@@ -144,7 +144,7 @@ function InterviewInfo() {
           <Tooltip>{interviewData.resumeFileName}</Tooltip>
         </InfoWithTooltip>
         <ButtonContainer>
-          <ArrowButton to="back">수정 하기</ArrowButton>
+          <ArrowButton to="back">면접 새로 만들기</ArrowButton>
         </ButtonContainer>
       </InnerContainer>
     </BannerContainer>
