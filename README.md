@@ -24,6 +24,15 @@
 
 배포 사이트: [Interview Partner](https://interviewpartner.site)
 
+시연 영상: [Interview Partner](https://www.youtube.com/watch?v=zoSdrH2qN-U)
+
+<div style="text-align: center;">
+  <a href="https://youtu.be/zoSdrH2qN-U" target="_blank">
+    <img src="https://github.com/interview-partner/interview-partner/assets/121853214/73f08dbe-4297-4adb-a57a-42f4574d8e44" alt="Interview Partner" style="width: 100%;">
+  </a>
+</div>
+
+
 ## 🚀 핵심 기능
 
 ### ⭐️ AI 면접
@@ -39,7 +48,7 @@
 - 참가자들끼리 면접 피드백을 주고받을 수 있습니다.
 - 참가자들끼리 채팅을 통해 소통할 수 있습니다.
 
-<img width="1000" alt="화상모의면접" src="https://github.com/junest66/interview-partner/assets/121853214/45d643e0-0587-46ec-b76a-f4580cf6a015">
+![화상모의면접](https://github.com/interview-partner/interview-partner/assets/121853214/6105263f-445e-4f49-bba4-40b865ce1868)
 
 ## 🧡 팀원소개
 | **Backend** | **Backend** | **Frontend** | **Frontend** |
