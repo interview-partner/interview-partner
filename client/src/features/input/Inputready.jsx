@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
 import Circle from "../../assets/icons/circle.png";
 import CheckMethod from "../../assets/images/checkMethodType.png";
 import BigSquareButton from "../../components/button/bigsquareButton";
+import LoadingModal from '../modal/InterviewLoadingModal'; // 로딩 모달 컴포넌트를 import 합니다.
 
 const Container = styled.div`
   width: 100%;
@@ -63,6 +64,15 @@ const Img = styled.img`
 `;
 
 function InputReady({ onStartInterview, currentIndex }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleStartClick = () => {
+    setIsOpen(true);
+    if (onStartInterview) {
+      onStartInterview();
+    }
+  };
+
   return (
     <Container>
       <Title>면접 준비</Title>
@@ -84,12 +94,13 @@ function InputReady({ onStartInterview, currentIndex }) {
           </GuideList>
         </GuideContainer>
         <BigSquareButton 
-          onClick={onStartInterview} 
+          onClick={handleStartClick} 
           disabled={currentIndex !== 3}
         >
           면접 시작하기
         </BigSquareButton>
       </TextContainer>
+      <LoadingModal isOpen={isOpen} /> {/* 모달 상태에 따른 조건부 렌더링 */}
     </Container>
   );
 }
