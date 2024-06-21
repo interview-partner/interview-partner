@@ -15,10 +15,11 @@
   </a>
 </p>
 
-<img width="1679" alt="메인페이지" src="https://github.com/junest66/interview-partner/assets/121853214/3d97b541-64c7-440a-9d13-a2d407fb7476">
+<img width="1679" alt="메인페이지" src="https://github.com/interview-partner/interview-partner/assets/121853214/c80d3b78-a808-4c40-9e10-fe8e218d1867">
 
 - **Interview Partner**는 자신의 이력서를 기반으로 AI 면접 및 화상 모의 면접을 할 수 있는 플랫폼입니다.
 - **AI 면접**에서는 자신의 이력서를 바탕으로 질문을 생성하고, 답변을 분석하여 꼬리 질문을 생성할 수 있습니다. 또한 음성 및 텍스트 중 하나를 선택하여 면접을 진행할 수 있습니다.
+
 - **화상 모의 면접**에서는 참가자들이 서로의 이력서를 열람하면서 화상 모의면접을 진행하며, 채팅 및 피드백 기능을 통해 소통할 수 있습니다.
 - **마이페이지**에서 AI 면접 기록과 화상 모의 면접 참가 이력 및 피드백을 열람할 수 있습니다.
 
@@ -137,11 +138,11 @@
 
 ## 🏛️ 시스템 아키텍쳐
 
-<img width="1000" alt="시스템 아키텍쳐" src="https://github.com/junest66/interview-partner/assets/121853214/9d6b139b-46ed-44b0-b724-37e624a37ee4">
+<img width="1000" alt="시스템 아키텍쳐" src="https://github.com/interview-partner/interview-partner/assets/121853214/e5657e3d-f7ca-46a7-a78c-bc66fd233810">
 
 ## 🚗 배포 전략
 
-![배포사진](https://github.com/junest66/interview-partner/assets/121853214/37324431-e6a7-42ea-9b37-7b2ee6877602)
+![배포사진](https://github.com/interview-partner/interview-partner/assets/121853214/fd27058b-2e41-40a3-8837-64f4272c98ae)
 
 ## 💿 실행방법
 
