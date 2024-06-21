@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
+import SendIcon from '../../assets/icons/send_Icon.png'; 
 
 const InputContainer = styled.div`
   display: flex;
@@ -28,9 +29,16 @@ const Button = styled.button`
   background-color: ${COLORS.blue_black};
   color: white;
   cursor: pointer;
+  opacity: ${props => (props.disabled ? 0.5 : 1)}; // 비활성화 시 투명도 조정
+  pointer-events: ${props => (props.disabled ? 'none' : 'auto')}; // 비활성화 시 클릭 이벤트 차단
+
+  img {
+    width: 20px; // 아이콘 크기 설정
+    height: 20px;
+  }
 `;
 
-const TextInput = ({ input, setInput, handleSend }) => {
+const TextInput = ({ input, setInput, handleSend, disabled }) => {
   return (
     <InputContainer>
       <Input
@@ -38,14 +46,20 @@ const TextInput = ({ input, setInput, handleSend }) => {
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyPress={(e) => {
-          if (e.key === 'Enter') handleSend();
+          if (e.key === 'Enter' && !disabled) handleSend();
         }}
+        disabled={disabled} 
       />
-      <Button onClick={() => {
-        console.log('Button clicked');
-        handleSend();
-      }}>
-        Send
+      <Button
+        onClick={() => {
+          if (!disabled) { 
+            console.log('Button clicked');
+            handleSend();
+          }
+        }}
+        disabled={disabled} 
+      >
+        <img src={SendIcon} alt="Send" /> 
       </Button>
     </InputContainer>
   );

@@ -5,27 +5,20 @@ import RoundButton from '../../components/button/RoundButton';
 import InputInterviewSetting from './InputInterviewSetting';
 import InputPersonalInfo from '../../features/input/InputPersonalInfo';
 import InputResumeSelect from '../../features/input/InputResumeSelect';
-import InputReady from './Inputready';
+import InputReady from '../input/Inputready';
 import { createInterviewRoom } from '../../services/interviewService';
 import { useNavigate } from 'react-router-dom';
 import { InterviewContext } from '../../context/interviewContext';
+import LoadingModal from '../modal/InterviewLoadingModal';
 
 const fadeIn = keyframes`
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 `;
 
 const fadeOut = keyframes`
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+  from { opacity: 1; }
+  to { opacity: 0; }
 `;
 
 const Container = styled.div`
@@ -81,7 +74,7 @@ const Card = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid ${COLORS.light_gray}; 
+  border: 1px solid ${COLORS.light_gray};
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2);
   padding: 20px;
@@ -107,6 +100,8 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
     jobAdvertisement: '',
     resumeId: null
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false); // 에러 상태 추가
   const navigate = useNavigate();
   const { setInterviewId } = useContext(InterviewContext);
 
@@ -119,11 +114,13 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
   };
 
   const handleCreateInterview = async () => {
+    setIsLoading(true);
+    setError(false); // 에러 상태 초기화
     try {
       const response = await createInterviewRoom(interviewData);
       if (response && response.status === 'success' && response.data) {
         const interviewId = response.data;
-        setInterviewId(interviewId); // Interview ID 설정
+        setInterviewId(interviewId);
         const currentTime = new Date().toISOString();
         localStorage.setItem('interviewData', JSON.stringify({ ...interviewData, createdAt: currentTime }));
         navigate(`/promptroom/${interviewId}`);
@@ -131,12 +128,17 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
         throw new Error("Invalid response from server.");
       }
     } catch (error) {
+      setError(true); // 에러 상태 설정
       console.error('Failed to create interview room:', error);
+      alert('인터뷰 정보 작성을 마쳐주세요 '); // Display alert message
+    } finally {
+      setIsLoading(false); // 요청이 완료되면 로딩 상태 해제
     }
   };
 
   return (
     <Container>
+      {isLoading && !error && <LoadingModal isOpen={true} />} {/* Show loading modal only if loading and no error */}
       <Carousel>
         <CardContainer currentIndex={currentIndex}>
           <Card>

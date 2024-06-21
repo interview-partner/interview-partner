@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { COLORS } from "../../styles/colors";
 import Circle from "../../assets/icons/circle.png";
@@ -63,6 +63,12 @@ const Img = styled.img`
 `;
 
 function InputReady({ onStartInterview, currentIndex }) {
+  const handleStartClick = async () => {
+    if (onStartInterview) {
+      await onStartInterview(); // Pass setIsOpen to handleCreateInterview
+    }
+  };
+
   return (
     <Container>
       <Title>면접 준비</Title>
@@ -84,7 +90,7 @@ function InputReady({ onStartInterview, currentIndex }) {
           </GuideList>
         </GuideContainer>
         <BigSquareButton 
-          onClick={onStartInterview} 
+          onClick={handleStartClick} 
           disabled={currentIndex !== 3}
         >
           면접 시작하기
