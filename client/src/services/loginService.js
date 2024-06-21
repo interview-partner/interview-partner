@@ -1,4 +1,6 @@
 import api from './axiosConfig';
+import { config } from '../config';
+import googleLogin from './googleLoginService';
 
 /**
  * 이메일과 비밀번호를 사용하여 로그인하는 함수
@@ -69,4 +71,52 @@ export const login = async (email, password) => {
          */
         throw new Error(errorMessage);
     }
+};
+
+/**
+ * 토큰 재발행 함수
+ * 
+ * @returns {Promise<void>}
+ * @throws {Error} - 토큰 재발행 실패 시 오류 메시지 반환
+ */
+export const reissueToken = async () => {
+    try {
+        const response = await api.post(`${config.apiUrl}/api/v1/auth/token/reissue`, {}, {
+            withCredentials: true
+        });
+
+        // 카카오, 네이버는 액세스 토큰이 없어서 리프레쉬 토큰을 통해 재발행
+        const newAccessToken = response.headers['authorization'].replace('Bearer ', '');
+        localStorage.setItem('accessToken', newAccessToken); // 새로운 액세스 토큰을 로컬 스토리지에 저장
+        console.log(newAccessToken);
+
+    } catch (error) {
+        console.error('Token refresh error:', error);
+        throw error;
+    }
+};
+
+/**
+ * 카카오 로그인 함수
+ */
+export const onKakaoLogin = () => {
+    window.location.href = `${config.apiUrl}/api/v1/auth/login/oauth2/kakao`;
+};
+
+/**
+ * 네이버 로그인 함수
+ */
+export const onNaverLogin = () => {
+    window.location.href = `${config.apiUrl}/api/v1/auth/login/oauth2/naver`;
+};
+
+/**
+ * 구글 로그인 함수
+ * 
+ * @param {object} auth - firebase auth 객체
+ * @param {function} setLoginError - 로그인 오류 상태 설정 함수
+ * @param {function} setShowNotification - 알림 표시 상태 설정 함수
+ */
+export const onGoogleLogin = (auth, setLoginError, setShowNotification) => {
+    googleLogin(auth, setLoginError, setShowNotification);
 };

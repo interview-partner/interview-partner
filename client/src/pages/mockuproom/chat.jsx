@@ -29,7 +29,6 @@ const Chat = ({ isOpen, handleClose, session, messages, setMessages }) => {
   const [selectedUserResume, setSelectedUserResume] = useState(null); // State to manage selected user resume
   const [selectedUserFeedback, setSelectedUserFeedback] = useState(null); // State to manage selected user feedback
   const messageListRef = useRef(null);
-  const messageIds = useRef(new Set()); // 이미 처리된 메시지 ID를 저장하는 Set
   const [isAutoScroll, setIsAutoScroll] = useState(true);
   const [activeUserId, setActiveUserId] = useState(null); // 사용자(참여자)ID 관리용, roomParticipantId 예: 버튼 클릭시 활성화된 사용자 이력서 제공
   const [feedbackContent, setFeedbackContent] = useState(''); // 피드백 내용 상태
@@ -65,27 +64,6 @@ const Chat = ({ isOpen, handleClose, session, messages, setMessages }) => {
       updateUsers(); // 초기 사용자 목록 설정
     }
   }, [session, updateUsers]);
-
-  useEffect(() => {
-    if (session) {
-      /**
-       * 채팅 신호를 처리하는 함수
-       * 
-       * @param {Object} event - 신호 이벤트 객체
-       */
-      const handleSignalChat = (event) => {
-        const messageData = JSON.parse(event.data);
-        if (!messageIds.current.has(messageData.id)) {
-          messageIds.current.add(messageData.id);
-        }
-      };
-      session.on('signal:chat', handleSignalChat);
-
-      return () => {
-        session.off('signal:chat', handleSignalChat);
-      };
-    }
-  }, [session, setMessages]);
 
   /**
    * 메시지를 전송하는 함수

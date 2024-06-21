@@ -1,5 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 import { COLORS } from '../../styles/colors.jsx';
+import { Marginer } from '../../components/common/marginer/marginer.jsx';
 
 export const IconImage = styled.img`
   width: 100%;
@@ -238,3 +239,15 @@ export const ErrorMessage = styled.p`
   font-size: 50%;
 `;
 
+/**
+ * 폼 필드 컴포넌트 정의
+ * 
+ * @param {object} props - 폼 필드에 대한 속성
+ */
+export const FormField = ({ type, placeholder, value, onChange, error }) => (
+  <>
+    <Input type={type} placeholder={placeholder} value={value} onChange={onChange} />
+    {!error && <Marginer direction="vertical" margin={20} />}
+    {error && <ErrorMessage>{error}</ErrorMessage>}
+  </>
+);

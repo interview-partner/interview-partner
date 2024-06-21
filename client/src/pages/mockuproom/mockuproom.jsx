@@ -10,6 +10,9 @@ import { Container, VideoContainer, ButtonContainer, IconButton, IconImage, Togg
 
 const MAX_PARTICIPANTS = 4;
 
+/**
+ * Mockuproom 컴포넌트
+ */
 function Mockuproom() {
   // 입장 토큰
   const location = useLocation();
@@ -50,6 +53,9 @@ function Mockuproom() {
     }
   }, [mainStreamManager]);
 
+  /**
+   * 채팅창 닫기 애니메이션을 위한 타이머 설정
+   */
   useEffect(() => {
     if (!isOpen) {
       const timer = setTimeout(() => setShouldRender(false), 300); // 채팅창 열기 애니메이션, 지속 시간과 동일하게 설정
@@ -141,22 +147,21 @@ function Mockuproom() {
   };
 
   /**
-    * 음소거 상태 관리 함수
-    * 
-    */
+   * 음소거 상태 관리 함수
+   */
   const toggleMute = () => {
     if (session) {
-      session.remoteConnections.forEach(connection => {
-        connection.stream.audioActive = !isMuted;
+      subscribers.forEach(subscriber => {
+        subscriber.subscribeToAudio(!isMuted);
       });
-      setIsMuted(!isMuted);
+      setIsMuted(!isMuted);  // 로컬 상태 업데이트
     }
-  };
+  }
 
   /**
    * 세션을 떠나는 함수
    * 
-   * @param {boolean} isTrue - navigate 여부
+   * @param {boolean} isNavigate  - navigate 여부
    */
   const leaveSession = useCallback(async (isNavigate) => {
 

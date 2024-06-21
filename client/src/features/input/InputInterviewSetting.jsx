@@ -58,7 +58,7 @@ const ButtonContainer = styled.div`
 function InputInterviewSetting({ interviewData, setInterviewData }) {
   const [title, setTitle] = useState(interviewData.title);
   const [interviewType, setInterviewType] = useState(interviewData.interviewType);
-  const [questionNumber, setQuestionNumber] = useState(interviewData.questionNumber);
+  const [questionNumber, setQuestionNumber] = useState(interviewData.questionNumber || 2); // 초기값을 2로 설정
 
   useEffect(() => {
     setInterviewData({ ...interviewData, title, interviewType, questionNumber });

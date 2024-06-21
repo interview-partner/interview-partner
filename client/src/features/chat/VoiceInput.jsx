@@ -1,37 +1,87 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { COLORS } from '../../styles/colors';
 import { transcribeAudio } from '../../services/transcribeAudioService';
+import SendBlueIcon from '../../assets/icons/send_blue.png';
+import VoiceBlueIcon from '../../assets/icons/voice_blue.png';
+import VoiceGreyIcon from '../../assets/icons/voice_grey.png'; // 비활성화 아이콘 추가
 
 const VoiceInputContainer = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
+  position: relative;
   padding: 20px;
 `;
 
 const Button = styled.button`
-  padding: 10px;
+  width: 60px;
+  height: 60px;
   border: none;
-  border-radius: 5px;
-  background-color: ${COLORS.blue_black};
-  color: white;
+  border-radius: 50%;
+  background-color: white;
   cursor: pointer;
+  z-index: 2;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  background-image: url(${props => 
+    props.disabled ? VoiceGreyIcon : 
+    (props.isRecording ? SendBlueIcon : VoiceBlueIcon)}); // disabled일 때 VoiceGreyIcon 사용
+  background-size: 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  &:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+  }
+
+  &:active {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transform: scale(0.95);
+  }
+
+  pointer-events: ${props => (props.disabled ? 'none' : 'auto')}; // 비활성화 시 클릭 이벤트 차단
 `;
 
-const VoiceInput = ({ handleSend, questionID }) => {
+const Canvas = styled.canvas`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+`;
+
+const VoiceInput = ({ handleSend, questionID, disabled }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
+  const canvasRef = useRef(null);
+  const animationFrameIdRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const analyserRef = useRef(null);
+  const dataArrayRef = useRef(null);
 
   useEffect(() => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       console.error('This browser does not support audio recording');
       setErrorMessage('This browser does not support audio recording');
     }
-  }, []);
+    drawStaticLine();
+  }, [disabled]); // disabled 상태가 바뀔 때마다 drawStaticLine 호출
+
+  useEffect(() => {
+    if (isRecording) {
+      startWaveAnimation();
+    } else {
+      stopWaveAnimation();
+    }
+  }, [isRecording]);
 
   const startRecording = async () => {
+    if (disabled) return; // 비활성화 상태라면 녹음 시작하지 않음
+
     console.log('Starting recording...');
     setErrorMessage('');
     try {
@@ -39,6 +89,18 @@ const VoiceInput = ({ handleSend, questionID }) => {
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
+
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const analyser = audioContext.createAnalyser();
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+      analyser.fftSize = 2048;
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      audioContextRef.current = audioContext;
+      analyserRef.current = analyser;
+      dataArrayRef.current = dataArray;
 
       mediaRecorder.ondataavailable = (event) => {
         audioChunksRef.current.push(event.data);
@@ -50,17 +112,19 @@ const VoiceInput = ({ handleSend, questionID }) => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const audioFile = await convertToWav(audioBlob, 16000);
         console.log('Audio file created:', audioFile);
-        
+
         try {
           const transcript = await transcribeAudio(questionID, audioFile);
           console.log('Transcription response:', transcript);
-
-          // 변환된 텍스트를 handleSend로 전달
           handleSend(transcript);
+          setIsRecording(false);
         } catch (error) {
           console.error('Error during STT:', error.message);
           setErrorMessage('Error during STT: ' + error.message);
         }
+
+        audioContext.close();
+        stopWaveAnimation();
       };
 
       mediaRecorder.start();
@@ -76,7 +140,6 @@ const VoiceInput = ({ handleSend, questionID }) => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
       console.log('MediaRecorder stopped.');
-      setIsRecording(false);
     }
   };
 
@@ -160,15 +223,109 @@ const VoiceInput = ({ handleSend, questionID }) => {
     return buffer;
   };
 
+  const drawStaticLine = () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+
+    ctx.clearRect(0, 0, width, height);
+
+    const gradient = ctx.createLinearGradient(0, height / 2, width, height / 2);
+    gradient.addColorStop(0, 'rgba(98, 174, 213, 0)');
+    gradient.addColorStop(0.5, disabled ? 'rgba(200, 200, 200, 1)' : 'rgba(98, 174, 213, 1)'); // 파란색 또는 회색
+    gradient.addColorStop(1, 'rgba(98, 174, 213, 0)');
+
+    ctx.strokeStyle = gradient;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, height / 2);
+    ctx.lineTo(width, height / 2);
+    ctx.stroke();
+  };
+
+  const startWaveAnimation = () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+    const numberOfWaves = 3;
+    let phase = 0;
+    const speed = 0.005;
+
+    const drawWave = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      if (analyserRef.current && dataArrayRef.current) {
+        analyserRef.current.getByteTimeDomainData(dataArrayRef.current);
+      }
+
+      for (let i = 0; i < numberOfWaves; i++) {
+        ctx.beginPath();
+
+        const lineGradient = ctx.createLinearGradient(0, height / 2, width, height / 2);
+        lineGradient.addColorStop(0, 'rgba(98, 174, 213, 0)');
+        lineGradient.addColorStop(0.5, disabled ? `rgba(200, 200, 200, ${0.8 - i * 0.3})` : `rgba(98, 174, 213, ${0.8 - i * 0.3})`);
+        lineGradient.addColorStop(1, 'rgba(98, 174, 213, 0)');
+
+        ctx.strokeStyle = lineGradient;
+        ctx.lineWidth = 1;
+        let x = 0;
+        const amplitude = 20 + i * 10;
+        const frequency = 0.005;
+
+        while (x < width) {
+          let y = height / 2;
+
+          if (isRecording && dataArrayRef.current) {
+            const sampleAmplitude = (dataArrayRef.current[x % dataArrayRef.current.length] - 128) / 128;
+            y += sampleAmplitude * amplitude;
+          } else {
+            y += Math.sin(x * frequency + phase) * amplitude;
+          }
+
+          if (x === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+
+          x++;
+        }
+
+        ctx.stroke();
+      }
+
+      phase += speed;
+
+      animationFrameIdRef.current = requestAnimationFrame(drawWave);
+    };
+
+    drawWave();
+  };
+
+  const stopWaveAnimation = () => {
+    if (animationFrameIdRef.current) {
+      cancelAnimationFrame(animationFrameIdRef.current);
+      animationFrameIdRef.current = null;
+    }
+
+    drawStaticLine();
+  };
+
   return (
     <VoiceInputContainer>
-      <Button onClick={isRecording ? stopRecording : startRecording}>
-        {isRecording ? 'Recording...' : 'Start Recording'}
+      <Button 
+        onClick={isRecording ? stopRecording : startRecording} 
+        isRecording={isRecording} 
+        disabled={disabled}
+      >
+        {/* 아이콘이 버튼 배경으로 사용됨 */}
       </Button>
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      <Canvas ref={canvasRef} width={500} height={100} />
     </VoiceInputContainer>
   );
 };
 
 export default VoiceInput;
-
