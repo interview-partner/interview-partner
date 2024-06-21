@@ -86,7 +86,7 @@ const LoadingText = styled.div`
   color: ${COLORS.font_black};
 `;
 
-const LoadingModal = ({ isOpen }) => {
+const InterviewLoadingModal = ({ isOpen }) => {
   if (!isOpen) return null;
 
   return (
@@ -106,4 +106,4 @@ const LoadingModal = ({ isOpen }) => {
   );
 };
 
-export default LoadingModal;
+export default InterviewLoadingModal;
