@@ -49,8 +49,7 @@ export const fetchRooms = async (status = 'open', page = 0) => {
 
         return response.data;
     } catch (error) {
-        let errorMessage = "Unknown error occurred";
-
+        let errorMessage = "오류가 발생하였습니다.";
         if (error.response && error.response.status === 400) {
             errorMessage = "유효하지 않은 형식입니다.";
         } else if (error.response && error.response.status === 500) {
