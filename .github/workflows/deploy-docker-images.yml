@@ -35,7 +35,7 @@ jobs:
           docker buildx build --platform linux/amd64 -t ghcr.io/${{ github.repository }}/backend:${{ env.VERSION }} -t ghcr.io/${{ github.repository }}/backend:latest -f ./server/Dockerfile --push ./server
 
   build-and-push-frontend:
-    if: ${{ github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/') }}
+    if: ${{ startsWith(github.event.pull_request.head.ref, 'release/') }}
     runs-on: ubuntu-latest
 
     steps:
@@ -72,7 +72,7 @@ jobs:
           docker buildx build --platform linux/amd64 -t ghcr.io/${{ github.repository }}/frontend:${{ env.VERSION }} -t ghcr.io/${{ github.repository }}/frontend:latest -f ./client/Dockerfile --push ./client
 
   deploy-to-ec2:
-    if: ${{ github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/') }}
+    if: ${{ startsWith(github.event.pull_request.head.ref, 'release/') }}
     runs-on: ubuntu-latest
     needs: [ build-and-push-backend, build-and-push-frontend ]
 
