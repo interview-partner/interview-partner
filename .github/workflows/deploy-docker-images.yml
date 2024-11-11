@@ -85,6 +85,9 @@ jobs:
           VERSION=$(echo "${{ github.event.pull_request.title }}" | sed -n 's/release: version \(.*\)/\1/p')
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.ACTION_KEY }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
       - name: SSH into EC2 and deploy
         uses: appleboy/ssh-action@v0.1.7
         with:
