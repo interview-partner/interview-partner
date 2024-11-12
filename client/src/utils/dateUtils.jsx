@@ -44,7 +44,7 @@ export const convertToISO = (dateString) => {
 export const formatTimeAgoInSeconds = (dateString) => {
     const isoDate = convertToISO(dateString);
     const initialDate = parseISO(isoDate);
-    const dateWithTimeAdded = addHours(initialDate, 0); // 서울 시간대에 맞게 9시간 추가
+    const dateWithTimeAdded = addHours(initialDate, 0);
 
     const now = new Date();
     const secondsDiff = Math.floor((now - dateWithTimeAdded) / 1000);  // 1000ms = 1s
@@ -53,7 +53,9 @@ export const formatTimeAgoInSeconds = (dateString) => {
         return `${secondsDiff}초 전`;
     } else if (secondsDiff < 3600) {
         return `${Math.floor(secondsDiff / 60)}분 전`;
-    } else {
+    } else if (secondsDiff < 86400) { // 86400초 = 24시간
         return `${Math.floor(secondsDiff / 3600)}시간 전`;
+    } else {
+        return `${Math.floor(secondsDiff / 86400)}일 전`;
     }
 };

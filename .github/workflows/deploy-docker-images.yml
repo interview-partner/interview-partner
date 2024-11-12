@@ -4,13 +4,12 @@ on:
   pull_request:
     branches:
       - main
-    types: [closed]
 
   workflow_dispatch:
 
 jobs:
   build-and-push-backend:
-    if: ${{ github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/') }}
+    if: ${{ startsWith(github.event.pull_request.head.ref, 'release/') }}
     runs-on: ubuntu-latest
 
     steps:
@@ -36,7 +35,7 @@ jobs:
           docker buildx build --platform linux/amd64 -t ghcr.io/${{ github.repository }}/backend:${{ env.VERSION }} -t ghcr.io/${{ github.repository }}/backend:latest -f ./server/Dockerfile --push ./server
 
   build-and-push-frontend:
-    if: ${{ github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/') }}
+    if: ${{ startsWith(github.event.pull_request.head.ref, 'release/') }}
     runs-on: ubuntu-latest
 
     steps:
@@ -73,7 +72,7 @@ jobs:
           docker buildx build --platform linux/amd64 -t ghcr.io/${{ github.repository }}/frontend:${{ env.VERSION }} -t ghcr.io/${{ github.repository }}/frontend:latest -f ./client/Dockerfile --push ./client
 
   deploy-to-ec2:
-    if: ${{ github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/') }}
+    if: ${{ startsWith(github.event.pull_request.head.ref, 'release/') }}
     runs-on: ubuntu-latest
     needs: [ build-and-push-backend, build-and-push-frontend ]
 
@@ -94,5 +93,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script: |
+            sudo docker logout ghcr.io || true  # 먼저 로그아웃 시도, 실패해도 무시
+            echo "${{ secrets.ACTION_KEY }}" | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
             sudo sed -i "s/[0-9]*\.[0-9]*\.[0-9]*/${{ env.VERSION }}/g" /opt/openvidu/docker-compose.override.yml
-            sudo su -c "cd /opt/openvidu && docker compose pull react_app spring_app && docker compose down && docker compose up -d"
+            sudo su -c "cd /opt/openvidu && sudo docker compose pull react_app spring_app && sudo docker compose down && docker compose up -d"
