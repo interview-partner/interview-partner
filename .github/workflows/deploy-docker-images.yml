@@ -95,5 +95,9 @@ jobs:
           script: |
             sudo docker logout ghcr.io || true  # 먼저 로그아웃 시도, 실패해도 무시
             echo "${{ secrets.ACTION_KEY }}" | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            sudo sed -i "s/[0-9]*\.[0-9]*\.[0-9]*/${{ env.VERSION }}/g" /opt/openvidu/docker-compose.override.yml
-            sudo su -c "cd /opt/openvidu && sudo docker compose pull react_app spring_app && sudo docker compose down && docker compose up -d"
+            sudo sed -i "s/[0-9]*\.[0-9]*\.[0-9]*/${{ env.VERSION }}/g" /opt/openvidu/docker-compose.app.yml
+            sudo su -c "
+              cd /opt/openvidu && \
+              docker compose -f docker-compose.app.yml pull && \
+              docker compose -f docker-compose.app.yml up -d
+            "

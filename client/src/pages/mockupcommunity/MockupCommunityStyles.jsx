@@ -174,3 +174,17 @@ export const Overlay = styled.div`
   font-weight: 700;
   z-index: 10;
 `;
+
+export const Message = styled.div`
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.2em;
+  color: #666;
+`;
+
+export const LoaderContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+`;
