@@ -138,7 +138,7 @@
 
 ## 🏛️ 시스템 아키텍쳐
 
-<img width="1000" alt="시스템 아키텍쳐" src="https://github.com/interview-partner/interview-partner/assets/121853214/9eb24ed0-4eef-4938-91b3-037d0ba9c02d">
+<img width="1000" alt="시스템 아키텍쳐" src="https://github.com/user-attachments/assets/ba75faa2-5ebe-4fec-8ff1-617673bae2a7">
 
 
 ## 🚗 배포 전략
