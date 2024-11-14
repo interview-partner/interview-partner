@@ -1,4 +1,4 @@
-package com.vip.interviewpartner.dto;
+package com.vip.interviewpartner.common.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;

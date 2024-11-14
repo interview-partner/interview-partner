@@ -6,7 +6,7 @@ import com.vip.interviewpartner.domain.interview.entity.Interview;
 import com.vip.interviewpartner.domain.member.entity.Member;
 import com.vip.interviewpartner.domain.interview.dto.response.InterviewLookupResponse;
 import com.vip.interviewpartner.domain.interview.dto.response.MemberInterviewLookupResponse;
-import com.vip.interviewpartner.dto.PageCustom;
+import com.vip.interviewpartner.common.dto.PageCustom;
 import com.vip.interviewpartner.domain.interview.repository.InterviewRepository;
 import com.vip.interviewpartner.domain.resume.repository.ResumeRepository;
 import lombok.RequiredArgsConstructor;

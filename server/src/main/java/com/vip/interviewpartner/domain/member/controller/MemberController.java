@@ -1,6 +1,7 @@
 package com.vip.interviewpartner.domain.member.controller;
 
 import com.vip.interviewpartner.common.ApiCommonResponse;
+import com.vip.interviewpartner.common.dto.PageCustom;
 import com.vip.interviewpartner.domain.interview.dto.response.MemberInterviewLookupResponse;
 import com.vip.interviewpartner.domain.interview.service.InterviewService;
 import com.vip.interviewpartner.domain.member.dto.CustomUserDetails;
@@ -15,7 +16,6 @@ import com.vip.interviewpartner.domain.resume.service.ResumeService;
 import com.vip.interviewpartner.domain.resume.service.ResumeUploadService;
 import com.vip.interviewpartner.domain.room_participant.dto.response.ParticipationResponse;
 import com.vip.interviewpartner.domain.room_participant.service.ParticipantLookupService;
-import com.vip.interviewpartner.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

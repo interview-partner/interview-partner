@@ -2,7 +2,7 @@ package com.vip.interviewpartner.domain.room_participant.service;
 
 import com.vip.interviewpartner.domain.room_participant.entity.RoomParticipant;
 import com.vip.interviewpartner.domain.feedback.dto.response.FeedbackCountDTO;
-import com.vip.interviewpartner.dto.PageCustom;
+import com.vip.interviewpartner.common.dto.PageCustom;
 import com.vip.interviewpartner.domain.room_participant.dto.response.ParticipationResponse;
 import com.vip.interviewpartner.domain.feedback.repository.FeedbackRepository;
 import java.util.List;

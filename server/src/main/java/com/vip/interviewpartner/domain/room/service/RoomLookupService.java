@@ -2,7 +2,7 @@ package com.vip.interviewpartner.domain.room.service;
 
 import com.vip.interviewpartner.domain.room.enitty.Room;
 import com.vip.interviewpartner.domain.room.enitty.RoomStatus;
-import com.vip.interviewpartner.dto.PageCustom;
+import com.vip.interviewpartner.common.dto.PageCustom;
 import com.vip.interviewpartner.domain.room.dto.response.RoomResponseDTO;
 import com.vip.interviewpartner.domain.room.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;

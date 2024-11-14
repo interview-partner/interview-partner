@@ -3,7 +3,7 @@ package com.vip.interviewpartner.domain.room.controller;
 import com.vip.interviewpartner.common.ApiCommonResponse;
 import com.vip.interviewpartner.domain.room.enitty.RoomStatus;
 import com.vip.interviewpartner.domain.member.dto.CustomUserDetails;
-import com.vip.interviewpartner.dto.PageCustom;
+import com.vip.interviewpartner.common.dto.PageCustom;
 import com.vip.interviewpartner.domain.room.dto.request.RoomCreateRequest;
 import com.vip.interviewpartner.domain.room.dto.response.RoomCreateResponse;
 import com.vip.interviewpartner.domain.room.dto.request.RoomEnterRequest;
