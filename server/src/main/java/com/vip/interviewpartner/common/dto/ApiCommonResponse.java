@@ -1,4 +1,4 @@
-package com.vip.interviewpartner.common;
+package com.vip.interviewpartner.common.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.ConstraintViolation;

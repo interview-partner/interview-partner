@@ -1,6 +1,6 @@
 package com.vip.interviewpartner.domain.feedback.controller;
 
-import com.vip.interviewpartner.common.ApiCommonResponse;
+import com.vip.interviewpartner.common.dto.ApiCommonResponse;
 import com.vip.interviewpartner.domain.member.dto.CustomUserDetails;
 import com.vip.interviewpartner.domain.feedback.dto.request.FeedbackCreateRequest;
 import com.vip.interviewpartner.domain.feedback.service.FeedbackCreateService;

@@ -4,7 +4,7 @@ import static com.vip.interviewpartner.common.constants.Constants.AUTHORIZATION_
 import static com.vip.interviewpartner.common.constants.Constants.BEARER_TOKEN_PREFIX;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vip.interviewpartner.common.ApiCommonResponse;
+import com.vip.interviewpartner.common.dto.ApiCommonResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;

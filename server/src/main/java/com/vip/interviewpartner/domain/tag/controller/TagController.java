@@ -1,6 +1,6 @@
 package com.vip.interviewpartner.domain.tag.controller;
 
-import com.vip.interviewpartner.common.ApiCommonResponse;
+import com.vip.interviewpartner.common.dto.ApiCommonResponse;
 import com.vip.interviewpartner.domain.tag.dto.request.TagCreateRequest;
 import com.vip.interviewpartner.domain.tag.dto.response.TagResponse;
 import com.vip.interviewpartner.domain.tag.service.TagService;

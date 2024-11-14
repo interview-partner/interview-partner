@@ -1,6 +1,6 @@
 package com.vip.interviewpartner.domain.room_participant.controller;
 
-import com.vip.interviewpartner.common.ApiCommonResponse;
+import com.vip.interviewpartner.common.dto.ApiCommonResponse;
 import com.vip.interviewpartner.domain.member.dto.CustomUserDetails;
 import com.vip.interviewpartner.domain.feedback.dto.response.FeedbackResponse;
 import com.vip.interviewpartner.domain.room_participant.dto.response.ParticipantDetailsResponse;

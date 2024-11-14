@@ -7,7 +7,7 @@ import static com.vip.interviewpartner.common.constants.Constants.COOKIE_REFRESH
 import static com.vip.interviewpartner.common.constants.Constants.REFRESH;
 import static com.vip.interviewpartner.common.constants.Constants.REFRESH_TOKEN;
 
-import com.vip.interviewpartner.common.ApiCommonResponse;
+import com.vip.interviewpartner.common.dto.ApiCommonResponse;
 import com.vip.interviewpartner.domain.member.service.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;

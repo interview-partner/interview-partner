@@ -1,6 +1,6 @@
 package com.vip.interviewpartner.domain.room.controller;
 
-import com.vip.interviewpartner.common.ApiCommonResponse;
+import com.vip.interviewpartner.common.dto.ApiCommonResponse;
 import com.vip.interviewpartner.domain.room.enitty.RoomStatus;
 import com.vip.interviewpartner.domain.member.dto.CustomUserDetails;
 import com.vip.interviewpartner.common.dto.PageCustom;

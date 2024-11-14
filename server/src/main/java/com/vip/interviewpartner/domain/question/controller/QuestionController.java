@@ -1,7 +1,7 @@
 package com.vip.interviewpartner.domain.question.controller;
 
 
-import com.vip.interviewpartner.common.ApiCommonResponse;
+import com.vip.interviewpartner.common.dto.ApiCommonResponse;
 import com.vip.interviewpartner.domain.question.dto.request.AnswerSaveRequest;
 import com.vip.interviewpartner.domain.question.dto.response.AudioAnswerResponse;
 import com.vip.interviewpartner.domain.member.dto.CustomUserDetails;

@@ -1,6 +1,6 @@
 package com.vip.interviewpartner.domain.interview.controller;
 
-import com.vip.interviewpartner.common.ApiCommonResponse;
+import com.vip.interviewpartner.common.dto.ApiCommonResponse;
 import com.vip.interviewpartner.domain.interview.dto.request.InterviewCreateRequest;
 import com.vip.interviewpartner.domain.member.dto.CustomUserDetails;
 import com.vip.interviewpartner.domain.interview.dto.response.InterviewLookupResponse;
