@@ -2,9 +2,9 @@ package com.vip.interviewpartner.common.oauth2;
 
 import static com.vip.interviewpartner.common.constants.Constants.*;
 
-import com.vip.interviewpartner.domain.Member;
-import com.vip.interviewpartner.dto.CustomUserDetails;
-import com.vip.interviewpartner.service.TokenService;
+import com.vip.interviewpartner.domain.member.entity.Member;
+import com.vip.interviewpartner.domain.member.dto.CustomUserDetails;
+import com.vip.interviewpartner.domain.member.service.TokenService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -2,10 +2,11 @@ package com.vip.interviewpartner.service;
 
 import com.vip.interviewpartner.common.exception.CustomException;
 import com.vip.interviewpartner.common.exception.ErrorCode;
-import com.vip.interviewpartner.domain.Tag;
-import com.vip.interviewpartner.dto.TagCreateRequest;
-import com.vip.interviewpartner.dto.TagResponse;
-import com.vip.interviewpartner.repository.TagRepository;
+import com.vip.interviewpartner.domain.tag.entity.Tag;
+import com.vip.interviewpartner.domain.tag.service.TagService;
+import com.vip.interviewpartner.domain.tag.dto.request.TagCreateRequest;
+import com.vip.interviewpartner.domain.tag.dto.response.TagResponse;
+import com.vip.interviewpartner.domain.tag.repository.TagRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
