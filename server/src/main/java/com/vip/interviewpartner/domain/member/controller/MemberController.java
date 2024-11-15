@@ -1,5 +1,6 @@
 package com.vip.interviewpartner.domain.member.controller;
 
+import com.vip.interviewpartner.common.aop.Login;
 import com.vip.interviewpartner.common.dto.ApiCommonResponse;
 import com.vip.interviewpartner.common.dto.PageCustom;
 import com.vip.interviewpartner.domain.interview.dto.response.MemberInterviewLookupResponse;
@@ -117,8 +118,8 @@ public class MemberController {
     )
     @GetMapping("/me")
     @ResponseStatus(HttpStatus.OK)
-    public ApiCommonResponse<MemberInfoResponse> getMemberInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        MemberInfoResponse memberInfoResponse = memberService.getMemberInfo(customUserDetails.getMemberId());
+    public ApiCommonResponse<MemberInfoResponse> getMemberInfo(@Login Long memberId) {
+        MemberInfoResponse memberInfoResponse = memberService.getMemberInfo(memberId);
         return ApiCommonResponse.successResponse(memberInfoResponse);
     }
 
@@ -139,9 +140,9 @@ public class MemberController {
     )
     @PatchMapping("/me")
     @ResponseStatus(HttpStatus.OK)
-    public ApiCommonResponse<?> updateMemberInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+    public ApiCommonResponse<?> updateMemberInfo(@Login Long memberId,
                                                  @Valid @RequestBody MemberUpdateRequest request) {
-        memberService.updateInfo(customUserDetails.getMemberId(), request);
+        memberService.updateInfo(memberId, request);
         return ApiCommonResponse.successWithNoContent();
     }
 
@@ -162,8 +163,8 @@ public class MemberController {
     )
     @PostMapping("/me/resumes")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiCommonResponse<?> uploadResume(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestParam("file") MultipartFile file) {
-        resumeUploadService.upload(customUserDetails.getMemberId(), file);
+    public ApiCommonResponse<?> uploadResume(@Login Long memberId, @RequestParam("file") MultipartFile file) {
+        resumeUploadService.upload(memberId, file);
         return ApiCommonResponse.successWithNoContent();
     }
 
@@ -182,8 +183,8 @@ public class MemberController {
     )
     @GetMapping("/me/resumes")
     @ResponseStatus(HttpStatus.OK)
-    public ApiCommonResponse<List<ResumeLookupResponse>> getResumes(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        List<ResumeLookupResponse> resumes = resumeService.getResumesByMemberId(customUserDetails.getMemberId());
+    public ApiCommonResponse<List<ResumeLookupResponse>> getResumes(@Login Long memberId) {
+        List<ResumeLookupResponse> resumes = resumeService.getResumesByMemberId(memberId);
         return ApiCommonResponse.successResponse(resumes);
     }
 
@@ -201,9 +202,9 @@ public class MemberController {
     )
     @GetMapping("/me/rooms")
     @ResponseStatus(HttpStatus.OK)
-    public ApiCommonResponse<PageCustom<ParticipationResponse>> getParticipation(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+    public ApiCommonResponse<PageCustom<ParticipationResponse>> getParticipation(@Login Long memberId,
                                                                                  @Parameter(description = "페이지 기본값: page=0, size=10, sort=joinDate, direction=DESC") @PageableDefault(size = 10, sort = "joinDate", direction = Sort.Direction.DESC) Pageable pageable) {
-        PageCustom<ParticipationResponse> participationResponses = participantLookupService.getParticipation(customUserDetails.getMemberId(), pageable);
+        PageCustom<ParticipationResponse> participationResponses = participantLookupService.getParticipation(memberId, pageable);
         return ApiCommonResponse.successResponse(participationResponses);
     }
 
@@ -221,9 +222,9 @@ public class MemberController {
     )
     @GetMapping("/me/interviews")
     @ResponseStatus(HttpStatus.OK)
-    public ApiCommonResponse<PageCustom<MemberInterviewLookupResponse>> getInterview(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+    public ApiCommonResponse<PageCustom<MemberInterviewLookupResponse>> getInterview(@Login Long memberId,
                                                                                      @Parameter(description = "페이지 기본값: page=0, size=10, sort=createDate, direction=DESC") @PageableDefault(size = 10, sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable) {
-        PageCustom<MemberInterviewLookupResponse> memberInterviewLookupResponses = interviewService.getInterviewByMemberId(customUserDetails.getMemberId(), pageable);
+        PageCustom<MemberInterviewLookupResponse> memberInterviewLookupResponses = interviewService.getInterviewByMemberId(memberId, pageable);
         return ApiCommonResponse.successResponse(memberInterviewLookupResponses);
     }
 

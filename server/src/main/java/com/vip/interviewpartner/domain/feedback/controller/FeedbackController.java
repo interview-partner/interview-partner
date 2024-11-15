@@ -1,7 +1,7 @@
 package com.vip.interviewpartner.domain.feedback.controller;
 
+import com.vip.interviewpartner.common.aop.Login;
 import com.vip.interviewpartner.common.dto.ApiCommonResponse;
-import com.vip.interviewpartner.domain.member.dto.CustomUserDetails;
 import com.vip.interviewpartner.domain.feedback.dto.request.FeedbackCreateRequest;
 import com.vip.interviewpartner.domain.feedback.service.FeedbackCreateService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,7 +12,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +30,6 @@ public class FeedbackController {
     /**
      * 피드백 생성 API입니다.
      *
-     * @param customUserDetails 사용자 인증 정보
      * @param request 피드백 생성 요청 정보를 담은 객체
      * @return ApiCommonResponse.successWithNoContent()
      */
@@ -45,9 +43,9 @@ public class FeedbackController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiCommonResponse<?> createFeedback(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+    public ApiCommonResponse<?> createFeedback(@Login Long memberId,
                                                @Valid @RequestBody FeedbackCreateRequest request) {
-        feedbackCreateService.createFeedback(customUserDetails.getMemberId(), request);
+        feedbackCreateService.createFeedback(memberId, request);
         return ApiCommonResponse.successWithNoContent();
     }
 }

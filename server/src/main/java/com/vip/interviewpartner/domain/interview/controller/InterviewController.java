@@ -1,5 +1,6 @@
 package com.vip.interviewpartner.domain.interview.controller;
 
+import com.vip.interviewpartner.common.aop.Login;
 import com.vip.interviewpartner.common.dto.ApiCommonResponse;
 import com.vip.interviewpartner.domain.interview.dto.request.InterviewCreateRequest;
 import com.vip.interviewpartner.domain.member.dto.CustomUserDetails;
@@ -53,9 +54,9 @@ public class InterviewController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiCommonResponse<Long> createInterview(@AuthenticationPrincipal CustomUserDetails customUserDetails, @Valid @RequestBody InterviewCreateRequest interviewCreateRequest) {
+    public ApiCommonResponse<Long> createInterview(@Login Long memberId, @Valid @RequestBody InterviewCreateRequest interviewCreateRequest) {
 
-        Long InterviewId = interviewCreateService.create(customUserDetails.getMemberId(), interviewCreateRequest);
+        Long InterviewId = interviewCreateService.create(memberId, interviewCreateRequest);
         return ApiCommonResponse.successResponse(InterviewId);
     }
 
@@ -76,8 +77,8 @@ public class InterviewController {
     )
     @GetMapping("/{interviewId}/questions")
     @ResponseStatus(HttpStatus.OK)
-    public ApiCommonResponse<List<QuestionLookupResponse>> getQuestions(@AuthenticationPrincipal CustomUserDetails customUserDetails, @NotNull(message = "인터뷰 아이디는 필수입니다.") @PathVariable Long interviewId) {
-        List<QuestionLookupResponse> questions = questionLookupService.getQuestionsByInterviewId(customUserDetails, interviewId);
+    public ApiCommonResponse<List<QuestionLookupResponse>> getQuestions(@Login Long memberId, @NotNull(message = "인터뷰 아이디는 필수입니다.") @PathVariable Long interviewId) {
+        List<QuestionLookupResponse> questions = questionLookupService.getQuestionsByInterviewId(memberId, interviewId);
         return ApiCommonResponse.successResponse(questions);
     }
 
@@ -97,8 +98,8 @@ public class InterviewController {
     )
     @GetMapping("/{interviewId}")
     @ResponseStatus(HttpStatus.OK)
-    public ApiCommonResponse<InterviewLookupResponse> getInterview(@AuthenticationPrincipal CustomUserDetails customUserDetails, @NotNull(message = "인터뷰 아이디는 필수입니다.") @PathVariable Long interviewId) {
-        InterviewLookupResponse interviewLookupResponse = interviewService.getInterviewById(customUserDetails.getMemberId(), interviewId);
+    public ApiCommonResponse<InterviewLookupResponse> getInterview(@Login Long memberId, @NotNull(message = "인터뷰 아이디는 필수입니다.") @PathVariable Long interviewId) {
+        InterviewLookupResponse interviewLookupResponse = interviewService.getInterviewById(memberId, interviewId);
         return ApiCommonResponse.successResponse(interviewLookupResponse);
     }
 

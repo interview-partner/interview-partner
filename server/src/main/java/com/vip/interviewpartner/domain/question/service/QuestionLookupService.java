@@ -26,8 +26,8 @@ public class QuestionLookupService {
      * @param interviewId 이력서를 조회할 회원의 ID
      * @return 주어진 인터뷰 ID에 해당하는 질문 목록을 담은 QuestionLookupResponse 리스트
      */
-    public List<QuestionLookupResponse> getQuestionsByInterviewId(CustomUserDetails customUserDetails, Long interviewId) {
-        interviewService.validateInterviewOwnership(customUserDetails.getMemberId(), interviewId);
+    public List<QuestionLookupResponse> getQuestionsByInterviewId(Long memberId, Long interviewId) {
+        interviewService.validateInterviewOwnership(memberId, interviewId);
         List<Question> questions = questionRepository.findByInterviewId(interviewId);
         if (questions.isEmpty()) {
             throw new CustomException(ErrorCode.INVALID_REQUEST);

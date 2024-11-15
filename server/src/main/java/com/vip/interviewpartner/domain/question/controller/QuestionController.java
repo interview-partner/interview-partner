@@ -1,6 +1,7 @@
 package com.vip.interviewpartner.domain.question.controller;
 
 
+import com.vip.interviewpartner.common.aop.Login;
 import com.vip.interviewpartner.common.dto.ApiCommonResponse;
 import com.vip.interviewpartner.domain.question.dto.request.AnswerSaveRequest;
 import com.vip.interviewpartner.domain.question.dto.response.AudioAnswerResponse;
@@ -46,11 +47,11 @@ public class QuestionController {
     )
     @PostMapping("/{questionId}/answers")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiCommonResponse<?> saveAnswer(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+    public ApiCommonResponse<?> saveAnswer(@Login Long memberId,
                                            @NotNull(message = "질문 아이디는 필수입니다.") @PathVariable Long questionId,
                                            @Valid @RequestBody AnswerSaveRequest answerSaveRequest) {
 
-        answerSaveService.saveAnswer(customUserDetails.getMemberId(), questionId, answerSaveRequest);
+        answerSaveService.saveAnswer(memberId, questionId, answerSaveRequest);
         return ApiCommonResponse.successWithNoContent();
     }
 
@@ -66,10 +67,10 @@ public class QuestionController {
     )
     @PostMapping("/{questionId}/audio-answers")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiCommonResponse<AudioAnswerResponse> saveAudioAnswer(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+    public ApiCommonResponse<AudioAnswerResponse> saveAudioAnswer(@Login Long memberId,
                                                                   @NotNull(message = "질문 아이디는 필수입니다.") @PathVariable Long questionId,
                                                                   @RequestParam("file") MultipartFile audioFile) {
-        AudioAnswerResponse audioAnswerResponse = answerSaveService.saveAudioAnswer(customUserDetails.getMemberId(), questionId, audioFile);
+        AudioAnswerResponse audioAnswerResponse = answerSaveService.saveAudioAnswer(memberId, questionId, audioFile);
         return ApiCommonResponse.successResponse(audioAnswerResponse);
     }
 
@@ -89,9 +90,9 @@ public class QuestionController {
     )
     @PostMapping("/{questionId}/tails")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiCommonResponse<TailQuestionResponse> createTailQuestion(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long questionId) {
+    public ApiCommonResponse<TailQuestionResponse> createTailQuestion(@Login Long memberId, @PathVariable Long questionId) {
 
-        TailQuestionResponse tailQuestionResponse = tailQuestionCreateService.createTailQuestion(customUserDetails.getMemberId(), questionId);
+        TailQuestionResponse tailQuestionResponse = tailQuestionCreateService.createTailQuestion(memberId, questionId);
         return ApiCommonResponse.successResponse(tailQuestionResponse);
     }
 }

@@ -1,5 +1,6 @@
 package com.vip.interviewpartner.domain.room.controller;
 
+import com.vip.interviewpartner.common.aop.Login;
 import com.vip.interviewpartner.common.dto.ApiCommonResponse;
 import com.vip.interviewpartner.domain.room.enitty.RoomStatus;
 import com.vip.interviewpartner.domain.member.dto.CustomUserDetails;
@@ -57,8 +58,8 @@ public class RoomController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiCommonResponse<RoomCreateResponse> createRoom(@AuthenticationPrincipal CustomUserDetails customUserDetails, @Valid @RequestBody RoomCreateRequest roomCreateRequest) {
-        RoomCreateResponse roomCreateResponse = roomCreateService.create(customUserDetails.getMemberId(), roomCreateRequest);
+    public ApiCommonResponse<RoomCreateResponse> createRoom(@Login Long memberId, @Valid @RequestBody RoomCreateRequest roomCreateRequest) {
+        RoomCreateResponse roomCreateResponse = roomCreateService.create(memberId, roomCreateRequest);
         return ApiCommonResponse.successResponse(roomCreateResponse);
     }
 
@@ -94,10 +95,10 @@ public class RoomController {
     )
     @PostMapping("/{roomId}/connections")
     @ResponseStatus(HttpStatus.OK)
-    public ApiCommonResponse<RoomEnterResponse> createConnection(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+    public ApiCommonResponse<RoomEnterResponse> createConnection(@Login Long memberId,
                                                                   @PathVariable Long roomId,
                                                                   @RequestBody RoomEnterRequest roomEnterRequest) {
-        String token = roomEnterService.enter(customUserDetails.getMemberId(), roomId, roomEnterRequest.getResumeId());
+        String token = roomEnterService.enter(memberId, roomId, roomEnterRequest.getResumeId());
         RoomEnterResponse roomEnterResponse = new RoomEnterResponse(token);
         return ApiCommonResponse.successResponse(roomEnterResponse);
     }

@@ -1,5 +1,6 @@
 package com.vip.interviewpartner.domain.room_participant.controller;
 
+import com.vip.interviewpartner.common.aop.Login;
 import com.vip.interviewpartner.common.dto.ApiCommonResponse;
 import com.vip.interviewpartner.domain.member.dto.CustomUserDetails;
 import com.vip.interviewpartner.domain.feedback.dto.response.FeedbackResponse;
@@ -44,9 +45,9 @@ public class ParticipantController {
             }
     )
     @GetMapping("/{participantId}")
-    public ApiCommonResponse<ParticipantDetailsResponse> getParticipantDetails(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+    public ApiCommonResponse<ParticipantDetailsResponse> getParticipantDetails(@Login Long memberId,
                                                                                @PathVariable Long participantId) {
-        ParticipantDetailsResponse roomParticipantDetails = roomParticipantService.findRoomParticipantDetails(customUserDetails.getMemberId(), participantId);
+        ParticipantDetailsResponse roomParticipantDetails = roomParticipantService.findRoomParticipantDetails(memberId, participantId);
         return ApiCommonResponse.successResponse(roomParticipantDetails);
     }
 
@@ -67,9 +68,9 @@ public class ParticipantController {
             }
     )
     @GetMapping("/{participantId}/feedbacks")
-    public ApiCommonResponse<List<FeedbackResponse>> getParticipantFeedbacks(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+    public ApiCommonResponse<List<FeedbackResponse>> getParticipantFeedbacks(@Login Long memberId,
                                                                              @PathVariable Long participantId) {
-        List<FeedbackResponse> feedbacks = feedbackService.findFeedbacksByReceiverId(customUserDetails.getMemberId(), participantId);
+        List<FeedbackResponse> feedbacks = feedbackService.findFeedbacksByReceiverId(memberId, participantId);
         return ApiCommonResponse.successResponse(feedbacks);
     }
 }
