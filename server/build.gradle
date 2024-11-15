@@ -65,7 +65,7 @@ processResources.dependsOn('copySecret')
 
 task copySecret(type: Copy) {
 	from 'src/main/resources/secret'
-	include 'application.yml', 'application-prod.yml', 'application-dev.yml', 'serviceAccountKey.json', 'interview-partner-google-cloud.json'
+	include 'application-prod.yml', 'serviceAccountKey.json', 'interview-partner-google-cloud.json'
 	into 'src/main/resources'
 }
 
