@@ -1,5 +1,8 @@
 package com.vip.interviewpartner.domain.feedback.dto.request;
 
+import com.vip.interviewpartner.domain.feedback.entity.Feedback;
+import com.vip.interviewpartner.domain.room.enitty.Room;
+import com.vip.interviewpartner.domain.room_participant.entity.RoomParticipant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,4 +26,12 @@ public class FeedbackCreateRequest {
     @NotBlank
     @Schema(description = "피드백 내용", example = "전체적으로 답변을 조금 더 구체적으로 하시면 좋을 것 같아요.")
     private String content;
+
+    public Feedback toEntity(RoomParticipant sender, RoomParticipant receiver) {
+        return Feedback.builder()
+                .sender(sender)
+                .receiver(receiver)
+                .content(content)
+                .build();
+    }
 }
