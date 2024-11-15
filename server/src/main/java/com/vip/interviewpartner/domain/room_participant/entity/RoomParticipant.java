@@ -21,8 +21,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
- * 방 참여자 정보를 관리하는 엔티티입니다.
- * 각 참여자는 특정 방, 멤버, 이력서와 연결되어 있으며, 참여 및 퇴장 날짜를 기록합니다.
+ * 방 참여자 정보를 관리하는 엔티티입니다. 각 참여자는 특정 방, 멤버, 이력서와 연결되어 있으며, 참여 및 퇴장 날짜를 기록합니다.
  */
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -60,6 +59,7 @@ public class RoomParticipant extends BaseTimeEntity {
 
     /**
      * 사용자가 방에 입장한 시각을 설정합니다.
+     *
      * @param joinDate 입장 시각
      */
     public void join(LocalDateTime joinDate) {
@@ -68,9 +68,18 @@ public class RoomParticipant extends BaseTimeEntity {
 
     /**
      * 사용자가 방에 퇴장한 시각을 설정합니다.
+     *
      * @param leaveDate 퇴장 시각
      */
     public void leave(LocalDateTime leaveDate) {
         this.leaveDate = leaveDate;
+    }
+
+    public boolean isEqualsRoom(Room otherRoom) {
+        return this.room.equals(otherRoom);
+    }
+
+    public boolean isEqualsMember(Member otherMember) {
+        return this.member.equals(otherMember);
     }
 }
