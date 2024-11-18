@@ -40,6 +40,7 @@ public enum ErrorCode {
     ROOM_CLOSED(410, "방이 종료되었습니다."),
     INVALID_FILE_TYPE(415, "PDF 파일만 업로드 가능합니다."),
     INVALID_AUDIO_FILE_TYPE(415, "WAV 파일만 업로드 가능합니다."),
+    WEBHOOK_TYPE_MISMATCH(422, "Webhook 이벤트 타입이 일치하지 않습니다."),
     SERVER_ERROR(500, "서버에 에러가 발생하였습니다."),
     STT_PROCESSING_ERROR(500, "STT 처리 중 오류가 발생했습니다."),
     OPENVIDU_SERVER_ERROR(500, "OpenVidu 서버에 에러가 발생하였습니다.");

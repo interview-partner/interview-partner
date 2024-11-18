@@ -25,5 +25,5 @@ COPY --from=builder /app/build/libs/*.jar app.jar
 # Expose the port the application runs on
 EXPOSE 8080
 
-# Run the application with the specified profile, default to 'dev' if not provided
-ENTRYPOINT ["sh", "-c", "java -jar -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-dev} app.jar"]
+# Run the application with the specified profile
+ENTRYPOINT ["sh", "-c", "java -jar -Dspring.profiles.active=prod -Duser.timezone=Asia/Seoul app.jar"]

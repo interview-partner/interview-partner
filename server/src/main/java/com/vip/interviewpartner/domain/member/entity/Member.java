@@ -72,4 +72,8 @@ public class Member extends BaseTimeEntity {
     public void updateInfo(MemberUpdateRequest request) {
         this.nickname = request.getNickname();
     }
+
+    public boolean isMe(Long memberId) {
+        return this.id.equals(memberId);
+    }
 }

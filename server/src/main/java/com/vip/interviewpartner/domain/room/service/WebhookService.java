@@ -7,11 +7,10 @@ import static com.vip.interviewpartner.common.constants.Constants.SERVER_DATA;
 import static com.vip.interviewpartner.common.constants.Constants.SESSION_ID;
 import static com.vip.interviewpartner.common.constants.Constants.TYPE;
 
-import com.vip.interviewpartner.common.constants.WebhookEvent;
+import com.vip.interviewpartner.domain.openvidu.entity.WebhookEvent;
 import com.vip.interviewpartner.common.exception.CustomException;
 import com.vip.interviewpartner.common.exception.ErrorCode;
 import com.vip.interviewpartner.common.util.DateTimeUtil;
-import com.vip.interviewpartner.domain.member.service.MemberService;
 import com.vip.interviewpartner.domain.message.entity.Message;
 import com.vip.interviewpartner.domain.room_participant.entity.RoomParticipant;
 import com.vip.interviewpartner.domain.room.dto.response.RoomChatDTO;
@@ -36,9 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @Slf4j
 public class WebhookService {
-
-    private final MemberService memberService;
-    private final RoomService roomService;
     private final RoomRepository roomRepository;
     private final RoomParticipantRepository roomParticipantRepository;
     private final MessageRepository messageRepository;
@@ -64,7 +60,7 @@ public class WebhookService {
     @Transactional
     public void handleWebhookEvent(Map<String, Object> payload) {
         String eventType = payload.get(EVENT).toString();
-        switch (WebhookEvent.findByEventType(eventType)) {
+        switch (WebhookEvent.from(eventType)) {
             case SESSION_DESTROYED:
                 handleSessionDestroyed(payload);
                 break;
