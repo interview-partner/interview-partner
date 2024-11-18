@@ -1,5 +1,7 @@
-package com.vip.interviewpartner.common.constants;
+package com.vip.interviewpartner.domain.openvidu.entity;
 
+import com.vip.interviewpartner.common.exception.CustomException;
+import com.vip.interviewpartner.common.exception.ErrorCode;
 import java.util.Arrays;
 
 /**
@@ -10,8 +12,7 @@ public enum WebhookEvent {
     SESSION_DESTROYED("sessionDestroyed"),
     PARTICIPANT_JOINED("participantJoined"),
     PARTICIPANT_LEFT("participantLeft"),
-    SIGNAL_SENT("signalSent"),
-    EMPTY("없음");
+    SIGNAL_SENT("signalSent");
 
     private final String eventType;
 
@@ -30,10 +31,10 @@ public enum WebhookEvent {
      * @param eventType 이벤트 타입을 나타내는 문자열
      * @return 주어진 이벤트 타입에 해당하는 WebhookEvent 열거형 상수
      */
-    public static WebhookEvent findByEventType(String eventType) {
+    public static WebhookEvent from(String eventType) {
         return Arrays.stream(WebhookEvent.values())
                 .filter(event -> event.getEventType().equals(eventType))
                 .findFirst()
-                .orElse(EMPTY);
+                .orElseThrow(() -> new CustomException(ErrorCode.WEBHOOK_TYPE_MISMATCH));
     }
 }
