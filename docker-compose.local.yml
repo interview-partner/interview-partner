@@ -16,7 +16,6 @@ services:
 
     volumes:
       - mysql:/var/lib/mysql
-      # - ./:/docker-entrypoint-initdb.d
 
     networks:
       - my-network
@@ -49,7 +48,7 @@ services:
       DOMAIN_OR_PUBLIC_IP: localhost
       OPENVIDU_WEBHOOK: true
       OPENVIDU_WEBHOOK_ENDPOINT: http://host.docker.internal:8080/webhook
-      OPENVIDU_WEBHOOK_HEADERS: '["Authorization: Basic cm9vdDpyb290MTIzNA=="]'
+      OPENVIDU_WEBHOOK_HEADERS: '["Authorization: Basic T1BFTlZJRFVBUFA6TVlfU0VDUkVU"]'
       OPENVIDU_WEBHOOK_EVENTS: '["sessionDestroyed","participantJoined", "participantLeft", "signalSent"]'
     networks:
       - my-network
