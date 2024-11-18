@@ -35,9 +35,11 @@ public class OpenViduWebhookListener {
     @Transactional
     public void receiveMessage(String message) {
         try {
+            log.info("Received webhook message: {}", message);
             JsonNode rootNode = objectMapper.readTree(message);
-            String eventType = rootNode.path("event").asText();
+            String eventType = rootNode.path(Constants.EVENT).asText();
             WebhookEvent webhookEvent = WebhookEvent.from(eventType);
+            log.info("Parsed event type: {}", eventType);
             switch (webhookEvent) {
                 case SESSION_DESTROYED -> handleSessionDestroyed(rootNode);
                 case PARTICIPANT_JOINED -> handleParticipantJoined(rootNode);

@@ -23,6 +23,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 /**
  * 모의면접방을 관리하는 엔티티입니다.
@@ -31,6 +32,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@DynamicUpdate
 @EqualsAndHashCode(of = "id")
 public class Room extends BaseTimeEntity {
     @Id
