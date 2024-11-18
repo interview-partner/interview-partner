@@ -40,7 +40,7 @@ public class InterviewCreateService {
      * @param interviewCreateRequest 프론트 단에서 받은 aiInterviewRequest
      * @return Interview_id를 반환
      */
-    @Transactional(readOnly = false)
+    @Transactional
     public Long create(Long memberId, InterviewCreateRequest interviewCreateRequest) {
         // DB 이력서 정보저장
         Member member = memberRepository.findById(memberId)
