@@ -17,7 +17,7 @@ import com.vip.interviewpartner.domain.room_participant.repository.RoomParticipa
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
+//import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +31,7 @@ public class OpenViduWebhookListener {
     private final RoomParticipantRepository roomParticipantRepository;
     private final MessageRepository messageRepository;
 
-    @RabbitListener(queues = "q.openvidu")
+//    @RabbitListener(queues = "q.openvidu")
     @Transactional
     public void receiveMessage(String message) {
         try {
