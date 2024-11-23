@@ -35,7 +35,7 @@ public class ResumeUploadService {
      * @param memberId 이력서를 업로드하려는 member의 Id 입니다.
      * @param file     PDF 파일을 말합니다.
      */
-    @Transactional(readOnly = false)
+    @Transactional
     public void upload(Long memberId, MultipartFile file) {
         String exportedText = exportTextService.exportText(file);
         String originalName = file.getOriginalFilename();
@@ -51,10 +51,10 @@ public class ResumeUploadService {
         } catch (IOException e) {
             throw new CustomException(UPLOAD_FAILURE);
         }
-
+        String cloudFrontPdfUrl = s3UploadService.generateCloudFrontUrl(pdfFileKey);
         // DB 이력서 정보저장
         Member member = memberService.getMemberById(memberId);
-        resumeRepository.save(new Resume(member, originalName, storedFileName, pdfFileKey, txtFileKey));
+        resumeRepository.save(new Resume(member, originalName, storedFileName, cloudFrontPdfUrl, txtFileKey));
     }
 
 }

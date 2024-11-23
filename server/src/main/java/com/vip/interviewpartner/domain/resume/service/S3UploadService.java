@@ -1,35 +1,36 @@
 package com.vip.interviewpartner.domain.resume.service;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.vip.interviewpartner.common.exception.CustomException;
+import com.vip.interviewpartner.common.exception.ErrorCode;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import com.vip.interviewpartner.common.exception.CustomException;
-import com.vip.interviewpartner.common.exception.ErrorCode;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import com.amazonaws.services.s3.AmazonS3Client;
 
 /**
  * S3UploadService는 Amazon S3에 파일을 업로드하는 서비스입니다.
  */
 @Service
+@RequiredArgsConstructor
 public class S3UploadService {
-
-    @Autowired
-    private AmazonS3Client amazonS3Client;
+    private final AmazonS3Client amazonS3Client;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
+    @Value("${cloud.aws.cloudfront.domain}")
+    private String cloudFrontDomain;
+
     /**
      * PDF 파일을 업로드합니다.
      *
-     * @param file 업로드할 PDF 파일
+     * @param file            업로드할 PDF 파일
      * @param originalFileKey S3에 저장할 파일 키
      * @throws IOException 파일 업로드 실패 시 예외 발생
      */
@@ -46,7 +47,7 @@ public class S3UploadService {
     /**
      * 텍스트 파일을 업로드합니다.
      *
-     * @param tempFile 업로드할 텍스트 파일의 경로
+     * @param tempFile        업로드할 텍스트 파일의 경로
      * @param originalFileKey S3에 저장할 파일 키
      * @throws IOException 파일 업로드 실패 시 예외 발생
      */
@@ -105,5 +106,15 @@ public class S3UploadService {
         File convFile = new File(file.getOriginalFilename());
         Files.write(convFile.toPath(), file.getBytes());
         return convFile;
+    }
+
+    /**
+     * CloudFront URL을 생성합니다.
+     *
+     * @param fileKey S3에 저장된 파일의 키
+     * @return CloudFront URL
+     */
+    public String generateCloudFrontUrl(String fileKey) {
+        return String.format("%s/%s", cloudFrontDomain, fileKey);
     }
 }
