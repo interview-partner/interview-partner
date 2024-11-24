@@ -71,27 +71,6 @@ public class OpenViduService {
     }
 
     /**
-     * 특정 세션의 연결 수를 반환합니다.
-     *
-     * @param sessionId 조회할 세션의 ID
-     * @return 세션에 연결된 연결 수
-     * @throws CustomException 서버 오류가 발생한 경우 발생
-     */
-    public int getSessionConnectionCount(String sessionId) {
-        Session session = openVidu.getActiveSession(sessionId);
-        try {
-            if (session != null) {
-                session.fetch();
-                return session.getConnections().size();
-            } else {
-                return 0;
-            }
-        } catch (OpenViduJavaClientException | OpenViduHttpException e) {
-            throw handleOpenViduException(e);
-        }
-    }
-
-    /**
      * 주어진 세션 ID와 사용자 데이터를 기반으로 OpenVidu 토큰을 생성합니다.
      *
      * @param sessionId OpenVidu 세션 ID

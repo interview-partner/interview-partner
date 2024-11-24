@@ -1,10 +1,11 @@
 package com.vip.interviewpartner.domain.room.service;
 
-import com.vip.interviewpartner.domain.room.enitty.Room;
-import com.vip.interviewpartner.domain.room.enitty.RoomStatus;
 import com.vip.interviewpartner.common.dto.PageCustom;
 import com.vip.interviewpartner.domain.room.dto.response.RoomResponseDTO;
+import com.vip.interviewpartner.domain.room.enitty.Room;
+import com.vip.interviewpartner.domain.room.enitty.RoomStatus;
 import com.vip.interviewpartner.domain.room.repository.RoomRepository;
+import com.vip.interviewpartner.domain.room_participant.repository.RoomParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class RoomLookupService {
 
-    private final OpenViduService openViduService;
+    private final RoomParticipantRepository roomParticipantRepository;
     private final RoomRepository roomRepository;
 
     /**
@@ -31,10 +32,15 @@ public class RoomLookupService {
      */
     public PageCustom<RoomResponseDTO> getRoomsByStatus(RoomStatus roomStatus, Pageable pageable) {
         Page<Room> rooms = roomRepository.findByStatus(roomStatus, pageable);
-        Page<RoomResponseDTO> page = rooms.map(room ->
-                RoomResponseDTO.of(room, roomStatus == RoomStatus.OPEN ? openViduService.getSessionConnectionCount(room.getSessionId()) : 0)
-        );
-
+        Page<RoomResponseDTO> page = rooms.map(room -> RoomResponseDTO.of(room, getParticipantCount(roomStatus, room))); //TODO: 쿼리 개선 필요
         return new PageCustom<>(page);
+    }
+
+    private int getParticipantCount(RoomStatus roomStatus, Room room) {
+        int participantCount = 0;
+        if (roomStatus == RoomStatus.OPEN) {
+            participantCount = roomParticipantRepository.countByRoomIdAndCurrentlyJoined(room.getId());
+        }
+        return participantCount;
     }
 }
