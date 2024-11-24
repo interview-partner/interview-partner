@@ -7,8 +7,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.vip.interviewpartner.common.exception.CustomException;
-import com.vip.interviewpartner.dto.MemberJoinRequest;
-import com.vip.interviewpartner.repository.MemberRepository;
+import com.vip.interviewpartner.domain.member.service.MemberJoinService;
+import com.vip.interviewpartner.domain.member.service.MemberService;
+import com.vip.interviewpartner.domain.member.dto.request.MemberJoinRequest;
+import com.vip.interviewpartner.domain.member.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

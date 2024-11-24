@@ -3,7 +3,7 @@ package com.vip.interviewpartner.common.exception;
 import static com.vip.interviewpartner.common.exception.ErrorCode.SERVER_ERROR;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vip.interviewpartner.common.ApiCommonResponse;
+import com.vip.interviewpartner.common.dto.ApiCommonResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

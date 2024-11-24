@@ -3,12 +3,10 @@ package com.vip.interviewpartner.common.jwt;
 import static com.vip.interviewpartner.common.constants.Constants.ACCESS;
 import static com.vip.interviewpartner.common.constants.Constants.AUTHORIZATION_HEADER;
 import static com.vip.interviewpartner.common.constants.Constants.BEARER_TOKEN_PREFIX;
-import static com.vip.interviewpartner.common.exception.ErrorCode.INVALID_REQUEST;
 
-import com.vip.interviewpartner.common.exception.CustomException;
-import com.vip.interviewpartner.domain.Member;
-import com.vip.interviewpartner.domain.Role;
-import com.vip.interviewpartner.dto.CustomUserDetails;
+import com.vip.interviewpartner.domain.member.entity.Member;
+import com.vip.interviewpartner.domain.member.entity.Role;
+import com.vip.interviewpartner.domain.member.dto.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

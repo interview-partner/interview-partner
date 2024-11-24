@@ -3,7 +3,8 @@ package com.vip.interviewpartner.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import com.vip.interviewpartner.repository.MemberRepository;
+import com.vip.interviewpartner.domain.member.repository.MemberRepository;
+import com.vip.interviewpartner.domain.member.service.CustomOAuth2UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

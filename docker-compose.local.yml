@@ -1,87 +1,61 @@
 services:
-  db:
-    container_name: db-container-local
-    build:
-      context: ./db
-      dockerfile: Dockerfile
+  mysql:
+    image: mysql:8.0.36
+
     restart: always
+
+    container_name: local-mysql-container
+
     ports:
-      - 3306:3306
+      - 3308:3306
+
     environment:
-      TZ: "Asia/Seoul"
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_DATABASE: interviewpartner
+      TZ: Asia/Seoul
+
     volumes:
-      - db-local:/var/lib/mysql
+      - mysql:/var/lib/mysql
+
+    networks:
+      - my-network
+
     command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
       - --default-authentication-plugin=mysql_native_password
       - --log-error-verbosity=1
-    networks:
-      - network
+
   redis:
-    container_name: redis-container-local
-    image: redis
+    image: redis:7.2.4
     restart: always
+    container_name: local-redis-container
     ports:
       - 6379:6379
     networks:
-      - network
-    command: redis-server --requirepass root1234
+      - my-network
     volumes:
-        - redis-local:/data
-
-  client:
-    container_name: client-container-local
-    build:
-      context: ./client
-      dockerfile: Dockerfile.local
-    restart: always
-    ports:
-      - 3000:3000
-    networks:
-      - network
-
-  server:
-    container_name: server-container-local
-    build:
-      context: ./server
-      dockerfile: Dockerfile
-    restart: always
-    ports:
-      - 8080:8080
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      SPRING_PROFILES_ACTIVE: dev
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/interviewpartner?useSSL=false&serverTimezone=Asia/Seoul&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_DRIVER: com.mysql.cj.jdbc.Driver
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root1234
-      SPRING_REDIS_HOST: redis
-      SPRING_REDIS_PORT: 6379
-      SPRING_REDIS_PASSWORD: root1234
-      OPENVIDU_URL: http://openvidu:4443
-    networks:
-      - network
+      - redis:/data
 
   openvidu:
-    image: openvidu/openvidu-dev:2.30.0
+    image: openvidu/openvidu-dev:2.29.0
     restart: always
-    container_name: openvidu-container-local
+    container_name: local-openvidu-container
     ports:
       - 4443:4443
     environment:
-      OPENVIDU_SECRET: 5OAgTGJ8TCtilux7lL8x9C5JFyNpUMpPShP5j4zCkQ
+      OPENVIDU_SECRET: zxczxcxztiasdasdsaJFtestMpP1231231234
       DOMAIN_OR_PUBLIC_IP: localhost
       OPENVIDU_WEBHOOK: true
-      OPENVIDU_WEBHOOK_ENDPOINT: http://server-container-local:8080/webhook
-      OPENVIDU_WEBHOOK_HEADERS: '["Authorization: Basic cm9vdDpyb290MTIzNA=="]'
+      OPENVIDU_WEBHOOK_ENDPOINT: http://host.docker.internal:8080/webhook
+      OPENVIDU_WEBHOOK_HEADERS: '["Authorization: Basic T1BFTlZJRFVBUFA6TVlfU0VDUkVU"]'
       OPENVIDU_WEBHOOK_EVENTS: '["sessionDestroyed","participantJoined", "participantLeft", "signalSent"]'
     networks:
-      - network
-
+      - my-network
 volumes:
-  db-local:
-  redis-local:
+  mysql:
+  redis:
 
 networks:
-  network:
+  my-network:
+    driver: bridge
