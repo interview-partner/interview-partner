@@ -47,14 +47,53 @@ services:
       OPENVIDU_SECRET: zxczxcxztiasdasdsaJFtestMpP1231231234
       DOMAIN_OR_PUBLIC_IP: localhost
       OPENVIDU_WEBHOOK: true
-      OPENVIDU_WEBHOOK_ENDPOINT: http://host.docker.internal:8080/webhook
+      OPENVIDU_WEBHOOK_ENDPOINT: http://host.docker.internal:8010/webhook
       OPENVIDU_WEBHOOK_HEADERS: '["Authorization: Basic T1BFTlZJRFVBUFA6TVlfU0VDUkVU"]'
       OPENVIDU_WEBHOOK_EVENTS: '["sessionDestroyed","participantJoined", "participantLeft", "signalSent"]'
     networks:
       - my-network
+
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    restart: always
+    container_name: local-rabbitmq-container
+    ports:
+      - 5672:5672   # AMQP protocol
+      - 15672:15672 # Management console
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin1234
+      RABBITMQ_DEFAULT_VHOST: openvidu
+    networks:
+      - my-network
+    volumes:
+      - ./setup_rabbitmq.sh:/setup_rabbitmq.sh
+      - rabbitmq:/var/lib/rabbitmq
+
+  webhook-service:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    restart: always
+    container_name: webhook-service-container
+    ports:
+      - 8010:8010
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: admin
+      RABBITMQ_PASSWORD: admin1234
+      RABBITMQ_EXCHANGE: openvidu.events
+      RABBITMQ_VHOST: openvidu
+    networks:
+      - my-network
+    depends_on:
+      - rabbitmq
+
 volumes:
   mysql:
   redis:
+  rabbitmq:
 
 networks:
   my-network:
