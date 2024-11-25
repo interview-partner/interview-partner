@@ -12,7 +12,6 @@ import com.vip.interviewpartner.common.jwt.JWTUtil;
 import com.vip.interviewpartner.common.jwt.LoginFilter;
 import com.vip.interviewpartner.common.oauth2.CustomFailureHandler;
 import com.vip.interviewpartner.common.oauth2.CustomSuccessHandler;
-import com.vip.interviewpartner.common.oauth2.FirebaseTokenFilter;
 import com.vip.interviewpartner.domain.member.service.CustomOAuth2UserService;
 import com.vip.interviewpartner.domain.member.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -117,8 +116,6 @@ public class SecurityConfig {
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
         http
                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
-        http
-                .addFilterBefore(new FirebaseTokenFilter(tokenService, customOAuth2UserService), UsernamePasswordAuthenticationFilter.class);
 
         http
                 .addFilterBefore(new ExceptionHandlingFilter(objectMapper), JWTFilter.class);

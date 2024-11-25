@@ -1,5 +1,6 @@
 package com.vip.interviewpartner.domain.member.service;
 
+import static com.vip.interviewpartner.common.constants.Constants.GOOGLE;
 import static com.vip.interviewpartner.common.constants.Constants.KAKAO;
 import static com.vip.interviewpartner.common.constants.Constants.NAVER;
 import static com.vip.interviewpartner.common.exception.ErrorCode.DUPLICATE_EMAIL;
@@ -7,11 +8,12 @@ import static com.vip.interviewpartner.common.exception.ErrorCode.INVALID_REQUES
 import static com.vip.interviewpartner.common.exception.ErrorCode.UNSUPPORTED_SOCIAL_MEDIA;
 
 import com.vip.interviewpartner.common.exception.CustomException;
-import com.vip.interviewpartner.domain.member.entity.Member;
 import com.vip.interviewpartner.domain.member.dto.CustomUserDetails;
+import com.vip.interviewpartner.domain.member.dto.GoogleResponse;
 import com.vip.interviewpartner.domain.member.dto.KakaoResponse;
 import com.vip.interviewpartner.domain.member.dto.NaverResponse;
 import com.vip.interviewpartner.domain.member.dto.OAuth2Response;
+import com.vip.interviewpartner.domain.member.entity.Member;
 import com.vip.interviewpartner.domain.member.repository.MemberRepository;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,8 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * CustomOAuth2UserService는 OAuth2 소셜 로그인을 처리하는 서비스입니다.
- * 사용자 정보를 가져와서 데이터베이스에 저장하거나 기존 사용자를 반환합니다.
+ * CustomOAuth2UserService는 OAuth2 소셜 로그인을 처리하는 서비스입니다. 사용자 정보를 가져와서 데이터베이스에 저장하거나 기존 사용자를 반환합니다.
  */
 @Service
 @Slf4j
@@ -55,14 +56,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             }
             OAuth2Response oAuth2Response;
             switch (registrationId) {
-                case NAVER:
-                    oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
-                    break;
-                case KAKAO:
-                    oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
-                    break;
-                default:
-                    throw new CustomException(UNSUPPORTED_SOCIAL_MEDIA);
+                case NAVER -> oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
+                case KAKAO -> oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
+                case GOOGLE -> oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
+                default -> throw new CustomException(UNSUPPORTED_SOCIAL_MEDIA);
             }
             Member member = findOrCreateMember(oAuth2Response);
             return new CustomUserDetails(member, oAuth2User.getAttributes());
@@ -79,7 +76,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
      */
     @Transactional
     public Member findOrCreateMember(OAuth2Response oAuth2Response) {
-        Optional<Member> optionalMember = memberRepository.findByProviderAndProviderId(oAuth2Response.getProvider(), oAuth2Response.getProviderId());
+        Optional<Member> optionalMember = memberRepository.findByProviderAndProviderId(oAuth2Response.getProvider(),
+                oAuth2Response.getProviderId());
 
         if (optionalMember.isPresent()) {
             log.info("기존에 소셜로그인을 한 경우: {}", oAuth2Response.getProvider());
