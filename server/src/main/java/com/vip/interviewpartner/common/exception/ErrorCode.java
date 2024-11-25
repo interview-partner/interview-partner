@@ -19,7 +19,6 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(400, "유효하지 않은 멤버입니다."),
     ROOM_PARTICIPANT_NOT_FOUND(400, "유효하지 않은 방 참가자입니다."),
     UNSUPPORTED_SOCIAL_MEDIA(400, "지원하지 않는 소셜 미디어입니다."),
-    INVALID_FIREBASE_ID_TOKEN(400, "유효하지 않는 Firebase 토큰입니다."),
     QUESTION_NOT_FOUND(400, "유효하지 않는 질문입니다."),
     INTERVIEW_NOT_FOUND(400, "유효하지 않는 인터뷰 입니다."),
     AUDIO_FILE_TOO_LONG(400, "1분 이상의 파일은 업로드할 수 없습니다."),
