@@ -1,6 +1,5 @@
 import api from './axiosConfig';
 import { config } from '../config';
-import googleLogin from './googleLoginService';
 
 /**
  * 이메일과 비밀번호를 사용하여 로그인하는 함수
@@ -112,11 +111,7 @@ export const onNaverLogin = () => {
 
 /**
  * 구글 로그인 함수
- * 
- * @param {object} auth - firebase auth 객체
- * @param {function} setLoginError - 로그인 오류 상태 설정 함수
- * @param {function} setShowNotification - 알림 표시 상태 설정 함수
  */
-export const onGoogleLogin = (auth, setLoginError, setShowNotification) => {
-    googleLogin(auth, setLoginError, setShowNotification);
+export const onGoogleLogin = () => {
+    window.location.href = `${config.apiUrl}/api/v1/auth/login/oauth2/google`;
 };

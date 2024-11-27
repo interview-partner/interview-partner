@@ -9,6 +9,7 @@ import com.vip.interviewpartner.domain.resume.service.ResumeService;
 import com.vip.interviewpartner.domain.room.enitty.Room;
 import com.vip.interviewpartner.domain.room_participant.entity.RoomParticipant;
 import com.vip.interviewpartner.domain.room.dto.response.RoomEnterUserData;
+import com.vip.interviewpartner.domain.room_participant.repository.RoomParticipantRepository;
 import com.vip.interviewpartner.domain.room_participant.service.RoomParticipantService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ public class RoomEnterService {
     private final RoomService roomService;
     private final OpenViduService openViduService;
     private final RoomParticipantService roomParticipantService;
+    private final RoomParticipantRepository roomParticipantRepository;
 
     /**
      * 사용자가 방에 입장하는 메서드입니다.
@@ -56,7 +58,7 @@ public class RoomEnterService {
      * @throws CustomException 방이 가득 찬 경우 발생
      */
     private void validateRoomCapacity(Room room) {
-        int currentParticipantCount = openViduService.getSessionConnectionCount(room.getSessionId());
+        int currentParticipantCount = roomParticipantRepository.countByRoomIdAndCurrentlyJoined(room.getId());
         if (room.isFull(currentParticipantCount)) {
             throw new CustomException(ErrorCode.ROOM_FULL);
         }

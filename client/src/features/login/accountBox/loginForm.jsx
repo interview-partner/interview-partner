@@ -11,8 +11,6 @@ import AuthContext from "../../../context/AuthContext";
 import kakaoLogo from '../../../assets/images/kakao_logo_round.png';
 import naverLogo from '../../../assets/images/naver_logo_round.png';
 import googleLogo from '../../../assets/images/google_logo_round.png';
-// firebase auth
-import { auth } from "../../../config";
 
 /**
  * 스타일드 컴포넌트 정의
@@ -237,7 +235,7 @@ export function LoginForm() {
           <Marginer direction="horizontal" margin="34px" />
           <NaverButton onClick={onNaverLogin} />
           <Marginer direction="horizontal" margin="34px" />
-          <GoogleButton onClick={() => onGoogleLogin(auth, setLoginError, setShowNotification)} />
+          <GoogleButton onClick={onGoogleLogin} />
         </ButtonsContainer>
         <Marginer direction="vertical" margin={52} />
       </BoxContainer>

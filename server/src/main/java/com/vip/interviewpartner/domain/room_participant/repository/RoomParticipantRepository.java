@@ -39,4 +39,10 @@ public interface RoomParticipantRepository extends JpaRepository<RoomParticipant
             "WHERE rp.id = :id")
     Optional<RoomParticipant> findWithDetailsById(Long id);
 
+    /**
+     * 현재 방에 참여 중인 참가자 수를 반환하는 메서드입니다.
+     */
+    @Query("SELECT COUNT(rp) FROM RoomParticipant rp WHERE rp.room.id = :roomId AND rp.leaveDate IS NULL")
+    int countByRoomIdAndCurrentlyJoined(Long roomId);
+
 }
