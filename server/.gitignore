@@ -26,9 +26,7 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 **/application.properties
-**/application.yml
-**/application-*.yml
-**/serviceAccountKey.json
+**/application-local.yml
 **/interview-partner-google-cloud.json
 
 ### NetBeans ###
