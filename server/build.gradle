@@ -47,6 +47,8 @@ dependencies {
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.flywaydb:flyway-mysql'
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.2.1")
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-parameter-store'
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
@@ -66,7 +68,7 @@ processResources.dependsOn('copySecret')
 
 task copySecret(type: Copy) {
 	from 'src/main/resources/secret'
-	include 'application-prod.yml', 'interview-partner-google-cloud.json'
+	include 'interview-partner-google-cloud.json'
 	into 'src/main/resources'
 }
 
