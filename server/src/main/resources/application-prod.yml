@@ -16,6 +16,7 @@ spring:
       repositories:
         enabled: false
   rabbitmq:
+    addresses: ${RABBITMQ_ADDRESSES}
     host: ${RABBITMQ_HOST}
     port: ${RABBITMQ_PORT}
     username: ${RABBITMQ_USERNAME}
