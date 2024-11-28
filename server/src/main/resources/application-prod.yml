@@ -120,7 +120,7 @@ gpt:
 google:
   cloud:
     credentials:
-      location: classpath:interview-partner-google-cloud.json
+      encoded: ${GOOGLE_STT_CREDENTIALS}
 
 logging:
   level:
