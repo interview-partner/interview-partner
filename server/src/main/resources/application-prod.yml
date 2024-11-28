@@ -24,6 +24,13 @@ spring:
     virtual-host: ${RABBITMQ_VIRTUAL_HOST}
     ssl:
       enabled: true
+  ai:
+    openai:
+      api-key: ${GPT_KEY}
+      chat:
+        options:
+          model: gpt-4o-mini
+          temperature: 0.7
   servlet:
     multipart:
       max-file-size: 20MB
