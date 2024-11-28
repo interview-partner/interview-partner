@@ -2,6 +2,7 @@ package com.vip.interviewpartner.domain.question.entity;
 
 import com.vip.interviewpartner.domain.base.BaseCreateDateEntity;
 import com.vip.interviewpartner.domain.interview.entity.Interview;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,6 +23,8 @@ import lombok.Setter;
  */
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Getter
 public class Question extends BaseCreateDateEntity {
     @Id
@@ -35,19 +40,17 @@ public class Question extends BaseCreateDateEntity {
     @Setter
     private Interview interview;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
-    private String modelAnswer;
 
     public Question(Interview interview, String content){
         this.interview = interview;
         this.content = content;
-        this.modelAnswer = "tmp";
     }
 
     public Question(Interview interview, String content, Question parent){
         this.interview = interview;
         this.parent = parent;
         this.content = content;
-        this.modelAnswer = "tmp";
     }
 }

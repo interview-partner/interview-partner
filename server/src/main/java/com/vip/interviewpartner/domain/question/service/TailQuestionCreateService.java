@@ -3,8 +3,8 @@ package com.vip.interviewpartner.domain.question.service;
 import com.vip.interviewpartner.common.exception.CustomException;
 import com.vip.interviewpartner.common.exception.ErrorCode;
 import com.vip.interviewpartner.domain.interview.entity.Interview;
-import com.vip.interviewpartner.domain.question.entity.Question;
 import com.vip.interviewpartner.domain.question.dto.response.TailQuestionResponse;
+import com.vip.interviewpartner.domain.question.entity.Question;
 import com.vip.interviewpartner.domain.question.repository.QuestionRepository;
 import com.vip.interviewpartner.domain.user_answer.repository.UserAnswerRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class TailQuestionCreateService {
      * @return 꼬리 질문 내용 content
      */
     @Transactional
-    public TailQuestionResponse createTailQuestion(Long memberId, Long questionId){
+    public TailQuestionResponse createTailQuestion(Long memberId, Long questionId) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
 
@@ -42,17 +42,13 @@ public class TailQuestionCreateService {
 
         String answerContent = userAnswerRepository.findContentByQuestionId(questionId);
 
-        String tailQuestionContent = questionCreateService.tailQuestionRequest(question.getContent(), answerContent);
+        Question tailQuestion = questionCreateService.createTailQuestion(question, question.getContent(),
+                answerContent);
 
-        Question tailQuestion = new Question(interview, tailQuestionContent, question);
-        questionRepository.save(tailQuestion);
-
-        return new TailQuestionResponse(tailQuestionContent);
+        return new TailQuestionResponse(tailQuestion.getContent());
     }
 
-
-
-    public void validateInterviewOwnership(Interview interview, Long memberId){
+    private void validateInterviewOwnership(Interview interview, Long memberId) {
         if (!interview.getMember().getId().equals(memberId)) {
             throw new CustomException(ErrorCode.MEMBER_ID_MISMATCH);
         }

@@ -130,7 +130,7 @@ function InputInterviewInfo({ currentIndex, setCurrentIndex }) {
     } catch (error) {
       setError(true); // 에러 상태 설정
       console.error('Failed to create interview room:', error);
-      alert('인터뷰 정보 작성을 마쳐주세요 '); // Display alert message
+      alert('인터뷰 생성 중 문제가 발생했습니다. 다시 시도 주세요!'); // Display alert message
     } finally {
       setIsLoading(false); // 요청이 완료되면 로딩 상태 해제
     }
