@@ -62,6 +62,10 @@ public class Interview extends BaseTimeEntity {
         }
     }
 
+    public void addQuestions(List<Question> questions) {
+        questions.forEach(this::addQuestion);
+    }
+
     public Interview( Member member, Resume resume, String interviewType, String jobAdvertisement, String title ) {
         this.interviewType = interviewType;
         this.jobAdvertisement = jobAdvertisement;
