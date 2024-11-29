@@ -13,7 +13,6 @@ public enum ErrorCode {
     RESUME_NOT_FOUND(400, "유효하지 않은 이력서입니다."),
     S3_READ_FAILURE(400, "S3 객체를 읽는 중 오류가 발생했습니다."),
     S3_DOWNLOAD_FAILURE(400, "S3 객체를 다운받는 중 오류가 발생했습니다."),
-    GPT_REQUEST_FAILURE(400, "GPT API 리퀘스트 중 오류가 발생했습니다."),
     FILE_EMPTY(400, "파일이 존재하지 않습니다."),
     UPLOAD_FAILURE(400, "업로드에 실패했습니다."),
     MEMBER_NOT_FOUND(400, "유효하지 않은 멤버입니다."),
@@ -42,6 +41,7 @@ public enum ErrorCode {
     WEBHOOK_TYPE_MISMATCH(422, "Webhook 이벤트 타입이 일치하지 않습니다."),
     SERVER_ERROR(500, "서버에 에러가 발생하였습니다."),
     STT_PROCESSING_ERROR(500, "STT 처리 중 오류가 발생했습니다."),
+    GPT_REQUEST_FAILURE(500, "GPT API 리퀘스트 중 오류가 발생했습니다."),
     OPENVIDU_SERVER_ERROR(500, "OpenVidu 서버에 에러가 발생하였습니다.");
 
     private final int status;
