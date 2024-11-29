@@ -1,5 +1,6 @@
-package com.vip.interviewpartner.domain.message;
+package com.vip.interviewpartner.domain.message.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vip.interviewpartner.common.constants.Constants;
@@ -8,7 +9,6 @@ import com.vip.interviewpartner.common.exception.ErrorCode;
 import com.vip.interviewpartner.common.util.DateTimeUtil;
 import com.vip.interviewpartner.domain.message.entity.Message;
 import com.vip.interviewpartner.domain.message.repository.MessageRepository;
-import com.vip.interviewpartner.domain.openvidu.entity.WebhookEvent;
 import com.vip.interviewpartner.domain.room.dto.response.RoomChatDTO;
 import com.vip.interviewpartner.domain.room_participant.entity.RoomParticipant;
 import com.vip.interviewpartner.domain.room_participant.repository.RoomParticipantRepository;
@@ -35,20 +35,9 @@ public class MessageSaveService {
      */
     @RabbitListener(queues = CHAT_EVENTS_QUEUE)
     @Transactional
-    public void receiveChatEvent(String message) {
-        try {
-            JsonNode rootNode = objectMapper.readTree(message);
-            String eventType = rootNode.path("event").asText();
-            WebhookEvent webhookEvent = WebhookEvent.from(eventType);
-            if (webhookEvent == WebhookEvent.SIGNAL_SENT) {
-                handleSignalSent(rootNode);
-            } else {
-                log.warn("Unhandled chat event type: {}", eventType);
-            }
-        } catch (Exception e) {
-            log.error("Failed to handle chat event", e);
-            // 필요 시, Dead Letter Queue로 메시지 전송하거나 재시도 로직 추가
-        }
+    public void receiveChatEvent(String message) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(message);
+        handleSignalSent(rootNode);
     }
 
     private void handleSignalSent(JsonNode rootNode) {
