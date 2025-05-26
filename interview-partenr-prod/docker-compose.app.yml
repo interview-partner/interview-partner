@@ -1,0 +1,15 @@
+services:
+  react_app:
+    image: ghcr.io/interview-partner/interview-partner/frontend:0.0.0
+    restart: on-failure
+    network_mode: host
+    environment:
+      - PORT=3000
+
+  spring_app:
+    image: ghcr.io/interview-partner/interview-partner/backend:0.0.0
+    restart: on-failure
+    network_mode: host
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SERVER_PORT=8080

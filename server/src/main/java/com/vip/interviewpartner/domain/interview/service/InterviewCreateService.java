@@ -2,22 +2,20 @@ package com.vip.interviewpartner.domain.interview.service;
 
 import com.vip.interviewpartner.common.exception.CustomException;
 import com.vip.interviewpartner.common.exception.ErrorCode;
-import com.vip.interviewpartner.domain.interview.entity.Interview;
-import com.vip.interviewpartner.domain.member.entity.Member;
-import com.vip.interviewpartner.domain.question.entity.Question;
-import com.vip.interviewpartner.domain.resume.entity.Resume;
 import com.vip.interviewpartner.domain.interview.dto.request.InterviewCreateRequest;
+import com.vip.interviewpartner.domain.interview.entity.Interview;
 import com.vip.interviewpartner.domain.interview.repository.InterviewRepository;
+import com.vip.interviewpartner.domain.member.entity.Member;
 import com.vip.interviewpartner.domain.member.repository.MemberRepository;
-import com.vip.interviewpartner.domain.question.repository.QuestionRepository;
-import com.vip.interviewpartner.domain.resume.repository.ResumeRepository;
+import com.vip.interviewpartner.domain.question.entity.Question;
 import com.vip.interviewpartner.domain.question.service.QuestionCreateService;
+import com.vip.interviewpartner.domain.resume.entity.Resume;
+import com.vip.interviewpartner.domain.resume.repository.ResumeRepository;
 import com.vip.interviewpartner.domain.resume.service.S3DownloadService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * AI 면접을 생성하는 서비스입니다.
@@ -29,14 +27,13 @@ public class InterviewCreateService {
     private final MemberRepository memberRepository;
     private final ResumeRepository resumeRepository;
     private final InterviewRepository interviewRepository;
-    private final QuestionRepository questionRepository;
     private final S3DownloadService s3DownloadService;
     private final QuestionCreateService makingQuestionService;
 
     /**
      * AI 인터뷰를 생성을 처리하는 매서드입니다.
      *
-     * @param memberId jwt 인증통해 받은 memberId
+     * @param memberId               jwt 인증통해 받은 memberId
      * @param interviewCreateRequest 프론트 단에서 받은 aiInterviewRequest
      * @return Interview_id를 반환
      */
@@ -55,14 +52,9 @@ public class InterviewCreateService {
 
         String resumeTxt = s3DownloadService.getFileContent(resume.getTranslatedFilePath());
 
-        List<String> contents = makingQuestionService.make(resumeTxt, interviewCreateRequest.getQuestionNumber());
-
-        for(String content : contents){
-            Question question = new Question(interview, content);
-            questionRepository.save(question);
-            interview.addQuestion(question);
-        }
-
+        List<Question> questions = makingQuestionService.create(interview, resumeTxt,
+                interviewCreateRequest.getQuestionNumber());
+        interview.addQuestions(questions);
         return interview.getId();
     }
 }

@@ -4,6 +4,7 @@ import com.vip.interviewpartner.common.dto.ApiCommonResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * @RestControllerAdvice 어노테이션을 통해 모든 컨트롤러에 대한 예외를 처리합니다.
  */
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     /**
@@ -27,7 +29,9 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiCommonResponse<?>> handleException(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiCommonResponse.errorResponse(e.getMessage()));
+        logException(e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiCommonResponse.errorResponse(e.getMessage()));
     }
 
     /**
@@ -38,11 +42,14 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ApiCommonResponse<?>> handleCustomException(CustomException e) {
-        return ResponseEntity.status(e.getErrorCode().getStatus()).body(ApiCommonResponse.errorResponse(e.errorCode.getMessage()));
+        logException(e);
+        return ResponseEntity.status(e.getErrorCode().getStatus())
+                .body(ApiCommonResponse.errorResponse(e.errorCode.getMessage()));
     }
 
     /**
-     * 입력 값 검증 실패(MethodArgumentNotValidException)를 처리합니다. 이 메서드는 입력 값에 대한 검증 실패 시 발생하는 예외를 캡처하고, 상세한 검증 오류 정보를 클라이언트에 반환합니다.
+     * 입력 값 검증 실패(MethodArgumentNotValidException)를 처리합니다. 이 메서드는 입력 값에 대한 검증 실패 시 발생하는 예외를 캡처하고, 상세한 검증 오류 정보를 클라이언트에
+     * 반환합니다.
      *
      * @param e 발생한 MethodArgumentNotValidException
      * @return 상태 코드 400과 함께 검증 오류의 세부 정보를 포함한 ApiResponse 객체
@@ -50,6 +57,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiCommonResponse<?>> handleValidationExceptions(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
+        logException(e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiCommonResponse.failValidResponse(bindingResult));
     }
 
@@ -62,6 +70,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiCommonResponse<?>> handleConstraintValidationException(ConstraintViolationException e) {
         Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
+        logException(e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiCommonResponse.failValidatedResponse(violations));
+    }
+
+    private void logException(Exception e) {
+        if (e instanceof CustomException) {
+            CustomException customException = (CustomException) e;
+            log.info("ErrorCode: {}, Status: {}, Message: {}", customException.getErrorCode(),
+                    customException.getErrorCode().getStatus(), customException.getErrorCode().getMessage());
+        } else if (e instanceof ConstraintViolationException || e instanceof MethodArgumentNotValidException) {
+            log.info("Validation error occurred: {}", e.getMessage());
+        } else {
+            log.error("Unhandled exception occurred: {}", e.getMessage(), e);
+        }
     }
 }

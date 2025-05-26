@@ -15,9 +15,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          submodules: true
-          token: ${{ secrets.ACTION_KEY }}  # 서브모듈 체크아웃 시 인증을 위해 토큰 사용
 
       - name: Set VERSION from PR title
         run: |
@@ -41,9 +38,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          submodules: true
-          token: ${{ secrets.ACTION_KEY }}  # 서브모듈 체크아웃 시 인증을 위해 토큰 사용
 
       - name: Set up environment files
         run: |
